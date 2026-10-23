@@ -1,0 +1,17 @@
+# Baseline local/project noise
+.commandcode/
+.env
+.env.*
+!.env.example
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
