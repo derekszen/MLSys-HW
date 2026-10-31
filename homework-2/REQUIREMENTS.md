@@ -1,0 +1,26 @@
+# Homework 2: requirements and evidence checklist
+
+Authority: [the original assignment](assignment.md). **Technical deliverables are complete within the recorded experimental scope.** All four models have passing matched TP1/TP2 configurations;4B's former discrepancy is [explained and fixed](docs/4B-discrepancy.md), with original failed verdicts retained. Student review/contribution confirmation and submission remain separate. See [completion](COMPLETION.md).
+
+| What the assignment requires us to show | Evidence | Current status / remaining action |
+| --- | --- | --- |
+| Run **0.8B, 4B, 9B and 27B**, separately, with one model sharded across the two chips of one 910C card | [Latest runs](docs/final-validation.md), [historical rank logs](docs/run-evidence.md), raw results/HBM | **Demonstrated:** all four complete 5/32/256-input → 16-output generation. Same-card topology and both worker PIDs/HBM are recorded, not just startup. |
+| Compare **TP1 vs TP2** with matching weights, precision and task settings when single-chip operation is possible; otherwise use a course-approved reference | [Report §3](report.md#3-连续推理与数值结果), [4B initial](results/4B-fp32-head-initial-validation.json)/[confirmation](results/4B-fp32-head-confirmation-validation.json), [final-source other models](results/head-fix-regression/) | **All four pass** exact16 generated IDs and unchanged selected-logprob `atol=0.15`:0.8B BF16,4B FP16+FP32 final projection,9B FP16,27B BF16/fraction0.9. Each pair uses matching precision/configuration; current27B does not require an alternative reference. Native4B's historical and fresh-control failures remain failed, not waived. |
+| Explain sharded/replicated weights, activations, outputs, collectives and inference state for a typical layer, covering different structures | [Sharding plan](docs/parallelism-plan.md) | **Documented:** embedding/head, GDN, convolution/recurrent state, MHA/KV cache, MLP and normalization. Source-derived shapes are distinguished from measured traces. |
+| On one representative model, compare TP1/TP2 at **two input lengths × two concurrencies**, reporting throughput, latency and each chip's HBM; add a larger model's TP2 performance/capacity | [New 0.8B matrix](results/final-matrix/benchmark-summary.json), [complete matrix HBM](results/final-matrix/hbm-summary.json), [new 27B validation/benchmark](results/final-27B/validation-summary.json), [model HBM](results/final-model-hbm-summary.json) | **Measured and validated:** 32/256 inputs × concurrency 1/2, three repetitions, all 36 measured outputs checked. All new matrix snapshots match the scheduler PIDs. 27B has a successful matched TP1 baseline and six validated TP2 benchmark outputs. Old HBM gaps remain historical unknowns, not filled in. |
+| Use timelines/tools to distinguish computation, communication and waiting, accounting for overlap; test one communication-related strategy with hypothesis, controlled change, results and conclusion | [Device trace analysis](docs/communication-results.md), [analysis JSON](results/npu-communication-analysis.json) | **Bounded experiment demonstrated:** both ranks, batch 1→2, actual payload doubling and unchanged collective count; interval unions avoid double counting. Mixed timing results do not establish a speedup. Unclassified gaps are not pure CPU waiting. |
+
+## What is not an additional course requirement
+
+- The assignment specifies **no exact-token equality rule or numeric tolerance**. Exact greedy IDs and `atol=0.15` are our recorded project checks, not a quoted course threshold. Keep their failed verdicts; do not arbitrarily relax them. Correctness needs a defensible numerical explanation or correction.
+- **TP2 speedup is not required.** Slower TP2 and a strategy with mixed results are valid observations if explained honestly.
+- A further optimization, longer profiling window, full upstream test-suite pass, full-model trace, or pure-wait decomposition is not explicitly mandated. These can strengthen particular claims but are not invented completion gates.
+- Four models need not reside simultaneously. HBM snapshots must be labelled as snapshots; the assignment does not explicitly require peak measurements.
+
+## Before submission
+
+1. Review the consolidated [report](report.md), including its self-contained layer-shape and computation/communication/control tables. The resolved 4B case is a brief fix-and-verification note; its detailed diagnostic is an attachment, not a completion blocker.
+2. The opening contribution table identifies **Zhuoxi Zeng,2501213387** and the documented coordination role.
+3. Upload the prepared report and permitted attachments according to the assignment entry. Follow the [submission guide](../SUBMISSION.md) for file mapping and receipt verification. **Nothing has been submitted.**
+
+No exact-equality rule or positive speedup is being invented as a course requirement. The stricter project checks now pass for all selected model configurations; old failures remain available with their original verdicts.

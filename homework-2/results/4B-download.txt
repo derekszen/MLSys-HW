@@ -1,0 +1,37 @@
+Downloading LICENSE (11343 bytes; resume 0)
+SHA256 verified: LICENSE
+Downloading chat_template.jinja (7756 bytes; resume 0)
+SHA256 verified: chat_template.jinja
+Downloading config.json (3161 bytes; resume 0)
+SHA256 verified: config.json
+Downloading configuration.json (73 bytes; resume 0)
+SHA256 verified: configuration.json
+Downloading merges.txt (3353259 bytes; resume 0)
+SHA256 verified: merges.txt
+Downloading model.safetensors-00001-of-00002.safetensors (5329398688 bytes; resume 0)
+model.safetensors-00001-of-00002.safetensors: 721420288/5329398688 bytes
+model.safetensors-00001-of-00002.safetensors: 1442840576/5329398688 bytes
+model.safetensors-00001-of-00002.safetensors: 2197815296/5329398688 bytes
+model.safetensors-00001-of-00002.safetensors: 2944401408/5329398688 bytes
+model.safetensors-00001-of-00002.safetensors: 3707764736/5329398688 bytes
+model.safetensors-00001-of-00002.safetensors: 4437573632/5329398688 bytes
+model.safetensors-00001-of-00002.safetensors: 5184159744/5329398688 bytes
+SHA256 verified: model.safetensors-00001-of-00002.safetensors
+Downloading model.safetensors-00002-of-00002.safetensors (3990429408 bytes; resume 0)
+model.safetensors-00002-of-00002.safetensors: 872415232/3990429408 bytes
+model.safetensors-00002-of-00002.safetensors: 1736441856/3990429408 bytes
+model.safetensors-00002-of-00002.safetensors: 2617245696/3990429408 bytes
+model.safetensors-00002-of-00002.safetensors: 3481272320/3990429408 bytes
+SHA256 verified: model.safetensors-00002-of-00002.safetensors
+Downloading model.safetensors.index.json (76196 bytes; resume 0)
+SHA256 verified: model.safetensors.index.json
+Downloading preprocessor_config.json (390 bytes; resume 0)
+SHA256 verified: preprocessor_config.json
+Downloading tokenizer.json (12807982 bytes; resume 0)
+SHA256 verified: tokenizer.json
+Downloading tokenizer_config.json (16710 bytes; resume 0)
+SHA256 verified: tokenizer_config.json
+Downloading video_preprocessor_config.json (385 bytes; resume 0)
+SHA256 verified: video_preprocessor_config.json
+Downloading vocab.json (6722759 bytes; resume 0)
+SHA256 verified: vocab.json

@@ -1,0 +1,213 @@
+{
+  "benchmark": {
+    "limitations": [
+      "Shared-server contention; three repeats, descriptive medians only."
+    ],
+    "measurement": "Batch wall latency and aggregate output throughput; not TTFT/TPOT.",
+    "output_id_checks": [
+      {
+        "case": "length_32",
+        "exact_output_ids": true,
+        "repeat": 0,
+        "request": 0
+      },
+      {
+        "case": "length_32",
+        "exact_output_ids": true,
+        "repeat": 1,
+        "request": 0
+      },
+      {
+        "case": "length_32",
+        "exact_output_ids": true,
+        "repeat": 2,
+        "request": 0
+      },
+      {
+        "case": "length_256",
+        "exact_output_ids": true,
+        "repeat": 0,
+        "request": 0
+      },
+      {
+        "case": "length_256",
+        "exact_output_ids": true,
+        "repeat": 1,
+        "request": 0
+      },
+      {
+        "case": "length_256",
+        "exact_output_ids": true,
+        "repeat": 2,
+        "request": 0
+      }
+    ],
+    "repeatability_validation_passed": true,
+    "rows": [
+      {
+        "aggregate_output_tokens_per_second": [
+          4.41703457325165,
+          4.397303796502096,
+          4.364193591571887
+        ],
+        "batch_seconds": [
+          3.6223397699650377,
+          3.6385932699777186,
+          3.6661985001992434
+        ],
+        "case": "length_32",
+        "concurrency": 1,
+        "input_tokens": 32,
+        "median_aggregate_output_tokens_per_second": 4.397303796502096,
+        "median_batch_seconds": 3.6385932699777186,
+        "output_tokens_per_request": 16,
+        "repeats": 3,
+        "tp": 2
+      },
+      {
+        "aggregate_output_tokens_per_second": [
+          2.554369825528235,
+          2.6696354881329736,
+          2.6495370387946298
+        ],
+        "batch_seconds": [
+          6.263775840168819,
+          5.99332758015953,
+          6.038790839957073
+        ],
+        "case": "length_256",
+        "concurrency": 1,
+        "input_tokens": 256,
+        "median_aggregate_output_tokens_per_second": 2.6495370387946298,
+        "median_batch_seconds": 6.038790839957073,
+        "output_tokens_per_request": 16,
+        "repeats": 3,
+        "tp": 2
+      }
+    ],
+    "scope": "Exact outputs match TP2 correctness, not independent accuracy.",
+    "verified_benchmark_requests": 6
+  },
+  "concurrency": 1,
+  "fingerprints": {
+    "cases_sha256": "5ffed43aa943d6951a337562beeec9680389408e1699f1537e3ce96a7a6b9e66",
+    "config_sha256": "f8d190c5b89c1521220f935d2567a587d6e291ed69066a45a106560b05a2174c",
+    "manifest_sha256": "96c6013d005219b3b58f0082c0a04af84e89c939d8df288f72128ce4c971bfad"
+  },
+  "inputs": [
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/final-27B/27B-correctness-tp1-c1/result.json",
+      "role": "tp1_correctness",
+      "sha256": "989b5a1ebdf1bed6b0bbac532c33636f0d3c8191e12c08c6b1432046a1bddeed"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/final-27B/27B-correctness-tp2-c1/result.json",
+      "role": "tp2_correctness",
+      "sha256": "4bd53ad8e5960c071858250c731aa0a666d8184714d275f7f376603049320b6a"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/final-27B/27B-benchmark-tp2-c1/result.json",
+      "role": "tp2_benchmark",
+      "sha256": "159093b120053bc54a0c7a3bc9f4af780218cf90675bbee72e49e805bf5ea5d1"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/cases.json",
+      "role": "cases",
+      "sha256": "5ffed43aa943d6951a337562beeec9680389408e1699f1537e3ce96a7a6b9e66"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/metadata/Qwen3.5-27B/source-manifest.json",
+      "role": "manifest",
+      "sha256": "96c6013d005219b3b58f0082c0a04af84e89c939d8df288f72128ce4c971bfad"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/metadata/Qwen3.5-27B/config.json",
+      "role": "model_config",
+      "sha256": "f8d190c5b89c1521220f935d2567a587d6e291ed69066a45a106560b05a2174c"
+    }
+  ],
+  "limitations": [
+    "TP agreement is not independent reference accuracy certification.",
+    "No full-logit comparison; exact greedy IDs and selected logprobs only."
+  ],
+  "model": "Qwen/Qwen3.5-27B",
+  "runtime_versions": {
+    "torch": "2.9.0+cpu",
+    "torch_npu": "2.9.0",
+    "triton": "3.2.0"
+  },
+  "shared_config": {
+    "base_gpu_id": 0,
+    "chunked_prefill_size": 128,
+    "device": "npu",
+    "disable_autotune": true,
+    "disable_kvstore": true,
+    "disable_pdl": true,
+    "disable_prefill_graph": true,
+    "distributed_timeout_seconds": 60,
+    "dtype": "bfloat16",
+    "enable_output_logprobs": true,
+    "enable_prefix_caching": false,
+    "enforce_eager": true,
+    "ep_size": 1,
+    "gpu_id_step": 1,
+    "gpu_memory_utilization": 0.9,
+    "language_model_only": true,
+    "log_level": "info",
+    "mamba_ssm_dtype": "float32",
+    "max_model_len": 512,
+    "max_num_seqs": 2,
+    "max_prefill_tokens": 128,
+    "max_total_tokens": 16384,
+    "model": "/home/u2501213387/MLSys-HW/homework-2/models/Qwen3.5-27B",
+    "pipeline_parallel_size": 1,
+    "sampling_backend": "greedy",
+    "seed": 42,
+    "trust_remote_code": false
+  },
+  "source_trees": {
+    "python": {
+      "file_count": 537,
+      "sha256": "be5b7fc59e7991c48c28debcd21772f0505f3362e9fd0f80b1f915b792624140"
+    },
+    "tokenspeed-kernel-npu/python": {
+      "file_count": 20,
+      "sha256": "7a02b8ec4b1c35d8cc756d96c31c665371d68bd0b123d9a785901df7a4cd46d1"
+    },
+    "tokenspeed-kernel/python": {
+      "file_count": 630,
+      "sha256": "36489c6490fe5290df76f617b4e8a224129292b977d10a19abaffba921bcc23f"
+    }
+  },
+  "strict_tp_comparison": {
+    "cases": [
+      {
+        "case": "smoke",
+        "greedy_exact": true,
+        "max_selected_logprob_error": 0.012968659400939941,
+        "passed": true,
+        "repeat": 0,
+        "request": 0
+      },
+      {
+        "case": "length_32",
+        "greedy_exact": true,
+        "max_selected_logprob_error": 0.0773688554763794,
+        "passed": true,
+        "repeat": 0,
+        "request": 0
+      },
+      {
+        "case": "length_256",
+        "greedy_exact": true,
+        "max_selected_logprob_error": 0.01813896745443344,
+        "passed": true,
+        "repeat": 0,
+        "request": 0
+      }
+    ],
+    "passed": true,
+    "scope": "greedy IDs and selected logprobs, not full logits; inspect rank/device logs separately",
+    "selected_logprob_atol": 0.15
+  }
+}

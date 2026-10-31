@@ -1,0 +1,93 @@
+{
+  "base_commit": "52bdb9763bb2da3d61336398072671885cc0a33e",
+  "comparison": "byte-exact contents and git modes; all tracked and nonignored new files",
+  "frozen_hw1_unchanged": true,
+  "hw1_sha256": "e68f2f26e49d30180280adbab0bb0ebaf433246e27457788e60277621613b8c6",
+  "hw2_bytes": 89738,
+  "hw2_sha256": "76071724b56e1f7922dd3fd9a4c2c5b359f3422252ac10c74daa5e5d0f2350f6",
+  "incremental_files": [
+    "docs/hccl-torch29.md",
+    "docs/lm-head-precision.md",
+    "docs/npu-profile.md",
+    "docs/qwen35-cache-precision.md",
+    "python/tokenspeed/runtime/distributed/comm_backend/hccl.py",
+    "python/tokenspeed/runtime/engine/request_handler.py",
+    "python/tokenspeed/runtime/layers/attention/configs/base.py",
+    "python/tokenspeed/runtime/layers/attention/kv_cache/recipes/qwen35.py",
+    "python/tokenspeed/runtime/layers/logits_processor.py",
+    "python/tokenspeed/runtime/utils/env.py",
+    "python/tokenspeed/runtime/utils/server_args.py",
+    "test/runtime/test_hccl_torch29.py",
+    "test/runtime/test_lm_head_precision.py",
+    "test/runtime/test_npu_profile.py",
+    "test/runtime/test_qwen35_cache_precision.py"
+  ],
+  "incremental_files_verified": {
+    "docs/hccl-torch29.md": {
+      "mode": "100644",
+      "sha256": "52de1df03b1d052a1cb45edf560bae8c9cbfa4af99f9747954fe98f591dfe9b6"
+    },
+    "docs/lm-head-precision.md": {
+      "mode": "100644",
+      "sha256": "d2cd55c256fc52c54dfceed188e594fefb072ba8aa2b83a27a388310494d7869"
+    },
+    "docs/npu-profile.md": {
+      "mode": "100644",
+      "sha256": "df9793d09b899fa994c899b2e1f42f580f9c82cb6e3f97f045767ccdf12a2a7b"
+    },
+    "docs/qwen35-cache-precision.md": {
+      "mode": "100644",
+      "sha256": "1d484c0cc85e67759cba0f8c53b0b61d957a31bf093d612dae1970a6048e937e"
+    },
+    "python/tokenspeed/runtime/distributed/comm_backend/hccl.py": {
+      "mode": "100644",
+      "sha256": "c15d81cefd2e6e148978b7e7e6386730ee05680d5de4319d8f06c7a8658b9d15"
+    },
+    "python/tokenspeed/runtime/engine/request_handler.py": {
+      "mode": "100644",
+      "sha256": "99b7571d5ab79867f1c2bd9a30cde88aaaf4439ec433a792579b6a2d58d402bd"
+    },
+    "python/tokenspeed/runtime/layers/attention/configs/base.py": {
+      "mode": "100644",
+      "sha256": "ce3d4d0e4f7ba07701c69030f39b257c8c1123caac160f0ea3749f8000f85c70"
+    },
+    "python/tokenspeed/runtime/layers/attention/kv_cache/recipes/qwen35.py": {
+      "mode": "100644",
+      "sha256": "4b8cea810dd349f89f32172d5ce52cfca799369e8e0bacaef48dd5558a541bf1"
+    },
+    "python/tokenspeed/runtime/layers/logits_processor.py": {
+      "mode": "100755",
+      "sha256": "bf3236e501404b6fe2fd4b3c2004080ed17be5c55f696e89d4163d226b1a06a2"
+    },
+    "python/tokenspeed/runtime/utils/env.py": {
+      "mode": "100755",
+      "sha256": "b64a6a26897d45d60a24e861fa19560da800761a9c277ed5b4a71179300c3263"
+    },
+    "python/tokenspeed/runtime/utils/server_args.py": {
+      "mode": "100755",
+      "sha256": "4c297174cbc272286bc35fc5956d67c952286e3ad77bd6bd72419a8d824d3825"
+    },
+    "test/runtime/test_hccl_torch29.py": {
+      "mode": "100644",
+      "sha256": "5bd49239ce67c8e2c0656bd6285082f30721295c784facc6944f9652893edc50"
+    },
+    "test/runtime/test_lm_head_precision.py": {
+      "mode": "100644",
+      "sha256": "9f783cc28bcde04dff97b17abe0521382ad6fdef50cf99055e28991bb6b7cc71"
+    },
+    "test/runtime/test_npu_profile.py": {
+      "mode": "100644",
+      "sha256": "974d60e837f9f4dd6848f7a52229d5a6caac6efdcbdfdb7d7a1a22840ab9fa83"
+    },
+    "test/runtime/test_qwen35_cache_precision.py": {
+      "mode": "100644",
+      "sha256": "a154cc3223dbf458999f597ce7c2f70a06d0825a4b4c23bab57e3c6c237c2caf"
+    }
+  },
+  "passed": true,
+  "scope": "patch application/byte verification only, not hardware execution",
+  "source_files_unchanged": true,
+  "source_index_unchanged": true,
+  "verified_file_count": 2972,
+  "verified_tree_sha256": "cd3d86e56e892e69b65d5594fc9d6a146ff1c3d060e22589de3fe4dafdcb46ca"
+}

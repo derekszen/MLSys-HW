@@ -1,0 +1,47 @@
+Downloading LICENSE (11343 bytes; resume 0)
+SHA256 verified: LICENSE
+Downloading chat_template.jinja (7756 bytes; resume 0)
+SHA256 verified: chat_template.jinja
+Downloading config.json (3126 bytes; resume 0)
+SHA256 verified: config.json
+Downloading configuration.json (51 bytes; resume 0)
+SHA256 verified: configuration.json
+Downloading merges.txt (3353259 bytes; resume 0)
+SHA256 verified: merges.txt
+Downloading model.safetensors-00001-of-00004.safetensors (5276436216 bytes; resume 0)
+model.safetensors-00001-of-00004.safetensors: 998244352/5276436216 bytes
+model.safetensors-00001-of-00004.safetensors: 1929379840/5276436216 bytes
+model.safetensors-00001-of-00004.safetensors: 2894069760/5276436216 bytes
+model.safetensors-00001-of-00004.safetensors: 3875536896/5276436216 bytes
+model.safetensors-00001-of-00004.safetensors: 4840226816/5276436216 bytes
+SHA256 verified: model.safetensors-00001-of-00004.safetensors
+Downloading model.safetensors-00002-of-00004.safetensors (5335161512 bytes; resume 0)
+model.safetensors-00002-of-00004.safetensors: 947912704/5335161512 bytes
+model.safetensors-00002-of-00004.safetensors: 1912602624/5335161512 bytes
+model.safetensors-00002-of-00004.safetensors: 2860515328/5335161512 bytes
+model.safetensors-00002-of-00004.safetensors: 3850371072/5335161512 bytes
+model.safetensors-00002-of-00004.safetensors: 4823449600/5335161512 bytes
+SHA256 verified: model.safetensors-00002-of-00004.safetensors
+Downloading model.safetensors-00003-of-00004.safetensors (5368717440 bytes; resume 0)
+model.safetensors-00003-of-00004.safetensors: 1107296256/5368717440 bytes
+model.safetensors-00003-of-00004.safetensors: 2197815296/5368717440 bytes
+model.safetensors-00003-of-00004.safetensors: 3305111552/5368717440 bytes
+model.safetensors-00003-of-00004.safetensors: 4429185024/5368717440 bytes
+SHA256 verified: model.safetensors-00003-of-00004.safetensors
+Downloading model.safetensors-00004-of-00004.safetensors (3325995712 bytes; resume 0)
+model.safetensors-00004-of-00004.safetensors: 1031798784/3325995712 bytes
+model.safetensors-00004-of-00004.safetensors: 2063597568/3325995712 bytes
+model.safetensors-00004-of-00004.safetensors: 3078619136/3325995712 bytes
+SHA256 verified: model.safetensors-00004-of-00004.safetensors
+Downloading model.safetensors.index.json (79657 bytes; resume 0)
+SHA256 verified: model.safetensors.index.json
+Downloading preprocessor_config.json (390 bytes; resume 0)
+SHA256 verified: preprocessor_config.json
+Downloading tokenizer.json (12807982 bytes; resume 0)
+SHA256 verified: tokenizer.json
+Downloading tokenizer_config.json (16710 bytes; resume 0)
+SHA256 verified: tokenizer_config.json
+Downloading video_preprocessor_config.json (385 bytes; resume 0)
+SHA256 verified: video_preprocessor_config.json
+Downloading vocab.json (6722759 bytes; resume 0)
+SHA256 verified: vocab.json

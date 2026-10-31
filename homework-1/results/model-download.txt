@@ -1,0 +1,26 @@
+Downloading LICENSE (11343 bytes; resume 0)
+SHA256 verified: LICENSE
+Downloading chat_template.jinja (7755 bytes; resume 0)
+SHA256 verified: chat_template.jinja
+Downloading config.json (2907 bytes; resume 0)
+SHA256 verified: config.json
+Downloading configuration.json (51 bytes; resume 0)
+SHA256 verified: configuration.json
+Downloading merges.txt (3353259 bytes; resume 0)
+SHA256 verified: merges.txt
+Downloading model.safetensors-00001-of-00001.safetensors (1746942600 bytes; resume 0)
+model.safetensors-00001-of-00001.safetensors: 872415232/1746942600 bytes
+model.safetensors-00001-of-00001.safetensors: 1702887424/1746942600 bytes
+SHA256 verified: model.safetensors-00001-of-00001.safetensors
+Downloading model.safetensors.index.json (50900 bytes; resume 0)
+SHA256 verified: model.safetensors.index.json
+Downloading preprocessor_config.json (390 bytes; resume 0)
+SHA256 verified: preprocessor_config.json
+Downloading tokenizer.json (12807982 bytes; resume 0)
+SHA256 verified: tokenizer.json
+Downloading tokenizer_config.json (16709 bytes; resume 0)
+SHA256 verified: tokenizer_config.json
+Downloading video_preprocessor_config.json (385 bytes; resume 0)
+SHA256 verified: video_preprocessor_config.json
+Downloading vocab.json (6722759 bytes; resume 0)
+SHA256 verified: vocab.json

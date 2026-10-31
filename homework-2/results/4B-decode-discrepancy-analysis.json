@@ -1,0 +1,3518 @@
+{
+  "schema": 1,
+  "status": "validated_offline_diagnostic_analysis",
+  "repetitions": [
+    {
+      "label": "length_32-repeat0",
+      "first_divergence": {
+        "step_index": 9,
+        "generated_token_number": 10,
+        "tp1": {
+          "actual_output_id": 20943,
+          "max_tied_ids": [
+            20943
+          ],
+          "candidates": {
+            "760": {
+              "logit": 14.2890625,
+              "logprob": -2.430098295211792
+            },
+            "20943": {
+              "logit": 14.296875,
+              "logprob": -2.422285795211792
+            },
+            "1118": {
+              "logit": 0.45751953125,
+              "logprob": -16.261640548706055
+            },
+            "2614": {
+              "logit": 0.4423828125,
+              "logprob": -16.276777267456055
+            }
+          },
+          "diagnostic_pair": [
+            20943,
+            760
+          ],
+          "diagnostic_pair_raw_logits": {
+            "20943": 14.296875,
+            "760": 14.2890625
+          },
+          "diagnostic_pair_dot_fp64": {
+            "20943": 14.29482058884605,
+            "760": 14.292772969027283
+          },
+          "dot_margin_tp1_choice_minus_tp2_choice": 0.0020476198187679984
+        },
+        "tp2": {
+          "actual_output_id": 760,
+          "max_tied_ids": [
+            760,
+            20943
+          ],
+          "candidates": {
+            "760": {
+              "logit": 14.2890625,
+              "logprob": -2.428931474685669
+            },
+            "20943": {
+              "logit": 14.2890625,
+              "logprob": -2.428931474685669
+            },
+            "1118": {
+              "logit": 0.461669921875,
+              "logprob": -16.256324768066406
+            },
+            "2614": {
+              "logit": 0.442626953125,
+              "logprob": -16.275367736816406
+            }
+          },
+          "diagnostic_pair": [
+            20943,
+            760
+          ],
+          "diagnostic_pair_raw_logits": {
+            "20943": 14.2890625,
+            "760": 14.2890625
+          },
+          "diagnostic_pair_dot_fp64": {
+            "20943": 14.29169215188449,
+            "760": 14.29165749369713
+          },
+          "dot_margin_tp1_choice_minus_tp2_choice": 3.465818736003712e-05
+        },
+        "pair_fp64_preserves_tp1_preference_on_both": true,
+        "native_argmax_policy": "lowest vocabulary ID among exact native maxima",
+        "interpretation": "Stored FP64 candidate dots keep the TP1 choice ahead on both TP settings; small TP numerical differences plus final FP16 rounding yield a TP2 tie resolved by native argmax. This does not imply identical upstream hidden states."
+      },
+      "compared_steps": [
+        {
+          "step_index": 0,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.015625,
+          "max_abs_full_vocab_logprob_error": 0.015628421456025166,
+          "kl_tp1_to_tp2": 2.1075924567935142e-07,
+          "kl_tp2_to_tp1": 2.1078835869426843e-07,
+          "total_variation": 2.8909362192333428e-05,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.03125,
+          "tp1_output_id": 9064,
+          "tp2_output_id": 9064
+        },
+        {
+          "step_index": 1,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.015625,
+          "max_abs_full_vocab_logprob_error": 0.015690477083440513,
+          "kl_tp1_to_tp2": 1.8820762908699891e-06,
+          "kl_tp2_to_tp1": 1.8843863786908429e-06,
+          "total_variation": 0.00017168869702613427,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.0234375,
+          "tp1_output_id": 11988,
+          "tp2_output_id": 11988
+        },
+        {
+          "step_index": 2,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.017578125,
+          "max_abs_full_vocab_logprob_error": 0.01753550772163237,
+          "kl_tp1_to_tp2": 3.2923702631248047e-07,
+          "kl_tp2_to_tp1": 3.276958532057821e-07,
+          "total_variation": 4.502692763400662e-05,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.03125,
+          "tp1_output_id": 33625,
+          "tp2_output_id": 33625
+        },
+        {
+          "step_index": 3,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.017578125,
+          "max_abs_full_vocab_logprob_error": 0.01756630849677876,
+          "kl_tp1_to_tp2": 1.1339460399936881e-07,
+          "kl_tp2_to_tp1": 1.1328246971474533e-07,
+          "total_variation": 1.9918102011655265e-05,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.0234375,
+          "tp1_output_id": 13016,
+          "tp2_output_id": 13016
+        },
+        {
+          "step_index": 4,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.01953125,
+          "max_abs_full_vocab_logprob_error": 0.01955097568522035,
+          "kl_tp1_to_tp2": 2.174006332045277e-07,
+          "kl_tp2_to_tp1": 2.1663331364126302e-07,
+          "total_variation": 2.834635883447805e-05,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.046875,
+          "tp1_output_id": 1518,
+          "tp2_output_id": 1518
+        },
+        {
+          "step_index": 5,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.015625,
+          "max_abs_full_vocab_logprob_error": 0.015712039052548477,
+          "kl_tp1_to_tp2": 7.468548437784516e-07,
+          "kl_tp2_to_tp1": 7.435322918502935e-07,
+          "total_variation": 9.772051325402989e-05,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.046875,
+          "tp1_output_id": 28043,
+          "tp2_output_id": 28043
+        },
+        {
+          "step_index": 6,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.015625,
+          "max_abs_full_vocab_logprob_error": 0.03100232360368338,
+          "kl_tp1_to_tp2": 2.0952494869360765e-06,
+          "kl_tp2_to_tp1": 2.1076375469964483e-06,
+          "total_variation": 0.000243876702269103,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.015625,
+          "tp1_output_id": 4906,
+          "tp2_output_id": 4906
+        },
+        {
+          "step_index": 7,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.01171875,
+          "max_abs_full_vocab_logprob_error": 0.011717850034440147,
+          "kl_tp1_to_tp2": 2.270184039273184e-07,
+          "kl_tp2_to_tp1": 2.270362339762665e-07,
+          "total_variation": 3.699240877663325e-05,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.03125,
+          "tp1_output_id": 13,
+          "tp2_output_id": 13
+        },
+        {
+          "step_index": 8,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.015625,
+          "max_abs_full_vocab_logprob_error": 0.015742004647849583,
+          "kl_tp1_to_tp2": 2.226011104192145e-06,
+          "kl_tp2_to_tp1": 2.227222376210472e-06,
+          "total_variation": 0.0003591149925216679,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.0390625,
+          "tp1_output_id": 271,
+          "tp2_output_id": 271
+        },
+        {
+          "step_index": 9,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.015625,
+          "max_abs_full_vocab_logprob_error": 0.014838676280495733,
+          "kl_tp1_to_tp2": 8.578374872916747e-06,
+          "kl_tp2_to_tp1": 8.577083818278604e-06,
+          "total_variation": 0.0015304824262814508,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.03125,
+          "tp1_output_id": 20943,
+          "tp2_output_id": 760
+        }
+      ],
+      "excluded_after_divergence": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "label": "length_32-repeat1",
+      "first_divergence": {
+        "step_index": 9,
+        "generated_token_number": 10,
+        "tp1": {
+          "actual_output_id": 20943,
+          "max_tied_ids": [
+            20943
+          ],
+          "candidates": {
+            "760": {
+              "logit": 14.2890625,
+              "logprob": -2.430098295211792
+            },
+            "20943": {
+              "logit": 14.296875,
+              "logprob": -2.422285795211792
+            },
+            "1118": {
+              "logit": 0.45751953125,
+              "logprob": -16.261640548706055
+            },
+            "2614": {
+              "logit": 0.4423828125,
+              "logprob": -16.276777267456055
+            }
+          },
+          "diagnostic_pair": [
+            20943,
+            760
+          ],
+          "diagnostic_pair_raw_logits": {
+            "20943": 14.296875,
+            "760": 14.2890625
+          },
+          "diagnostic_pair_dot_fp64": {
+            "20943": 14.29482058884605,
+            "760": 14.292772969027283
+          },
+          "dot_margin_tp1_choice_minus_tp2_choice": 0.0020476198187679984
+        },
+        "tp2": {
+          "actual_output_id": 760,
+          "max_tied_ids": [
+            760,
+            20943
+          ],
+          "candidates": {
+            "760": {
+              "logit": 14.2890625,
+              "logprob": -2.428931474685669
+            },
+            "20943": {
+              "logit": 14.2890625,
+              "logprob": -2.428931474685669
+            },
+            "1118": {
+              "logit": 0.461669921875,
+              "logprob": -16.256324768066406
+            },
+            "2614": {
+              "logit": 0.442626953125,
+              "logprob": -16.275367736816406
+            }
+          },
+          "diagnostic_pair": [
+            20943,
+            760
+          ],
+          "diagnostic_pair_raw_logits": {
+            "20943": 14.2890625,
+            "760": 14.2890625
+          },
+          "diagnostic_pair_dot_fp64": {
+            "20943": 14.29169215188449,
+            "760": 14.29165749369713
+          },
+          "dot_margin_tp1_choice_minus_tp2_choice": 3.465818736003712e-05
+        },
+        "pair_fp64_preserves_tp1_preference_on_both": true,
+        "native_argmax_policy": "lowest vocabulary ID among exact native maxima",
+        "interpretation": "Stored FP64 candidate dots keep the TP1 choice ahead on both TP settings; small TP numerical differences plus final FP16 rounding yield a TP2 tie resolved by native argmax. This does not imply identical upstream hidden states."
+      },
+      "compared_steps": [
+        {
+          "step_index": 0,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.015625,
+          "max_abs_full_vocab_logprob_error": 0.015628421456025166,
+          "kl_tp1_to_tp2": 2.1075924567935142e-07,
+          "kl_tp2_to_tp1": 2.1078835869426843e-07,
+          "total_variation": 2.8909362192333428e-05,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.03125,
+          "tp1_output_id": 9064,
+          "tp2_output_id": 9064
+        },
+        {
+          "step_index": 1,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.015625,
+          "max_abs_full_vocab_logprob_error": 0.015690477083440513,
+          "kl_tp1_to_tp2": 1.8820762908699891e-06,
+          "kl_tp2_to_tp1": 1.8843863786908429e-06,
+          "total_variation": 0.00017168869702613427,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.0234375,
+          "tp1_output_id": 11988,
+          "tp2_output_id": 11988
+        },
+        {
+          "step_index": 2,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.017578125,
+          "max_abs_full_vocab_logprob_error": 0.01753550772163237,
+          "kl_tp1_to_tp2": 3.2923702631248047e-07,
+          "kl_tp2_to_tp1": 3.276958532057821e-07,
+          "total_variation": 4.502692763400662e-05,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.03125,
+          "tp1_output_id": 33625,
+          "tp2_output_id": 33625
+        },
+        {
+          "step_index": 3,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.017578125,
+          "max_abs_full_vocab_logprob_error": 0.01756630849677876,
+          "kl_tp1_to_tp2": 1.1339460399936881e-07,
+          "kl_tp2_to_tp1": 1.1328246971474533e-07,
+          "total_variation": 1.9918102011655265e-05,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.0234375,
+          "tp1_output_id": 13016,
+          "tp2_output_id": 13016
+        },
+        {
+          "step_index": 4,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.01953125,
+          "max_abs_full_vocab_logprob_error": 0.01955097568522035,
+          "kl_tp1_to_tp2": 2.174006332045277e-07,
+          "kl_tp2_to_tp1": 2.1663331364126302e-07,
+          "total_variation": 2.834635883447805e-05,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.046875,
+          "tp1_output_id": 1518,
+          "tp2_output_id": 1518
+        },
+        {
+          "step_index": 5,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.015625,
+          "max_abs_full_vocab_logprob_error": 0.015712039052548477,
+          "kl_tp1_to_tp2": 7.468548437784516e-07,
+          "kl_tp2_to_tp1": 7.435322918502935e-07,
+          "total_variation": 9.772051325402989e-05,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.046875,
+          "tp1_output_id": 28043,
+          "tp2_output_id": 28043
+        },
+        {
+          "step_index": 6,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.015625,
+          "max_abs_full_vocab_logprob_error": 0.03100232360368338,
+          "kl_tp1_to_tp2": 2.0952494869360765e-06,
+          "kl_tp2_to_tp1": 2.1076375469964483e-06,
+          "total_variation": 0.000243876702269103,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.015625,
+          "tp1_output_id": 4906,
+          "tp2_output_id": 4906
+        },
+        {
+          "step_index": 7,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.01171875,
+          "max_abs_full_vocab_logprob_error": 0.011717850034440147,
+          "kl_tp1_to_tp2": 2.270184039273184e-07,
+          "kl_tp2_to_tp1": 2.270362339762665e-07,
+          "total_variation": 3.699240877663325e-05,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.03125,
+          "tp1_output_id": 13,
+          "tp2_output_id": 13
+        },
+        {
+          "step_index": 8,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.015625,
+          "max_abs_full_vocab_logprob_error": 0.015742004647849583,
+          "kl_tp1_to_tp2": 2.226011104192145e-06,
+          "kl_tp2_to_tp1": 2.227222376210472e-06,
+          "total_variation": 0.0003591149925216679,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.0390625,
+          "tp1_output_id": 271,
+          "tp2_output_id": 271
+        },
+        {
+          "step_index": 9,
+          "preceding_history_equal": true,
+          "max_abs_raw_logit_error": 0.015625,
+          "max_abs_full_vocab_logprob_error": 0.014838676280495733,
+          "kl_tp1_to_tp2": 8.578374872916747e-06,
+          "kl_tp2_to_tp1": 8.577083818278604e-06,
+          "total_variation": 0.0015304824262814508,
+          "hidden_exact_equal": false,
+          "max_abs_hidden_error": 0.03125,
+          "tp1_output_id": 20943,
+          "tp2_output_id": 760
+        }
+      ],
+      "excluded_after_divergence": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ]
+    }
+  ],
+  "common_history_summary": {
+    "compared_step_pairs": 20,
+    "max_abs_raw_logit_error": 0.01953125,
+    "max_abs_full_vocab_logprob_error": 0.03100232360368338
+  },
+  "all_three_cases_match_original_same_tp_baseline": true,
+  "tp2_rank_logits_and_inputs_exact": true,
+  "repeat_reproducibility": {
+    "tp1": {
+      "output_ids_exact_across_two_repetitions": true,
+      "raw_logits_exact_across_two_repetitions": true,
+      "hidden_exact_across_two_repetitions": true
+    },
+    "tp2": {
+      "output_ids_exact_across_two_repetitions": true,
+      "raw_logits_exact_across_two_repetitions": true,
+      "hidden_exact_across_two_repetitions": true
+    }
+  },
+  "scope": {
+    "distribution_normalization": "stable float64 full-vocabulary log-softmax of captured rounded raw logits",
+    "comparison_history": "equal full preceding history; includes first divergence; excludes all later steps",
+    "correctness_threshold_changed": false,
+    "existing_logprob_threshold": 0.15,
+    "metrics": "descriptive only; no new pass criterion; does not establish task correctness",
+    "fp64_dots": "observer-recorded pair only, from stored FP16 weights/hidden; not a whole unrounded vocabulary; weights not archived for offline recomputation",
+    "source_validation": "captured source manifests are internally hashed and match baselines; audit/observer scripts match inspected local files; captured run_model hashes must match across TP, not a later local revision",
+    "interpretation": "small TP numerical differences plus final logit rounding can produce an exact tie; upstream hidden states are not assumed identical",
+    "limitations": "two independent repeat labels are observations, not universal reproducibility proof; diagnostic timings are not benchmark timings; original non-retry warmup-tail captures excluded"
+  },
+  "bindings": {
+    "tp1": {
+      "result_sha256": "8fde6dcff8dbc89e84c33ddd0480d85a12a5fe22f785bfb297b19f5136684716",
+      "baseline_sha256": "307cf0c6d169c86e65efc32ed8d87226f8c12ef7e130d2d9616c0c73527f85ca",
+      "plan_sha256": "b9811beb4ca24745abb6c1f909042923cf2f6db299dc6a5eb95ad54895372ea4",
+      "rank_pids": {
+        "0": 4020827
+      }
+    },
+    "tp2": {
+      "result_sha256": "79dee317e82d920ebd38cdba662a7105de25b441fc0f2f9a9bc3cf900c4a64bc",
+      "baseline_sha256": "bfc14ca60dbd69d84bb0d45e56ae9d97b3a44c49c9c708e1dd5a5c1be10e36dd",
+      "plan_sha256": "596da834f4efea5151dcf856fad2f88f0bb0c7b6126b425e613a77a24277b46f",
+      "rank_pids": {
+        "0": 4021325,
+        "1": 4021326
+      }
+    }
+  },
+  "provenance": [
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/cases.json",
+      "sha256": "5ffed43aa943d6951a337562beeec9680389408e1699f1537e3ce96a7a6b9e66",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/result.json",
+      "sha256": "8fde6dcff8dbc89e84c33ddd0480d85a12a5fe22f785bfb297b19f5136684716",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/probe-plan.json",
+      "sha256": "b9811beb4ca24745abb6c1f909042923cf2f6db299dc6a5eb95ad54895372ea4",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp16-cachefix-correctness-tp1-c1/result.json",
+      "sha256": "307cf0c6d169c86e65efc32ed8d87226f8c12ef7e130d2d9616c0c73527f85ca",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step00.json",
+      "sha256": "2d3fc1fe5286aa9852708ade53f59820bb3adf721beea8101dcb981a9c9d0324",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step00-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "e51190c087f085ce96c32c4a560a00a4ca69c386d317e3521e293daf6bb6b852",
+      "raw_sha256": "ba8d642b69b378f8f268fd4a4e82fd158a739645285507663db55302d11d2f49",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step00-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "7887bbf042aaac02894a18273907748d750c64ab1fc8b35d2f4e4cf39d85fdd1",
+      "raw_sha256": "7bf4c49ced719e891415e9160319f31091ea355ef5e4401edbc0d7a93bc8c29d",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step01.json",
+      "sha256": "20e9c7831c0bf51366bd82bf2f3ce812413692dd6f28a5811ff9ed0b2377f9dd",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step01-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "865e60f36e960cc624a378f48351db43b4c818c872ca6ec1c1c4800d869bf113",
+      "raw_sha256": "f9d15f06d6ae691c905c7eba5a461b265c2652c1d6651a2f42adcdd236e03ef2",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step01-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "e30291b6475adde0939f47d0a9a77f2f4e3c170f7317b726e1ee3baf3ef63af5",
+      "raw_sha256": "b29dca6d219cc4d85c433eb49fff781487f9c1def2f53d8f2dd2d8eef882be44",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step02.json",
+      "sha256": "0a501ac7b7b67fd97e3baea37e675290eca854f6ba2930d222764a3ed279e2ec",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step02-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "1fb35e0ca36ab67cce93097844a15c49f23cdeae617c0253e6eb95c0f148be4e",
+      "raw_sha256": "ca3f265d3ca8f139940e1e55ebdd5e862d8bcd3083023f6265d18eca1b04471d",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step02-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "3b10686a11447a920cea000ea2be090334e821f2740c2bfaf59a58e98663ebc0",
+      "raw_sha256": "a3a370d45633098955e7cce2493df1090320b1b3bcaf3da5a4c0e12075933942",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step03.json",
+      "sha256": "986f46083e365fea377eb1796db7a169908c632cb038ff27245aa12b8390895f",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step03-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "dae6cb93bf6a40f684fa906fbcd070a4c31713e95bbfba1c4d3b2a77ee4a38c8",
+      "raw_sha256": "4c14ed9a00c7fcc57cacf5ed3d143db33a6e0dbd67158cd7ad220e956ff1cbae",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step03-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "6bfd0c1d699839c25b878ef545ea91ec4d461b78305a38f48b209df34923ff32",
+      "raw_sha256": "6644f1f6903e52c5a473d187951e85b19515d4f92ca37eee944921ce5677bb87",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step04.json",
+      "sha256": "378a5ee8de62ffd5199164e8f6f7bb57b72c88ca128fe34e5ceeb44e7a96d91e",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step04-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "683110581813dd83edfa68b244c3f29b2af2e029916a11869f2d1de24916c3e5",
+      "raw_sha256": "028efce4f9c675557172af64905e24e7d10a475e47156cff7d00586d1b766f35",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step04-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "e2a7b1f3ba17b96e2f5ce0776ebd01e9773807dcf1f89a072fd81fd0194760a1",
+      "raw_sha256": "75391d7a4277fd026504ac1a4a0f115db18a311e24dc0c09bb3409233f8c9808",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step05.json",
+      "sha256": "46581f648bf3b545744b33643f87cc8a226ac5db7c13d4dfb3f64b4cc41265d3",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step05-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "c7ab89510f4c4a901db1c670b5d519019434b0293b595a478d90bd94eb65e716",
+      "raw_sha256": "ad9abb5eeaf40daa57e01ed78747e4b866e48c783bbeb76df3382dfb54dec0ad",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step05-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "a1dbdad146bb9e4f618f4336a77f4fbee961d7547506fece3f4d4b59d2d8ef00",
+      "raw_sha256": "264306ad4f81002810b5c4639e1118f5175cbcfd9a947b304ed80093ff2c679d",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step06.json",
+      "sha256": "a1107745b2eecc13e60ea5f0be46d64a404d3b292a4c7781f748b644ff76ff0d",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step06-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "0079c61c42d173d39853b6ac33aa5c01649813761d53a6503b5d006dc775e1f9",
+      "raw_sha256": "ab3f1b28255d3cc7385961d682aaa87763fb553396201978b866cafd652434a2",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step06-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "898ecdac1e8ea268a3ba193d784421d25d4c3987c90a0cc915e85f4d78839c49",
+      "raw_sha256": "2939a929721cceb21107d19f58e745a823cfcb32c76b0650607b055fba915ca5",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step07.json",
+      "sha256": "2581cd85331a6780a9d54e0f7189cdd27fcd6045dd421fefd3686d66dd545593",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step07-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "c1465041f74c2d0c5cb7d3ed79d9c1dc4f8024bca3c132e2b1b4446cd841132b",
+      "raw_sha256": "c9276c18c9bbfeca4f434ad670274ccc633df956719b1cf025f3b95d0445491a",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step07-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "78c090b8918b786358e1f29827ee4e88fac4395df128ecba8b26a59bb30b57c3",
+      "raw_sha256": "f7b17ca4e746d9780eaebcee988c5e2904d96cbd861a16395984fd9a98d9897e",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step08.json",
+      "sha256": "292aebb18bcba80f5d8a797a92173ad05030b3fa15c54326ae0f670c61d3fab6",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step08-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "620c3e82ff43ac206308d8cda5320153ffd815cf90d00368c1539dd73570258b",
+      "raw_sha256": "5b6cb41e775d94f4d2749d179537fad9585b4ac74a2a450ac7cade14f8e74658",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step08-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "680839138d6ed6e7bcc1e391980eab5f42c4bc5e2709f3d734661e0f8f58ed9c",
+      "raw_sha256": "da619590714eaea91073ab7aaea939dcac6cbcc7361f3e10abf04d7423038874",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step09.json",
+      "sha256": "56b81d041d139c44296e94e2875cb3b6a244757985b8f9042c8647ec47f4c673",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step09-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "9a2cd3734367d5f30def01afe4baacc4aba1f4a138b3cd821271b491df041413",
+      "raw_sha256": "b0b2814ea2da0799246927241f8d97b9b69efff8f2e614e30cf1d181456ee171",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step09-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "8a9737a7de8bcc1bef33958eefd3f65d95eb57c78c357435ffa19837e7101dd6",
+      "raw_sha256": "b2faadd8dd1cf1532f141ff90ece540924a528ff5bd2f156f2e94d77292f4169",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step10.json",
+      "sha256": "741991631d88f43af65106785695fdd28d4414436b42479b0bc1acfef63fe7c1",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step10-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "94528fb972b19041fdc156690da3f20cda4d69fb91d633737f5a1c56748fe420",
+      "raw_sha256": "e935c901e23fea0fa1307e30ee356a1e65f9b1c529d3d46a60c3153de23d20da",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step10-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "1b545c8144d164d79d25230c3d74f3364d764109cf369350dfd8252c375b3f32",
+      "raw_sha256": "56fa0f186d87a4d23d8b00993aa80af48babe10812f2af1a49e52ddfffa01767",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step11.json",
+      "sha256": "825514ea82a6be7b33bcd3ccee074255f77fc73a928f991e8d94e691bac87d8b",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step11-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "7b4c2697c67c5628dd0dea1a75c8c808ff0522204d4bb7c0f02f5a869ffc05a9",
+      "raw_sha256": "b44cec45865288e758106d86596777600e40bcadd162152046b0dd9e3a2f8d2d",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step11-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "641a10988cc7d96fd37d0cd96be2e6aa46718b030b04bb2015089b1df7498efe",
+      "raw_sha256": "4791c1be24482e0e8463b41865f5995339a87b547234ec0aafcb73f0f8e613b2",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step12.json",
+      "sha256": "f0482d3b219f504545f97b189e1a2f07540259e59199079222ff4526add7c948",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step12-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "a75f6ad41aae7bf447a1e925f6df3440f460ad621cac9b4cf1795b7a4c9f9a89",
+      "raw_sha256": "f343029fdca5a8d09ef40f3c0c41ec45520c62da5087fca8aeb59e5306773bf8",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step12-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "ca01bd51114adb17878db007bc32f7ab9e474f77634fab2bc0490e9c031342a6",
+      "raw_sha256": "cd4bfb42a4af7c2255a490c3a11c58e2fe240c02206db87b60759b09d79dc5a0",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step13.json",
+      "sha256": "1ad2ae4f2a534c48d43ec2d357e63736fa38b910418b7c24aac604a528e6b105",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step13-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "8929a1d54877fbe67fad733cb8f9000dc1d23d723d1939ffb65e946497f90694",
+      "raw_sha256": "7ebbeae75c7bff5ebca68fa5f5cd1a58168aa5eeaef3f196dc64d3ed2f14f999",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step13-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "3e4cf1acb03c27744815f5000712033eade583021ecdae4a025e761c70df4b5c",
+      "raw_sha256": "8b3d101ca1dba5c7379b3a5ad9a4c24e202522ae076c811815808f4adc4e607e",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step14.json",
+      "sha256": "c032e9fc6812ff10d099e7c2b01f6dab5df93103d6e529fbe2338a2cecd229f6",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step14-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "a8210f1695b820e7580793806ceb88b45661672833f4fab09737603b90dcbecd",
+      "raw_sha256": "eb4e6e60c444e5c0448721337b710f1008e999712c174af251def9dc2d042e8d",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step14-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "fbdab225c76507b32a6a5c5739eec4f3607b9bad06d022a2ab93cb8fe123555b",
+      "raw_sha256": "d5993bf12d932a6c4363ee59370cc1379bee1e984d6045ec66cbe0840c51b5f5",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step15.json",
+      "sha256": "9dbeb91ccb36af6700a8190a0b3c94c3c398681d04ea8d3465e751cf87050d34",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step15-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "555b83460af0f0da894eb22cd3538c6193f1246b0040b10e770bc5d59d891fdc",
+      "raw_sha256": "503181a9b81b2def61af72258433b36224f5324c2f76687668e204a1aad55545",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat0-rank0/step15-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "c11ab38574bac9cc1ff8775643db475e6d186348b64c8d100da7b0b5200fcf82",
+      "raw_sha256": "5a86213e6bd0afce754dadd37b4281cd6e90f327957cb79ab9f856d56646ccbc",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step00.json",
+      "sha256": "8d9b444ff3173bb0371343d7f09de31e3604fee2ab58477b4558f06c83ad4c76",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step00-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "e51190c087f085ce96c32c4a560a00a4ca69c386d317e3521e293daf6bb6b852",
+      "raw_sha256": "ba8d642b69b378f8f268fd4a4e82fd158a739645285507663db55302d11d2f49",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step00-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "7887bbf042aaac02894a18273907748d750c64ab1fc8b35d2f4e4cf39d85fdd1",
+      "raw_sha256": "7bf4c49ced719e891415e9160319f31091ea355ef5e4401edbc0d7a93bc8c29d",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step01.json",
+      "sha256": "1f94218bed87a1cbb083a0cb8176ea7c24726681cc5df9ec9a5101a6b5b36c48",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step01-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "865e60f36e960cc624a378f48351db43b4c818c872ca6ec1c1c4800d869bf113",
+      "raw_sha256": "f9d15f06d6ae691c905c7eba5a461b265c2652c1d6651a2f42adcdd236e03ef2",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step01-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "e30291b6475adde0939f47d0a9a77f2f4e3c170f7317b726e1ee3baf3ef63af5",
+      "raw_sha256": "b29dca6d219cc4d85c433eb49fff781487f9c1def2f53d8f2dd2d8eef882be44",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step02.json",
+      "sha256": "d44bd18a3524741e3ebe9715560c0d1d90496d884b7fb0041acb8a492acce760",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step02-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "1fb35e0ca36ab67cce93097844a15c49f23cdeae617c0253e6eb95c0f148be4e",
+      "raw_sha256": "ca3f265d3ca8f139940e1e55ebdd5e862d8bcd3083023f6265d18eca1b04471d",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step02-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "3b10686a11447a920cea000ea2be090334e821f2740c2bfaf59a58e98663ebc0",
+      "raw_sha256": "a3a370d45633098955e7cce2493df1090320b1b3bcaf3da5a4c0e12075933942",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step03.json",
+      "sha256": "194238e676897834ed6ca248c4524ffab88dc6ed830c9d0fb31ec77158654f80",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step03-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "dae6cb93bf6a40f684fa906fbcd070a4c31713e95bbfba1c4d3b2a77ee4a38c8",
+      "raw_sha256": "4c14ed9a00c7fcc57cacf5ed3d143db33a6e0dbd67158cd7ad220e956ff1cbae",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step03-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "6bfd0c1d699839c25b878ef545ea91ec4d461b78305a38f48b209df34923ff32",
+      "raw_sha256": "6644f1f6903e52c5a473d187951e85b19515d4f92ca37eee944921ce5677bb87",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step04.json",
+      "sha256": "61ac8a707808111c6a10a76917936aa56be0dc4749759e4104ad8ee83c4ccc1a",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step04-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "683110581813dd83edfa68b244c3f29b2af2e029916a11869f2d1de24916c3e5",
+      "raw_sha256": "028efce4f9c675557172af64905e24e7d10a475e47156cff7d00586d1b766f35",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step04-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "e2a7b1f3ba17b96e2f5ce0776ebd01e9773807dcf1f89a072fd81fd0194760a1",
+      "raw_sha256": "75391d7a4277fd026504ac1a4a0f115db18a311e24dc0c09bb3409233f8c9808",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step05.json",
+      "sha256": "499f3633cb46987ed045496a3be4ac3f3b163657617415ae8b515f99e495fc75",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step05-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "c7ab89510f4c4a901db1c670b5d519019434b0293b595a478d90bd94eb65e716",
+      "raw_sha256": "ad9abb5eeaf40daa57e01ed78747e4b866e48c783bbeb76df3382dfb54dec0ad",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step05-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "a1dbdad146bb9e4f618f4336a77f4fbee961d7547506fece3f4d4b59d2d8ef00",
+      "raw_sha256": "264306ad4f81002810b5c4639e1118f5175cbcfd9a947b304ed80093ff2c679d",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step06.json",
+      "sha256": "ed2e2197202aea44007b49236ded1ff77cb5495f2e1acad7faab2948fced8448",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step06-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "0079c61c42d173d39853b6ac33aa5c01649813761d53a6503b5d006dc775e1f9",
+      "raw_sha256": "ab3f1b28255d3cc7385961d682aaa87763fb553396201978b866cafd652434a2",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step06-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "898ecdac1e8ea268a3ba193d784421d25d4c3987c90a0cc915e85f4d78839c49",
+      "raw_sha256": "2939a929721cceb21107d19f58e745a823cfcb32c76b0650607b055fba915ca5",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step07.json",
+      "sha256": "f9cdf9de9c75a8f7294869c3027ed43216ddeb460a379c0546366896512735e2",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step07-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "c1465041f74c2d0c5cb7d3ed79d9c1dc4f8024bca3c132e2b1b4446cd841132b",
+      "raw_sha256": "c9276c18c9bbfeca4f434ad670274ccc633df956719b1cf025f3b95d0445491a",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step07-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "78c090b8918b786358e1f29827ee4e88fac4395df128ecba8b26a59bb30b57c3",
+      "raw_sha256": "f7b17ca4e746d9780eaebcee988c5e2904d96cbd861a16395984fd9a98d9897e",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step08.json",
+      "sha256": "97182f010b1dc8da69c0758c95a9540ef8d15e40625badb106278ca9548a94e8",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step08-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "620c3e82ff43ac206308d8cda5320153ffd815cf90d00368c1539dd73570258b",
+      "raw_sha256": "5b6cb41e775d94f4d2749d179537fad9585b4ac74a2a450ac7cade14f8e74658",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step08-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "680839138d6ed6e7bcc1e391980eab5f42c4bc5e2709f3d734661e0f8f58ed9c",
+      "raw_sha256": "da619590714eaea91073ab7aaea939dcac6cbcc7361f3e10abf04d7423038874",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step09.json",
+      "sha256": "47ef002d2526048b805ea34aaea02469c194bbef12470baa07ca287c7ff2f6f5",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step09-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "9a2cd3734367d5f30def01afe4baacc4aba1f4a138b3cd821271b491df041413",
+      "raw_sha256": "b0b2814ea2da0799246927241f8d97b9b69efff8f2e614e30cf1d181456ee171",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step09-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "8a9737a7de8bcc1bef33958eefd3f65d95eb57c78c357435ffa19837e7101dd6",
+      "raw_sha256": "b2faadd8dd1cf1532f141ff90ece540924a528ff5bd2f156f2e94d77292f4169",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step10.json",
+      "sha256": "b863c5d4fbf6b6d2c8e229bf4e9f6368949337ba3f0cef6c67a69fd62a4668fe",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step10-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "94528fb972b19041fdc156690da3f20cda4d69fb91d633737f5a1c56748fe420",
+      "raw_sha256": "e935c901e23fea0fa1307e30ee356a1e65f9b1c529d3d46a60c3153de23d20da",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step10-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "1b545c8144d164d79d25230c3d74f3364d764109cf369350dfd8252c375b3f32",
+      "raw_sha256": "56fa0f186d87a4d23d8b00993aa80af48babe10812f2af1a49e52ddfffa01767",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step11.json",
+      "sha256": "aa204afc97dee362fafad71b6de3cb1721525396f965ad873abb68d66398adfd",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step11-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "7b4c2697c67c5628dd0dea1a75c8c808ff0522204d4bb7c0f02f5a869ffc05a9",
+      "raw_sha256": "b44cec45865288e758106d86596777600e40bcadd162152046b0dd9e3a2f8d2d",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step11-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "641a10988cc7d96fd37d0cd96be2e6aa46718b030b04bb2015089b1df7498efe",
+      "raw_sha256": "4791c1be24482e0e8463b41865f5995339a87b547234ec0aafcb73f0f8e613b2",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step12.json",
+      "sha256": "cf55df5380cb90c4adebcaa5ecd38f352b746b13a164cadcb83dc1f42320f628",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step12-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "a75f6ad41aae7bf447a1e925f6df3440f460ad621cac9b4cf1795b7a4c9f9a89",
+      "raw_sha256": "f343029fdca5a8d09ef40f3c0c41ec45520c62da5087fca8aeb59e5306773bf8",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step12-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "ca01bd51114adb17878db007bc32f7ab9e474f77634fab2bc0490e9c031342a6",
+      "raw_sha256": "cd4bfb42a4af7c2255a490c3a11c58e2fe240c02206db87b60759b09d79dc5a0",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step13.json",
+      "sha256": "71abb044e5a19068291eb73404883e16a0006629c59d609ec97a3081f23228fe",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step13-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "8929a1d54877fbe67fad733cb8f9000dc1d23d723d1939ffb65e946497f90694",
+      "raw_sha256": "7ebbeae75c7bff5ebca68fa5f5cd1a58168aa5eeaef3f196dc64d3ed2f14f999",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step13-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "3e4cf1acb03c27744815f5000712033eade583021ecdae4a025e761c70df4b5c",
+      "raw_sha256": "8b3d101ca1dba5c7379b3a5ad9a4c24e202522ae076c811815808f4adc4e607e",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step14.json",
+      "sha256": "67a69946c6f74430de572635a7dc1e0b22cd56de035e6d4b56e30b1b90b3bc43",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step14-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "a8210f1695b820e7580793806ceb88b45661672833f4fab09737603b90dcbecd",
+      "raw_sha256": "eb4e6e60c444e5c0448721337b710f1008e999712c174af251def9dc2d042e8d",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step14-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "fbdab225c76507b32a6a5c5739eec4f3607b9bad06d022a2ab93cb8fe123555b",
+      "raw_sha256": "d5993bf12d932a6c4363ee59370cc1379bee1e984d6045ec66cbe0840c51b5f5",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step15.json",
+      "sha256": "fa49d7f5b27dae2758a3c7fe67d1110c7bb0325dfd1961a2859864c91e739488",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step15-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "555b83460af0f0da894eb22cd3538c6193f1246b0040b10e770bc5d59d891fdc",
+      "raw_sha256": "503181a9b81b2def61af72258433b36224f5324c2f76687668e204a1aad55545",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry/length_32-repeat1-rank0/step15-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "c11ab38574bac9cc1ff8775643db475e6d186348b64c8d100da7b0b5200fcf82",
+      "raw_sha256": "5a86213e6bd0afce754dadd37b4281cd6e90f327957cb79ab9f856d56646ccbc",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/result.json",
+      "sha256": "79dee317e82d920ebd38cdba662a7105de25b441fc0f2f9a9bc3cf900c4a64bc",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/probe-plan.json",
+      "sha256": "596da834f4efea5151dcf856fad2f88f0bb0c7b6126b425e613a77a24277b46f",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp16-cachefix-correctness-tp2-c1/result.json",
+      "sha256": "bfc14ca60dbd69d84bb0d45e56ae9d97b3a44c49c9c708e1dd5a5c1be10e36dd",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step00.json",
+      "sha256": "0562faf957c5305ef21a0f39f2ac7330bae74af38bc98570bff316b560996838",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step00-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "60b1eb5662f3ed927f6ec2566f75d04f2cb6a947b3817e1d57d1804342e54c6e",
+      "raw_sha256": "a1edd15651116d0f68ed1e6b8c3b8573d92e5a129265b328ae972db723b477b0",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step00-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "49a3070f151f63e657f61265828e2d7441ebcea8639fa343056ad4aad4fdf700",
+      "raw_sha256": "f560acc6bb6a1e0f3bb4eed081c5b8672e35473d76b6695b7516dc3009ffcf63",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step01.json",
+      "sha256": "f866b21ec5d4e8bb3215494996d05d90ee17a13ac3522fdc45b2d512264bf2da",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step01-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "6a897d8116eced2e9e55e81f039229e48d6a23d817732740b85b70eae49d9e8c",
+      "raw_sha256": "a9170aa4678de00bd195915646b1a107da84d452c40c76de9f426489a064fdaf",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step01-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "9db46384f2fc03ea63ef52533ccabd3a67c674bb11178e76ff95a4d5455c6b98",
+      "raw_sha256": "95baa07e6f345eddb8c363f9401572af57c2e6f667076d14d5b4236ff27a522a",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step02.json",
+      "sha256": "fb5903e9e8fda70e33bf37e77f0528625b1a725194a05eaf6db191cba2416b01",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step02-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "9279ae312baadeffbd4d55cd0e63d9e4d097a9e2f75cab57d714272f173a4b0f",
+      "raw_sha256": "f74e83794b4674fcc61e1a664094be83bda1069967b6968b0a4b7759a3840a37",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step02-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "995e9fed4edcbdc2730fa4062374ae7c232deda80a87d9ffc5305c6bcceffd8a",
+      "raw_sha256": "5b66b5f93231f043d69490d8f413162cad94b5e4b5a821c54c554b0db3e174c8",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step03.json",
+      "sha256": "8c3df07b5e8255f38e4b62e839e4326ccba826b0de63d3b83bbf8467de7ed243",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step03-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "88500b9278ade271895fd060b8e3858c6962a54af3a304eed75b6b589c381a9a",
+      "raw_sha256": "2811b3c5558189267e85f39e7d51dc130133cc117e0736970b38f11876030b02",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step03-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "1e46a297cc4f645477cf084ae1f662eb196aa07d83fb5fd3a7591a27cd4ad011",
+      "raw_sha256": "7fa7980946c55be149ec21445747b4ac3167ca132a8a457e3d72fe3e1803b013",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step04.json",
+      "sha256": "3ca40c2fa182d40bcf795337d9ef1d01c56a4bf0d057dff402a13e1088e3e484",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step04-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "38ba66734e303ffb11d60f4494e5007e496c5aceb9c55994ec5547934aa12183",
+      "raw_sha256": "9ea959b2b160bad52809689cd6a1980f432f4a81f52f4afd937831836d7fa633",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step04-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "e5ad858a82aafcba6f4c072a1baa1bc5fd6c21e239dda1b7e210875d83de1e7a",
+      "raw_sha256": "8546c27ca549d9883f9a4d14fdb50985c6f02d59a02a1ee584f50cf45e586a5d",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step05.json",
+      "sha256": "aeb51d35962d6fd9869dc86c86d51945a9d679620e5c7bc6f458bccac5abf46a",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step05-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "824ff367e1d0be27ded20cc80f5e6e0cdb881721416a8f3b5e1af1f9fb20291b",
+      "raw_sha256": "24d0dbc07377ee5bccab2b08f60ac28f772ac10dda19520275685a1c518d84cd",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step05-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "2b4b09b0cb3bbedc662082231b6b8ff7e347da5dfb60a826f402419c3592d286",
+      "raw_sha256": "94c01bac11b349448d4e4ed07303c5150b14489c8b6ec07cb9b3d588c1469151",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step06.json",
+      "sha256": "e4d15343c95df98924c135334d2f3d4f446190d9659e09572f25eb2db819457c",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step06-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "999e9d3fa9c658174676c7b5e590a92de486480e4866232d1d5f3b832f8b57ca",
+      "raw_sha256": "0715da92426f0663eedd98e1c4746502b4e0720fe40c5611d06a75bebfdb3be2",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step06-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "8e7e67d253c1a8ec137f5e4a5aa76ebd756908f9c9cef89908d4abd7076be7ba",
+      "raw_sha256": "8ef4ccfcf84eefa0a7d94f07e1fef02ea1b900c318b74bbfa11155d4ac7557eb",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step07.json",
+      "sha256": "85fe45e96c6e076bbff4f899b8accf00e8e4fb3310e5c45d9f0058c84956bccb",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step07-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "42671110634979a4bd07c9be9c60183369960ac73e26b103071bfd6b50db31fb",
+      "raw_sha256": "871469b99d56187b14ee1f3a2d9d7ecd04d92c62a58ec89f1835f8afc0551fc3",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step07-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "d8d359ee95968cd0157cac3fb392c95f6fc38158bd4a1ebd5dd84f7ffab1a7aa",
+      "raw_sha256": "eab0c543ceaf334a2a51cbdc09668c15f65d4135492fd94b8680ddb45cb2b214",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step08.json",
+      "sha256": "0044714c3b165726778de9032132401ed9fc518cad7565141e4a397e8d0febd3",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step08-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "d2f840798735612983fa6b485fd3c11f78eec6afc9b88fd217a4fbc319548335",
+      "raw_sha256": "fc5bfded9cbae40234ede6dd127aa9ed37efa8371d033698cba3c549dfe46c21",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step08-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "edc8c29c69a57fef988e47969f4cbf1b028eb86f31791e1e7c31ff0026d6dd50",
+      "raw_sha256": "12938a1492c692989ab26977c26d387cfd9918c1cf4e3228ea59e59196cd8511",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step09.json",
+      "sha256": "8998f40483e9d542621bb80b52dcdf9e2a06dfaa8a1ccb5b3803767d88c7d2bb",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step09-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "78a8685a4aa688ec59ae507d530408d3c2d95298746f765ca05530d08522dbeb",
+      "raw_sha256": "2c7da83f36626e0a473fe346c170ca3e1fe7b42f075bef12a5c1a5438dac2a87",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step09-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "b524a42f981fb086ad212ea9ad20d5196b34cb8b1184b2fee62eb67248f5b58a",
+      "raw_sha256": "a9576104cbfcb05ff6b7060e7ae4f8b9fdefed2fbac34bae3566911a9279bf34",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step10.json",
+      "sha256": "d097845cc93950206680781bbcc3960a1124a771c8929438f355b06e9e1ee7a8",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step10-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "980745700796074347d61ba1b46875d2641cfafd027ed3bc517066a2ba1c1d11",
+      "raw_sha256": "b367d15cfbbe70f873595e87658d53d30a6badd6b0de908c28856e3509278a74",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step10-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "42a461e22d4d79b5702b6559a969f8ef349f45b3ab8de46ce55bc3eafa96c195",
+      "raw_sha256": "5431023c1ead2062e0633c6e7e2d89e7d84c93e973348c249ad7e6267b7256fd",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step11.json",
+      "sha256": "47261db6255807a341ab7b852dbf73ebd9d95caf3c4332043a6c6db499f68d4c",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step11-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "3b6adc2484fd950a0ad0e35ae88529a2d83b29640af40a237931846c175d1e82",
+      "raw_sha256": "2879af1200f9832b9ef8ea5fdcd94a939f5577a7fa6e887ed02d283262173bd9",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step11-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "9cf85dea889b58af83d0b39fb5e611ab5225551bf812f077d6180ea8a7b831ad",
+      "raw_sha256": "0fdfdc3713379097a7f053d5e54859f32e0ae895b53c0960877a470202a31145",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step12.json",
+      "sha256": "58ea6ef62bc4cf518f0af6045a0d4175bc6982dae39b4547cca6e3b48fbea391",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step12-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "6df199f45dd7e4bfcd4e1248f457b8ef47274fd4d3ee5ad95787c3443a69ab3c",
+      "raw_sha256": "7fc600d26352506dbe06162c5677660f8d819511d94d963e05547204f21511a7",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step12-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "89480d1ca6201f3e598e89dfa78cdc6605d66c0f1b65b17a2e703abfcfabfbcc",
+      "raw_sha256": "7effd306116f8bc91fed4ef6c83a86be733d1c16bd847e45007bb5fb62ff7b0b",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step13.json",
+      "sha256": "1e2fbccbb1e4718a40165c4db0bc3e700982e0d8a3c6726327c2117946dbdb80",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step13-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "0be3304c95743b4627b5cdb33d658578635ab167b76c7b948fef7a9668ed958d",
+      "raw_sha256": "97743e2ff8651d4cfa8eb0c846f91064829a4eb39cfe9f0ddf86aafbc6bdc579",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step13-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "441b78bd85fc5283d350784ab8e22c0bd7958baa291877e24ca95bf27e514af9",
+      "raw_sha256": "2f7e8057a84da6e057ac8531ff9f9f290e7d7f7244a8236243e7c52b6fca78c6",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step14.json",
+      "sha256": "caf9d63875d9e39784086693c9dff22494dc0fead9ef67a89a3fe48f7060503b",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step14-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "178b2e67ea5d2159164a20fd515412a25907f429341fb3d4b36912c2d65b6e19",
+      "raw_sha256": "753599f18589a77b9fa218e7d85238b66c74d6f6a87757cb6e10d95b2211c0f1",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step14-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "19256a85368c5ac430431edcf7a39629c9e6f70b2e88d598bad0651475ae14e5",
+      "raw_sha256": "8e2fd8c2ffe3f118fce80c2ebd2900cad5911b0cdcb5ed4b7de0096520f060e9",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step15.json",
+      "sha256": "8a1b38d53623681b4e3fa492d47b61168dd524c011923a1d4f00fefbfec59d5e",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step15-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "ad526af135c591a96518d47b5c5de2084cedd6fa043d674c4695b2908e15f378",
+      "raw_sha256": "4b338a2e525e7cfbf8f5415206f31a0655d6f47f3e9e5fc75eddc1cca98ff450",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank0/step15-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "5566bbe1eabfca5ba7920d4fee34d5169d85ecf83da0f7fc9f88877359181cb4",
+      "raw_sha256": "6369345af9882bcf203e680ac87871c47e4f76d1374abbcf1c491f9b5fb60801",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step00.json",
+      "sha256": "574fd728c57cc8a820ed20aa0bc328116fb2c4b5c9e3338883c76e8413c1a6f9",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step00-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "60b1eb5662f3ed927f6ec2566f75d04f2cb6a947b3817e1d57d1804342e54c6e",
+      "raw_sha256": "a1edd15651116d0f68ed1e6b8c3b8573d92e5a129265b328ae972db723b477b0",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step00-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "49a3070f151f63e657f61265828e2d7441ebcea8639fa343056ad4aad4fdf700",
+      "raw_sha256": "f560acc6bb6a1e0f3bb4eed081c5b8672e35473d76b6695b7516dc3009ffcf63",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step01.json",
+      "sha256": "40c8f82563842228d011a5dd536efc45bc8ea1c5915b0ad770ed24fef52a0fa1",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step01-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "6a897d8116eced2e9e55e81f039229e48d6a23d817732740b85b70eae49d9e8c",
+      "raw_sha256": "a9170aa4678de00bd195915646b1a107da84d452c40c76de9f426489a064fdaf",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step01-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "9db46384f2fc03ea63ef52533ccabd3a67c674bb11178e76ff95a4d5455c6b98",
+      "raw_sha256": "95baa07e6f345eddb8c363f9401572af57c2e6f667076d14d5b4236ff27a522a",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step02.json",
+      "sha256": "419afcaa1003a1e8d61eb2c6ccb37d9129b067812167c64986eb3af7593f9c27",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step02-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "9279ae312baadeffbd4d55cd0e63d9e4d097a9e2f75cab57d714272f173a4b0f",
+      "raw_sha256": "f74e83794b4674fcc61e1a664094be83bda1069967b6968b0a4b7759a3840a37",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step02-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "995e9fed4edcbdc2730fa4062374ae7c232deda80a87d9ffc5305c6bcceffd8a",
+      "raw_sha256": "5b66b5f93231f043d69490d8f413162cad94b5e4b5a821c54c554b0db3e174c8",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step03.json",
+      "sha256": "b27022ab3a974061149369c0898fb30eb04675cc3798bcc07e20d6574a52f822",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step03-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "88500b9278ade271895fd060b8e3858c6962a54af3a304eed75b6b589c381a9a",
+      "raw_sha256": "2811b3c5558189267e85f39e7d51dc130133cc117e0736970b38f11876030b02",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step03-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "1e46a297cc4f645477cf084ae1f662eb196aa07d83fb5fd3a7591a27cd4ad011",
+      "raw_sha256": "7fa7980946c55be149ec21445747b4ac3167ca132a8a457e3d72fe3e1803b013",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step04.json",
+      "sha256": "fe55838d26d61ef225e2179f115bf5d70bb1ee8d0230edc56a55efb3d2d9eb0c",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step04-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "38ba66734e303ffb11d60f4494e5007e496c5aceb9c55994ec5547934aa12183",
+      "raw_sha256": "9ea959b2b160bad52809689cd6a1980f432f4a81f52f4afd937831836d7fa633",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step04-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "e5ad858a82aafcba6f4c072a1baa1bc5fd6c21e239dda1b7e210875d83de1e7a",
+      "raw_sha256": "8546c27ca549d9883f9a4d14fdb50985c6f02d59a02a1ee584f50cf45e586a5d",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step05.json",
+      "sha256": "943e3531e1c5a8b8d0e3ecaaafc15f1d8130abe6b93d62791909a70a20bbce77",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step05-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "824ff367e1d0be27ded20cc80f5e6e0cdb881721416a8f3b5e1af1f9fb20291b",
+      "raw_sha256": "24d0dbc07377ee5bccab2b08f60ac28f772ac10dda19520275685a1c518d84cd",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step05-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "2b4b09b0cb3bbedc662082231b6b8ff7e347da5dfb60a826f402419c3592d286",
+      "raw_sha256": "94c01bac11b349448d4e4ed07303c5150b14489c8b6ec07cb9b3d588c1469151",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step06.json",
+      "sha256": "1ac980cfa736f4aa6fe7d15e351a3ebe0536660eb5f530665b2414fa30d2cb30",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step06-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "999e9d3fa9c658174676c7b5e590a92de486480e4866232d1d5f3b832f8b57ca",
+      "raw_sha256": "0715da92426f0663eedd98e1c4746502b4e0720fe40c5611d06a75bebfdb3be2",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step06-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "8e7e67d253c1a8ec137f5e4a5aa76ebd756908f9c9cef89908d4abd7076be7ba",
+      "raw_sha256": "8ef4ccfcf84eefa0a7d94f07e1fef02ea1b900c318b74bbfa11155d4ac7557eb",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step07.json",
+      "sha256": "823f64debb74e1b92cd9f4e1c54f2f601d3cce55e8a04f7bcbd015c9cd594151",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step07-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "42671110634979a4bd07c9be9c60183369960ac73e26b103071bfd6b50db31fb",
+      "raw_sha256": "871469b99d56187b14ee1f3a2d9d7ecd04d92c62a58ec89f1835f8afc0551fc3",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step07-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "d8d359ee95968cd0157cac3fb392c95f6fc38158bd4a1ebd5dd84f7ffab1a7aa",
+      "raw_sha256": "eab0c543ceaf334a2a51cbdc09668c15f65d4135492fd94b8680ddb45cb2b214",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step08.json",
+      "sha256": "b5cf4ecaa38901b5cafc8e34f9cc474623978f33c58d83c5a37288403726d68f",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step08-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "d2f840798735612983fa6b485fd3c11f78eec6afc9b88fd217a4fbc319548335",
+      "raw_sha256": "fc5bfded9cbae40234ede6dd127aa9ed37efa8371d033698cba3c549dfe46c21",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step08-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "edc8c29c69a57fef988e47969f4cbf1b028eb86f31791e1e7c31ff0026d6dd50",
+      "raw_sha256": "12938a1492c692989ab26977c26d387cfd9918c1cf4e3228ea59e59196cd8511",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step09.json",
+      "sha256": "c92e9f21313718acf8fa7da3a500d7827a27bef8c1c272a0b89880d74553dc59",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step09-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "78a8685a4aa688ec59ae507d530408d3c2d95298746f765ca05530d08522dbeb",
+      "raw_sha256": "2c7da83f36626e0a473fe346c170ca3e1fe7b42f075bef12a5c1a5438dac2a87",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step09-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "b524a42f981fb086ad212ea9ad20d5196b34cb8b1184b2fee62eb67248f5b58a",
+      "raw_sha256": "a9576104cbfcb05ff6b7060e7ae4f8b9fdefed2fbac34bae3566911a9279bf34",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step10.json",
+      "sha256": "08db3b4f814e9545dc4d72402b53ad5511544eccbb9a664b18f7c7ef3f320698",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step10-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "980745700796074347d61ba1b46875d2641cfafd027ed3bc517066a2ba1c1d11",
+      "raw_sha256": "b367d15cfbbe70f873595e87658d53d30a6badd6b0de908c28856e3509278a74",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step10-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "42a461e22d4d79b5702b6559a969f8ef349f45b3ab8de46ce55bc3eafa96c195",
+      "raw_sha256": "5431023c1ead2062e0633c6e7e2d89e7d84c93e973348c249ad7e6267b7256fd",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step11.json",
+      "sha256": "c1b88eb9d9d8ee5858957933b40fa867ef2c57c355703fba1199dadddf83665e",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step11-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "3b6adc2484fd950a0ad0e35ae88529a2d83b29640af40a237931846c175d1e82",
+      "raw_sha256": "2879af1200f9832b9ef8ea5fdcd94a939f5577a7fa6e887ed02d283262173bd9",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step11-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "9cf85dea889b58af83d0b39fb5e611ab5225551bf812f077d6180ea8a7b831ad",
+      "raw_sha256": "0fdfdc3713379097a7f053d5e54859f32e0ae895b53c0960877a470202a31145",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step12.json",
+      "sha256": "cfe43964cc65856bd46d7365d0422009334cfef560b744f90993985bcf4064da",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step12-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "6df199f45dd7e4bfcd4e1248f457b8ef47274fd4d3ee5ad95787c3443a69ab3c",
+      "raw_sha256": "7fc600d26352506dbe06162c5677660f8d819511d94d963e05547204f21511a7",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step12-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "89480d1ca6201f3e598e89dfa78cdc6605d66c0f1b65b17a2e703abfcfabfbcc",
+      "raw_sha256": "7effd306116f8bc91fed4ef6c83a86be733d1c16bd847e45007bb5fb62ff7b0b",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step13.json",
+      "sha256": "9400baad4df7fe25b937708b7a4ce40f0afa1aa7dacd667ade1188bd3ab5f1d6",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step13-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "0be3304c95743b4627b5cdb33d658578635ab167b76c7b948fef7a9668ed958d",
+      "raw_sha256": "97743e2ff8651d4cfa8eb0c846f91064829a4eb39cfe9f0ddf86aafbc6bdc579",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step13-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "441b78bd85fc5283d350784ab8e22c0bd7958baa291877e24ca95bf27e514af9",
+      "raw_sha256": "2f7e8057a84da6e057ac8531ff9f9f290e7d7f7244a8236243e7c52b6fca78c6",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step14.json",
+      "sha256": "28d045f1861e65a592362ad77502309f34d8d10fbc9b290302b95ebd2e9e3563",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step14-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "178b2e67ea5d2159164a20fd515412a25907f429341fb3d4b36912c2d65b6e19",
+      "raw_sha256": "753599f18589a77b9fa218e7d85238b66c74d6f6a87757cb6e10d95b2211c0f1",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step14-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "19256a85368c5ac430431edcf7a39629c9e6f70b2e88d598bad0651475ae14e5",
+      "raw_sha256": "8e2fd8c2ffe3f118fce80c2ebd2900cad5911b0cdcb5ed4b7de0096520f060e9",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step15.json",
+      "sha256": "f51bd204782ae29a5f1fcbc803e08cc31cba81d71761a7bf887991509e9eba8e",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step15-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "ad526af135c591a96518d47b5c5de2084cedd6fa043d674c4695b2908e15f378",
+      "raw_sha256": "4b338a2e525e7cfbf8f5415206f31a0655d6f47f3e9e5fc75eddc1cca98ff450",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat0-rank1/step15-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "5566bbe1eabfca5ba7920d4fee34d5169d85ecf83da0f7fc9f88877359181cb4",
+      "raw_sha256": "6369345af9882bcf203e680ac87871c47e4f76d1374abbcf1c491f9b5fb60801",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step00.json",
+      "sha256": "aa6d6deed627803db448e2a14095218dcad1644a8e31589730b5363f24f75af4",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step00-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "60b1eb5662f3ed927f6ec2566f75d04f2cb6a947b3817e1d57d1804342e54c6e",
+      "raw_sha256": "a1edd15651116d0f68ed1e6b8c3b8573d92e5a129265b328ae972db723b477b0",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step00-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "49a3070f151f63e657f61265828e2d7441ebcea8639fa343056ad4aad4fdf700",
+      "raw_sha256": "f560acc6bb6a1e0f3bb4eed081c5b8672e35473d76b6695b7516dc3009ffcf63",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step01.json",
+      "sha256": "ac744b389944b216b8d23affc4637a67b54671f254aa1d417e173bed3cb686bc",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step01-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "6a897d8116eced2e9e55e81f039229e48d6a23d817732740b85b70eae49d9e8c",
+      "raw_sha256": "a9170aa4678de00bd195915646b1a107da84d452c40c76de9f426489a064fdaf",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step01-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "9db46384f2fc03ea63ef52533ccabd3a67c674bb11178e76ff95a4d5455c6b98",
+      "raw_sha256": "95baa07e6f345eddb8c363f9401572af57c2e6f667076d14d5b4236ff27a522a",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step02.json",
+      "sha256": "685a955b43d0301a4b126ed6b8d71d1bc1045a73e20c0e6e7db1b2673ab66be0",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step02-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "9279ae312baadeffbd4d55cd0e63d9e4d097a9e2f75cab57d714272f173a4b0f",
+      "raw_sha256": "f74e83794b4674fcc61e1a664094be83bda1069967b6968b0a4b7759a3840a37",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step02-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "995e9fed4edcbdc2730fa4062374ae7c232deda80a87d9ffc5305c6bcceffd8a",
+      "raw_sha256": "5b66b5f93231f043d69490d8f413162cad94b5e4b5a821c54c554b0db3e174c8",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step03.json",
+      "sha256": "ee9a06d89a39186945974796d4d31236c9920dbd160a87fa3ad49e99e1a58dd8",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step03-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "88500b9278ade271895fd060b8e3858c6962a54af3a304eed75b6b589c381a9a",
+      "raw_sha256": "2811b3c5558189267e85f39e7d51dc130133cc117e0736970b38f11876030b02",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step03-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "1e46a297cc4f645477cf084ae1f662eb196aa07d83fb5fd3a7591a27cd4ad011",
+      "raw_sha256": "7fa7980946c55be149ec21445747b4ac3167ca132a8a457e3d72fe3e1803b013",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step04.json",
+      "sha256": "0ea7429dce96a7fe7c94ff7e66867557184b7fdc5add8c1c146b29e71b6f987e",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step04-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "38ba66734e303ffb11d60f4494e5007e496c5aceb9c55994ec5547934aa12183",
+      "raw_sha256": "9ea959b2b160bad52809689cd6a1980f432f4a81f52f4afd937831836d7fa633",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step04-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "e5ad858a82aafcba6f4c072a1baa1bc5fd6c21e239dda1b7e210875d83de1e7a",
+      "raw_sha256": "8546c27ca549d9883f9a4d14fdb50985c6f02d59a02a1ee584f50cf45e586a5d",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step05.json",
+      "sha256": "e962bb8e437da5493da38806bb0cb4e7a40cd99d8645bf8c15c88dcd1a9867c4",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step05-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "824ff367e1d0be27ded20cc80f5e6e0cdb881721416a8f3b5e1af1f9fb20291b",
+      "raw_sha256": "24d0dbc07377ee5bccab2b08f60ac28f772ac10dda19520275685a1c518d84cd",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step05-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "2b4b09b0cb3bbedc662082231b6b8ff7e347da5dfb60a826f402419c3592d286",
+      "raw_sha256": "94c01bac11b349448d4e4ed07303c5150b14489c8b6ec07cb9b3d588c1469151",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step06.json",
+      "sha256": "422e81d7732d644688809859629a1a372abc509f6e4d06111187c7dd021071a9",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step06-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "999e9d3fa9c658174676c7b5e590a92de486480e4866232d1d5f3b832f8b57ca",
+      "raw_sha256": "0715da92426f0663eedd98e1c4746502b4e0720fe40c5611d06a75bebfdb3be2",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step06-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "8e7e67d253c1a8ec137f5e4a5aa76ebd756908f9c9cef89908d4abd7076be7ba",
+      "raw_sha256": "8ef4ccfcf84eefa0a7d94f07e1fef02ea1b900c318b74bbfa11155d4ac7557eb",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step07.json",
+      "sha256": "25635c4038467f0d0fa9e9ac7e844af55dff6df3259027e4571441acc9af0d27",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step07-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "42671110634979a4bd07c9be9c60183369960ac73e26b103071bfd6b50db31fb",
+      "raw_sha256": "871469b99d56187b14ee1f3a2d9d7ecd04d92c62a58ec89f1835f8afc0551fc3",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step07-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "d8d359ee95968cd0157cac3fb392c95f6fc38158bd4a1ebd5dd84f7ffab1a7aa",
+      "raw_sha256": "eab0c543ceaf334a2a51cbdc09668c15f65d4135492fd94b8680ddb45cb2b214",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step08.json",
+      "sha256": "1acf345ca6a13cfac7a91200df9bb8a13d7be2f8a9426e97530a7d00c9622226",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step08-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "d2f840798735612983fa6b485fd3c11f78eec6afc9b88fd217a4fbc319548335",
+      "raw_sha256": "fc5bfded9cbae40234ede6dd127aa9ed37efa8371d033698cba3c549dfe46c21",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step08-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "edc8c29c69a57fef988e47969f4cbf1b028eb86f31791e1e7c31ff0026d6dd50",
+      "raw_sha256": "12938a1492c692989ab26977c26d387cfd9918c1cf4e3228ea59e59196cd8511",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step09.json",
+      "sha256": "45e5d8cb706953a3df895552086714c91fbe04abdb2d812960d66bee07b8f1b2",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step09-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "78a8685a4aa688ec59ae507d530408d3c2d95298746f765ca05530d08522dbeb",
+      "raw_sha256": "2c7da83f36626e0a473fe346c170ca3e1fe7b42f075bef12a5c1a5438dac2a87",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step09-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "b524a42f981fb086ad212ea9ad20d5196b34cb8b1184b2fee62eb67248f5b58a",
+      "raw_sha256": "a9576104cbfcb05ff6b7060e7ae4f8b9fdefed2fbac34bae3566911a9279bf34",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step10.json",
+      "sha256": "700a75d2a9cfa7baf016c93cfa93be8e4f13a45625cf9203c4b1aa1c82592199",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step10-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "980745700796074347d61ba1b46875d2641cfafd027ed3bc517066a2ba1c1d11",
+      "raw_sha256": "b367d15cfbbe70f873595e87658d53d30a6badd6b0de908c28856e3509278a74",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step10-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "42a461e22d4d79b5702b6559a969f8ef349f45b3ab8de46ce55bc3eafa96c195",
+      "raw_sha256": "5431023c1ead2062e0633c6e7e2d89e7d84c93e973348c249ad7e6267b7256fd",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step11.json",
+      "sha256": "d09770f776dcdd8a80c90661432ad5030ad451defbdff567c0b0f68b73dade8b",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step11-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "3b6adc2484fd950a0ad0e35ae88529a2d83b29640af40a237931846c175d1e82",
+      "raw_sha256": "2879af1200f9832b9ef8ea5fdcd94a939f5577a7fa6e887ed02d283262173bd9",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step11-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "9cf85dea889b58af83d0b39fb5e611ab5225551bf812f077d6180ea8a7b831ad",
+      "raw_sha256": "0fdfdc3713379097a7f053d5e54859f32e0ae895b53c0960877a470202a31145",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step12.json",
+      "sha256": "c5aca90dde23ed1c9cc093c639283b5e64976e7e8b21e96076a7bde357587383",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step12-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "6df199f45dd7e4bfcd4e1248f457b8ef47274fd4d3ee5ad95787c3443a69ab3c",
+      "raw_sha256": "7fc600d26352506dbe06162c5677660f8d819511d94d963e05547204f21511a7",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step12-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "89480d1ca6201f3e598e89dfa78cdc6605d66c0f1b65b17a2e703abfcfabfbcc",
+      "raw_sha256": "7effd306116f8bc91fed4ef6c83a86be733d1c16bd847e45007bb5fb62ff7b0b",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step13.json",
+      "sha256": "8e082e9567146efd34f805dd108c139da7c2b16f71747f64f98dc9ce86f1b774",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step13-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "0be3304c95743b4627b5cdb33d658578635ab167b76c7b948fef7a9668ed958d",
+      "raw_sha256": "97743e2ff8651d4cfa8eb0c846f91064829a4eb39cfe9f0ddf86aafbc6bdc579",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step13-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "441b78bd85fc5283d350784ab8e22c0bd7958baa291877e24ca95bf27e514af9",
+      "raw_sha256": "2f7e8057a84da6e057ac8531ff9f9f290e7d7f7244a8236243e7c52b6fca78c6",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step14.json",
+      "sha256": "41506fa5304ca3eb6dc5e68f9af1c8c7cf3ab867489e7a907966566030f9ceb0",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step14-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "178b2e67ea5d2159164a20fd515412a25907f429341fb3d4b36912c2d65b6e19",
+      "raw_sha256": "753599f18589a77b9fa218e7d85238b66c74d6f6a87757cb6e10d95b2211c0f1",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step14-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "19256a85368c5ac430431edcf7a39629c9e6f70b2e88d598bad0651475ae14e5",
+      "raw_sha256": "8e2fd8c2ffe3f118fce80c2ebd2900cad5911b0cdcb5ed4b7de0096520f060e9",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step15.json",
+      "sha256": "cff28d2e44a8bd5af5441c646fcfc6173bad3361a7c98a8b9f54caad85d93295",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step15-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "ad526af135c591a96518d47b5c5de2084cedd6fa043d674c4695b2908e15f378",
+      "raw_sha256": "4b338a2e525e7cfbf8f5415206f31a0655d6f47f3e9e5fc75eddc1cca98ff450",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank0/step15-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "5566bbe1eabfca5ba7920d4fee34d5169d85ecf83da0f7fc9f88877359181cb4",
+      "raw_sha256": "6369345af9882bcf203e680ac87871c47e4f76d1374abbcf1c491f9b5fb60801",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step00.json",
+      "sha256": "9b9e560c69dad7c7c6e6e7be394854fc6ec1ef4207f283e283e01e1ac3302ad8",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step00-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "60b1eb5662f3ed927f6ec2566f75d04f2cb6a947b3817e1d57d1804342e54c6e",
+      "raw_sha256": "a1edd15651116d0f68ed1e6b8c3b8573d92e5a129265b328ae972db723b477b0",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step00-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "49a3070f151f63e657f61265828e2d7441ebcea8639fa343056ad4aad4fdf700",
+      "raw_sha256": "f560acc6bb6a1e0f3bb4eed081c5b8672e35473d76b6695b7516dc3009ffcf63",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step01.json",
+      "sha256": "61f4c8ee0de6280d338ca9b889a409ab2d45e63113a196ba811aa7ac08049b34",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step01-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "6a897d8116eced2e9e55e81f039229e48d6a23d817732740b85b70eae49d9e8c",
+      "raw_sha256": "a9170aa4678de00bd195915646b1a107da84d452c40c76de9f426489a064fdaf",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step01-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "9db46384f2fc03ea63ef52533ccabd3a67c674bb11178e76ff95a4d5455c6b98",
+      "raw_sha256": "95baa07e6f345eddb8c363f9401572af57c2e6f667076d14d5b4236ff27a522a",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step02.json",
+      "sha256": "4e03959e610c82aabfd5ed0563f28966c06c5740458e9b6c29861f0859f112cf",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step02-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "9279ae312baadeffbd4d55cd0e63d9e4d097a9e2f75cab57d714272f173a4b0f",
+      "raw_sha256": "f74e83794b4674fcc61e1a664094be83bda1069967b6968b0a4b7759a3840a37",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step02-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "995e9fed4edcbdc2730fa4062374ae7c232deda80a87d9ffc5305c6bcceffd8a",
+      "raw_sha256": "5b66b5f93231f043d69490d8f413162cad94b5e4b5a821c54c554b0db3e174c8",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step03.json",
+      "sha256": "0b0ea77df9e3bff29d34eafb1371c433e68463c63a19a39e349f7351d501791a",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step03-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "88500b9278ade271895fd060b8e3858c6962a54af3a304eed75b6b589c381a9a",
+      "raw_sha256": "2811b3c5558189267e85f39e7d51dc130133cc117e0736970b38f11876030b02",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step03-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "1e46a297cc4f645477cf084ae1f662eb196aa07d83fb5fd3a7591a27cd4ad011",
+      "raw_sha256": "7fa7980946c55be149ec21445747b4ac3167ca132a8a457e3d72fe3e1803b013",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step04.json",
+      "sha256": "2ac9eaf605244ef85d92a9a74e07e3a8a91eeb977bbdc07c16e4b98e8971fc00",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step04-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "38ba66734e303ffb11d60f4494e5007e496c5aceb9c55994ec5547934aa12183",
+      "raw_sha256": "9ea959b2b160bad52809689cd6a1980f432f4a81f52f4afd937831836d7fa633",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step04-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "e5ad858a82aafcba6f4c072a1baa1bc5fd6c21e239dda1b7e210875d83de1e7a",
+      "raw_sha256": "8546c27ca549d9883f9a4d14fdb50985c6f02d59a02a1ee584f50cf45e586a5d",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step05.json",
+      "sha256": "b2ec881004cf5610bdf4900ef660247c24cdfc3a0ff0b4f34a53578f35057c3d",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step05-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "824ff367e1d0be27ded20cc80f5e6e0cdb881721416a8f3b5e1af1f9fb20291b",
+      "raw_sha256": "24d0dbc07377ee5bccab2b08f60ac28f772ac10dda19520275685a1c518d84cd",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step05-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "2b4b09b0cb3bbedc662082231b6b8ff7e347da5dfb60a826f402419c3592d286",
+      "raw_sha256": "94c01bac11b349448d4e4ed07303c5150b14489c8b6ec07cb9b3d588c1469151",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step06.json",
+      "sha256": "05014a767ce52513a0168391cddb259aaa29a704deb55137b9e41bf769a804d5",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step06-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "999e9d3fa9c658174676c7b5e590a92de486480e4866232d1d5f3b832f8b57ca",
+      "raw_sha256": "0715da92426f0663eedd98e1c4746502b4e0720fe40c5611d06a75bebfdb3be2",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step06-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "8e7e67d253c1a8ec137f5e4a5aa76ebd756908f9c9cef89908d4abd7076be7ba",
+      "raw_sha256": "8ef4ccfcf84eefa0a7d94f07e1fef02ea1b900c318b74bbfa11155d4ac7557eb",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step07.json",
+      "sha256": "5d2bc806033471653728f5b83c5a2c8cc0b8291db9be2a049516dbdbfd5c3942",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step07-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "42671110634979a4bd07c9be9c60183369960ac73e26b103071bfd6b50db31fb",
+      "raw_sha256": "871469b99d56187b14ee1f3a2d9d7ecd04d92c62a58ec89f1835f8afc0551fc3",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step07-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "d8d359ee95968cd0157cac3fb392c95f6fc38158bd4a1ebd5dd84f7ffab1a7aa",
+      "raw_sha256": "eab0c543ceaf334a2a51cbdc09668c15f65d4135492fd94b8680ddb45cb2b214",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step08.json",
+      "sha256": "01b1b098846b6e0ab701377cc1ef977b2c14e271fb29552246c2bdaaca2c6008",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step08-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "d2f840798735612983fa6b485fd3c11f78eec6afc9b88fd217a4fbc319548335",
+      "raw_sha256": "fc5bfded9cbae40234ede6dd127aa9ed37efa8371d033698cba3c549dfe46c21",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step08-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "edc8c29c69a57fef988e47969f4cbf1b028eb86f31791e1e7c31ff0026d6dd50",
+      "raw_sha256": "12938a1492c692989ab26977c26d387cfd9918c1cf4e3228ea59e59196cd8511",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step09.json",
+      "sha256": "534d3d881c3da87de1a1f88f31bea9abc731ecacf452ca57d1a727f5c0b03ce7",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step09-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "78a8685a4aa688ec59ae507d530408d3c2d95298746f765ca05530d08522dbeb",
+      "raw_sha256": "2c7da83f36626e0a473fe346c170ca3e1fe7b42f075bef12a5c1a5438dac2a87",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step09-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "b524a42f981fb086ad212ea9ad20d5196b34cb8b1184b2fee62eb67248f5b58a",
+      "raw_sha256": "a9576104cbfcb05ff6b7060e7ae4f8b9fdefed2fbac34bae3566911a9279bf34",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step10.json",
+      "sha256": "0dd13ab526f04c6c9286fd0cbaf6a7e6e76550479ed5d9274981b645e7377776",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step10-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "980745700796074347d61ba1b46875d2641cfafd027ed3bc517066a2ba1c1d11",
+      "raw_sha256": "b367d15cfbbe70f873595e87658d53d30a6badd6b0de908c28856e3509278a74",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step10-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "42a461e22d4d79b5702b6559a969f8ef349f45b3ab8de46ce55bc3eafa96c195",
+      "raw_sha256": "5431023c1ead2062e0633c6e7e2d89e7d84c93e973348c249ad7e6267b7256fd",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step11.json",
+      "sha256": "71910d584512c538a439a7636da630843b555134ea766f1059e42cb6db294075",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step11-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "3b6adc2484fd950a0ad0e35ae88529a2d83b29640af40a237931846c175d1e82",
+      "raw_sha256": "2879af1200f9832b9ef8ea5fdcd94a939f5577a7fa6e887ed02d283262173bd9",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step11-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "9cf85dea889b58af83d0b39fb5e611ab5225551bf812f077d6180ea8a7b831ad",
+      "raw_sha256": "0fdfdc3713379097a7f053d5e54859f32e0ae895b53c0960877a470202a31145",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step12.json",
+      "sha256": "fbe20a0dd6403ccb97e75104006281dfa823468cc295cb1e1ada97aeeb9dab97",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step12-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "6df199f45dd7e4bfcd4e1248f457b8ef47274fd4d3ee5ad95787c3443a69ab3c",
+      "raw_sha256": "7fc600d26352506dbe06162c5677660f8d819511d94d963e05547204f21511a7",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step12-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "89480d1ca6201f3e598e89dfa78cdc6605d66c0f1b65b17a2e703abfcfabfbcc",
+      "raw_sha256": "7effd306116f8bc91fed4ef6c83a86be733d1c16bd847e45007bb5fb62ff7b0b",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step13.json",
+      "sha256": "a29ec6326a0ae1f3b27883861be0e3c14a24deb83cdf0f17725c83c73f8b7462",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step13-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "0be3304c95743b4627b5cdb33d658578635ab167b76c7b948fef7a9668ed958d",
+      "raw_sha256": "97743e2ff8651d4cfa8eb0c846f91064829a4eb39cfe9f0ddf86aafbc6bdc579",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step13-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "441b78bd85fc5283d350784ab8e22c0bd7958baa291877e24ca95bf27e514af9",
+      "raw_sha256": "2f7e8057a84da6e057ac8531ff9f9f290e7d7f7244a8236243e7c52b6fca78c6",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step14.json",
+      "sha256": "d9b2db6caa6e0d071e384c18fcb786c76833d18b72d5de519fe5b8825522a882",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step14-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "178b2e67ea5d2159164a20fd515412a25907f429341fb3d4b36912c2d65b6e19",
+      "raw_sha256": "753599f18589a77b9fa218e7d85238b66c74d6f6a87757cb6e10d95b2211c0f1",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step14-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "19256a85368c5ac430431edcf7a39629c9e6f70b2e88d598bad0651475ae14e5",
+      "raw_sha256": "8e2fd8c2ffe3f118fce80c2ebd2900cad5911b0cdcb5ed4b7de0096520f060e9",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step15.json",
+      "sha256": "e8423a4e28622c763d828446df9a2e6de8a55b99bcbf31dbca3dc87123ea3edf",
+      "kind": "json"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step15-logits.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "ad526af135c591a96518d47b5c5de2084cedd6fa043d674c4695b2908e15f378",
+      "raw_sha256": "4b338a2e525e7cfbf8f5415206f31a0655d6f47f3e9e5fc75eddc1cca98ff450",
+      "compression": "gzip",
+      "raw_bytes": 993408,
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp2-retry/length_32-repeat1-rank1/step15-hidden.npy.gz",
+      "kind": "tensor",
+      "selected_sha256": "5566bbe1eabfca5ba7920d4fee34d5169d85ecf83da0f7fc9f88877359181cb4",
+      "raw_sha256": "6369345af9882bcf203e680ac87871c47e4f76d1374abbcf1c491f9b5fb60801",
+      "compression": "gzip",
+      "raw_bytes": 10368,
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    }
+  ]
+}

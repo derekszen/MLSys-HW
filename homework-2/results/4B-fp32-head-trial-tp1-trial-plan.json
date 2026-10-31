@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "mode": "diagnostic_fp32_head_ablation",
+  "head_precision": "float32",
+  "implementation_sha256": "20f693fe1297cf8189ac2547cdc4993ca56a59c5b77438902e501db6b0cbf75d",
+  "changes": "FP32 final vocabulary projection only; weights first loaded in model dtype",
+  "not_production_implementation": true
+}

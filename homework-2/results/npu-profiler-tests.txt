@@ -1,0 +1,64 @@
+F
+=================================== FAILURES ===================================
+____ test_captures_device_work_from_preexisting_forward_thread[activities0] ____
+
+session = (<tokenspeed.runtime.engine.request_handler.RequestHandler object at 0xffff14f59d10>, <concurrent.futures.thread.ThreadPoolExecutor object at 0xffff150775d0>, 2916947, <function session.<locals>.prepare.<locals>.forward at 0xffff95987240>)
+tmp_path = PosixPath('/tmp/pytest-of-u2501213387/pytest-1/test_captures_device_work_from0')
+activities = ['NPU']
+
+    @pytest.mark.parametrize("activities", [["NPU"], ["CPU", "NPU"]])
+    def test_captures_device_work_from_preexisting_forward_thread(
+        session, tmp_path, activities
+    ):
+        handler, worker, thread_id, forward = session
+        started = handler.profile(_start(tmp_path, activities=activities))
+        assert started.success, started.message
+        actual_thread, value = worker.submit(forward).result(timeout=60)
+        assert actual_thread == thread_id
+        assert value == 257
+        stopped = handler.profile(ProfileReq(type=ProfileReqType.STOP_PROFILE))
+>       assert stopped.success, stopped.message
+E       AssertionError: Failed to finalize NPU profiling: vendor profiler produced no Chrome traceEvents at /tmp/pytest-of-u2501213387/pytest-1/test_captures_device_work_from0/npu-test-TP0.trace.json
+E       assert False
+E        +  where False = ProfileReqOutput(rid=None, http_worker_ipc=None, success=False, message='Failed to finalize NPU profiling: vendor prof... no Chrome traceEvents at /tmp/pytest-of-u2501213387/pytest-1/test_captures_device_work_from0/npu-test-TP0.trace.json').success
+
+/home/u2501213387/MLSys-HW/homework-1/tokenspeed/test/runtime/test_npu_profile.py:133: AssertionError
+----------------------------- Captured stdout call -----------------------------
+[2026-10-24 04:38:59] [WARNING] [2916255] profiler.py: Invalid parameter export_type: None, reset it to text.
+[2026-10-24 04:38:59] [WARNING] [2916255] profiler.py: Invalid parameter export_type: None, reset it to text.
+[2026-10-24 04:38:59] [WARNING] [2916255] profiler.py: Incorrect schedule: Stop profiler while current state is RECORD which may result in incomplete parsed data.
+[2026-10-24 04:39:00] [INFO] [2917009] profiler.py: Start parsing profiling data: /tmp/pytest-of-u2501213387/pytest-1/test_captures_device_work_from0/export_only_prof_dir/5664fbce7f43_2916255_20261024043859615_ascend_pt
+|/-\[2026-10-24 04:39:03] [INFO] [2917019] profiler.py: CANN profiling data parsed in a total time of 0:00:03.031025
+[2026-10-24 04:39:03] [INFO] [2917009] profiler.py: All profiling data parsed in a total time of 0:00:03.754547
+------------------------------ Captured log call -------------------------------
+ERROR    tokenspeed.runtime.engine.request_handler:request_handler.py:1285 Failed to finalize NPU profiling
+Traceback (most recent call last):
+  File "/home/u2501213387/MLSys-HW/homework-1/tokenspeed/python/tokenspeed/runtime/engine/request_handler.py", line 1281, in _stop_npu_profile
+    raise RuntimeError(
+RuntimeError: vendor profiler produced no Chrome traceEvents at /tmp/pytest-of-u2501213387/pytest-1/test_captures_device_work_from0/npu-test-TP0.trace.json
+=============================== warnings summary ===============================
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+test/runtime/test_npu_profile.py::test_captures_device_work_from_preexisting_forward_thread[activities0]
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+    warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+test/runtime/test_npu_profile.py::test_captures_device_work_from_preexisting_forward_thread[activities0]
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+    warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66: UserWarning: Permission mismatch: The owner of /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/lib/libop_plugin_atb.so does not match.
+    warnings.warn(f"Permission mismatch: The owner of {path} does not match.")
+
+test/runtime/test_npu_profile.py::test_captures_device_work_from_preexisting_forward_thread[activities0]
+  /home/u2501213387/MLSys-HW/homework-1/tokenspeed/test/runtime/test_npu_profile.py:79: UserWarning: Cannot create tensor with interal format while allow_internel_format=False, tensor will be created with base format. (Triggered internally at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:338.)
+    weight = torch.ones_like(x)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED test/runtime/test_npu_profile.py::test_captures_device_work_from_preexisting_forward_thread[activities0]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 8 warnings in 9.48s

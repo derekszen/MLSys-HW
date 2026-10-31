@@ -1,0 +1,182 @@
+{
+  "accuracy_certified_performance": false,
+  "comparison_scope": "Each benchmark output ID equals the same TP2 correctness run; NOT independent accuracy certification.",
+  "config_without_port": {
+    "attn_tp_size": 2,
+    "base_gpu_id": 0,
+    "chunked_prefill_size": 128,
+    "dense_tp_size": 2,
+    "device": "npu",
+    "disable_autotune": true,
+    "disable_kvstore": true,
+    "disable_pdl": true,
+    "disable_prefill_graph": true,
+    "distributed_timeout_seconds": 60,
+    "dtype": "bfloat16",
+    "enable_output_logprobs": true,
+    "enable_prefix_caching": false,
+    "enforce_eager": true,
+    "ep_size": 1,
+    "gpu_id_step": 1,
+    "gpu_memory_utilization": 0.8,
+    "language_model_only": true,
+    "lm_head_tp_size": 2,
+    "log_level": "info",
+    "mamba_ssm_dtype": "float32",
+    "max_model_len": 512,
+    "max_num_seqs": 2,
+    "max_prefill_tokens": 128,
+    "max_total_tokens": 16384,
+    "model": "/home/u2501213387/MLSys-HW/homework-2/models/Qwen3.5-27B",
+    "moe_tp_size": 2,
+    "pipeline_parallel_size": 1,
+    "sampling_backend": "greedy",
+    "seed": 42,
+    "trust_remote_code": false,
+    "world_size": 2
+  },
+  "environment": {
+    "ASCEND_RT_VISIBLE_DEVICES": "0,1",
+    "HCCL_NPU_SOCKET_PORT_RANGE": "41000-41031",
+    "TOKENIZERS_PARALLELISM": "false"
+  },
+  "fingerprints": {
+    "cases_sha256": "5ffed43aa943d6951a337562beeec9680389408e1699f1537e3ce96a7a6b9e66",
+    "config_sha256": "f8d190c5b89c1521220f935d2567a587d6e291ed69066a45a106560b05a2174c",
+    "manifest_sha256": "96c6013d005219b3b58f0082c0a04af84e89c939d8df288f72128ce4c971bfad"
+  },
+  "inputs": [
+    {
+      "path": "27B-benchmark-tp2-c1-retry/result.json",
+      "sha256": "9a50534affb1c1da127441499b05ec990042b61fe87d16a3bf2bafd122bbb7c8"
+    },
+    {
+      "path": "27B-correctness-tp2-c1/result.json",
+      "sha256": "4dd7223ebaeb7d4592d4229e2cb2abc4b63cc788926ab282d222570101b13ea1"
+    },
+    {
+      "path": "27B-reference-comparison.json",
+      "sha256": "51fef687d4270fd8a37e3dc943d5b3508514ab7f586c03fa0a513900c37645a7"
+    },
+    {
+      "path": "27B-transformers-reference.json",
+      "sha256": "ee312127c3bc95f873fb83d05e1e12619cb4aac6d57402478942257458cd8c61"
+    }
+  ],
+  "limitations": [
+    "Strict independent Transformers length_32 reference comparison failed; two other cases passed.",
+    "Shared server; uncontrolled contention. Three repeats, no confidence interval.",
+    "No TP1 speedup or physical non-fit claim; TP1 failed its configured 0.8 memory budget."
+  ],
+  "measurement": "Descriptive batch wall latency and aggregate output-token throughput; not TTFT/TPOT or communication timing.",
+  "model": "Qwen3.5-27B",
+  "output_id_checks": [
+    {
+      "case": "length_32",
+      "exact_output_ids": true,
+      "repeat": 0,
+      "request": 0
+    },
+    {
+      "case": "length_32",
+      "exact_output_ids": true,
+      "repeat": 1,
+      "request": 0
+    },
+    {
+      "case": "length_32",
+      "exact_output_ids": true,
+      "repeat": 2,
+      "request": 0
+    },
+    {
+      "case": "length_256",
+      "exact_output_ids": true,
+      "repeat": 0,
+      "request": 0
+    },
+    {
+      "case": "length_256",
+      "exact_output_ids": true,
+      "repeat": 1,
+      "request": 0
+    },
+    {
+      "case": "length_256",
+      "exact_output_ids": true,
+      "repeat": 2,
+      "request": 0
+    }
+  ],
+  "physical_devices_requested": [
+    0,
+    1
+  ],
+  "repeatability_validation_passed": true,
+  "rows": [
+    {
+      "aggregate_output_tokens_per_second": [
+        4.529240776853271,
+        4.529786938965045,
+        4.585689252640322
+      ],
+      "batch_seconds": [
+        3.5326008901465684,
+        3.5321749600116163,
+        3.489115620031953
+      ],
+      "case": "length_32",
+      "concurrency": 1,
+      "input_tokens": 32,
+      "median_aggregate_output_tokens_per_second": 4.529786938965045,
+      "median_batch_seconds": 3.5321749600116163,
+      "output_tokens_per_request": 16,
+      "repeats": 3,
+      "tp": 2
+    },
+    {
+      "aggregate_output_tokens_per_second": [
+        2.851651005066039,
+        2.7954380351963617,
+        2.9023355910586854
+      ],
+      "batch_seconds": [
+        5.610784759977832,
+        5.723611040040851,
+        5.5128015000373125
+      ],
+      "case": "length_256",
+      "concurrency": 1,
+      "input_tokens": 256,
+      "median_aggregate_output_tokens_per_second": 2.851651005066039,
+      "median_batch_seconds": 5.610784759977832,
+      "output_tokens_per_request": 16,
+      "repeats": 3,
+      "tp": 2
+    }
+  ],
+  "runtime_versions": {
+    "torch": "2.9.0+cpu",
+    "torch_npu": "2.9.0",
+    "triton": "3.2.0"
+  },
+  "source_trees": {
+    "python": {
+      "file_count": 537,
+      "sha256": "ed05c4b9b4285ecf0a1692ae2632bd1003307827812a831a647edbdc62f280d4"
+    },
+    "tokenspeed-kernel-npu/python": {
+      "file_count": 20,
+      "sha256": "7a02b8ec4b1c35d8cc756d96c31c665371d68bd0b123d9a785901df7a4cd46d1"
+    },
+    "tokenspeed-kernel/python": {
+      "file_count": 630,
+      "sha256": "36489c6490fe5290df76f617b4e8a224129292b977d10a19abaffba921bcc23f"
+    }
+  },
+  "strict_reference_failed_cases": [
+    "length_32"
+  ],
+  "strict_reference_passed": false,
+  "verified_benchmark_requests": 6
+}

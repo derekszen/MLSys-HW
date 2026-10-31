@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "selected_logprob_atol": 0.15,
+  "scope": "greedy IDs and selected logprobs, not full logits; inspect rank/device logs separately",
+  "cases": [
+    {
+      "case": "smoke",
+      "repeat": 0,
+      "request": 0,
+      "greedy_exact": true,
+      "max_selected_logprob_error": 0.005827903747558594,
+      "passed": true
+    },
+    {
+      "case": "length_32",
+      "repeat": 0,
+      "request": 0,
+      "greedy_exact": true,
+      "max_selected_logprob_error": 0.00342366099357605,
+      "passed": true
+    },
+    {
+      "case": "length_256",
+      "repeat": 0,
+      "request": 0,
+      "greedy_exact": true,
+      "max_selected_logprob_error": 0.0015065690968185663,
+      "passed": true
+    }
+  ]
+}

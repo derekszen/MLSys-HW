@@ -1,0 +1,1091 @@
+{
+  "forward_phases": {
+    "EXTEND": {
+      "calls": 2,
+      "host_span_ms": 1772.94274
+    },
+    "DECODE": {
+      "calls": 8,
+      "host_span_ms": 774.00068
+    }
+  },
+  "cpu_ops": [
+    {
+      "name": "empty_tensor",
+      "calls": 81193,
+      "inclusive_us": 232463.81000000273,
+      "self_us": 232463.81000000273
+    },
+    {
+      "name": "aten::mul",
+      "calls": 31754,
+      "inclusive_us": 369939.5000000012,
+      "self_us": 187703.9900000012
+    },
+    {
+      "name": "aten::as_strided",
+      "calls": 89312,
+      "inclusive_us": 129267.68000000594,
+      "self_us": 129267.68000000594
+    },
+    {
+      "name": "aten::select",
+      "calls": 49474,
+      "inclusive_us": 195792.73000000173,
+      "self_us": 126601.76999999769
+    },
+    {
+      "name": "aten::copy_",
+      "calls": 7939,
+      "inclusive_us": 118235.55000000035,
+      "self_us": 96993.78000000007
+    },
+    {
+      "name": "aten::unsqueeze",
+      "calls": 33794,
+      "inclusive_us": 136009.50000000026,
+      "self_us": 89051.49999999808
+    },
+    {
+      "name": "aten::sum",
+      "calls": 9864,
+      "inclusive_us": 129415.23999999957,
+      "self_us": 76037.95999999937
+    },
+    {
+      "name": "npu::_npu_dtype_cast",
+      "calls": 14254,
+      "inclusive_us": 153207.8000000006,
+      "self_us": 73254.2100000005
+    },
+    {
+      "name": "aclnnMul",
+      "calls": 27002,
+      "inclusive_us": 71274.3399999996,
+      "self_us": 71274.3399999996
+    },
+    {
+      "name": "aten::add",
+      "calls": 7148,
+      "inclusive_us": 93601.98000000007,
+      "self_us": 48254.21
+    },
+    {
+      "name": "aclnnCast",
+      "calls": 14254,
+      "inclusive_us": 38406.209999999934,
+      "self_us": 38406.209999999934
+    },
+    {
+      "name": "aten::to",
+      "calls": 21943,
+      "inclusive_us": 224530.58000000194,
+      "self_us": 35138.17999999977
+    },
+    {
+      "name": "aten::sub",
+      "calls": 4756,
+      "inclusive_us": 50221.059999999954,
+      "self_us": 27549.860000000026
+    },
+    {
+      "name": "aten::exp",
+      "calls": 4878,
+      "inclusive_us": 53502.87999999992,
+      "self_us": 26168.310000000212
+    },
+    {
+      "name": "aclnnReduceSum",
+      "calls": 9832,
+      "inclusive_us": 25425.580000000093,
+      "self_us": 25425.580000000093
+    },
+    {
+      "name": "aclnnInplaceCopy",
+      "calls": 6988,
+      "inclusive_us": 20947.109999999957,
+      "self_us": 20947.109999999957
+    },
+    {
+      "name": "aten::index",
+      "calls": 278,
+      "inclusive_us": 18223.809999999994,
+      "self_us": 14728.009999999997
+    },
+    {
+      "name": "aclnnAdd",
+      "calls": 5380,
+      "inclusive_us": 14045.96999999996,
+      "self_us": 14045.96999999996
+    },
+    {
+      "name": "aclnnExp",
+      "calls": 4878,
+      "inclusive_us": 13589.869999999995,
+      "self_us": 13589.869999999995
+    },
+    {
+      "name": "aclnnMuls",
+      "calls": 4752,
+      "inclusive_us": 12841.159999999965,
+      "self_us": 12841.159999999965
+    },
+    {
+      "name": "aten::pow",
+      "calls": 1150,
+      "inclusive_us": 20392.959999999985,
+      "self_us": 12085.950000000024
+    },
+    {
+      "name": "aclnnSub",
+      "calls": 4736,
+      "inclusive_us": 11760.389999999989,
+      "self_us": 11760.389999999989
+    },
+    {
+      "name": "aten::slice",
+      "calls": 3338,
+      "inclusive_us": 17359.669999999995,
+      "self_us": 11129.6
+    },
+    {
+      "name": "aten::view",
+      "calls": 4494,
+      "inclusive_us": 11037.180000000026,
+      "self_us": 11037.180000000026
+    },
+    {
+      "name": "aten::item",
+      "calls": 6778,
+      "inclusive_us": 19002.11999999999,
+      "self_us": 10695.09999999999
+    },
+    {
+      "name": "aten::matmul",
+      "calls": 970,
+      "inclusive_us": 19122.610000000033,
+      "self_us": 10391.890000000038
+    },
+    {
+      "name": "aten::_local_scalar_dense",
+      "calls": 6786,
+      "inclusive_us": 8321.389999999974,
+      "self_us": 8307.019999999975
+    },
+    {
+      "name": "aten::mean",
+      "calls": 790,
+      "inclusive_us": 12519.670000000011,
+      "self_us": 7980.289999999999
+    },
+    {
+      "name": "aten::repeat_interleave",
+      "calls": 372,
+      "inclusive_us": 10781.780000000002,
+      "self_us": 7946.920000000004
+    },
+    {
+      "name": "aten::rsqrt",
+      "calls": 1150,
+      "inclusive_us": 12990.760000000002,
+      "self_us": 6350.270000000015
+    },
+    {
+      "name": "aten::reshape",
+      "calls": 3064,
+      "inclusive_us": 12944.559999999998,
+      "self_us": 6115.979999999976
+    },
+    {
+      "name": "aten::transpose",
+      "calls": 1236,
+      "inclusive_us": 9779.459999999988,
+      "self_us": 5819.879999999986
+    },
+    {
+      "name": "aclnnAdds",
+      "calls": 1768,
+      "inclusive_us": 5419.170000000007,
+      "self_us": 5419.170000000007
+    },
+    {
+      "name": "aten::_to_copy",
+      "calls": 861,
+      "inclusive_us": 36184.60000000002,
+      "self_us": 4799.240000000013
+    },
+    {
+      "name": "aten::empty",
+      "calls": 1120,
+      "inclusive_us": 5069.819999999995,
+      "self_us": 4379.309999999994
+    },
+    {
+      "name": "aten::linear",
+      "calls": 960,
+      "inclusive_us": 35685.439999999966,
+      "self_us": 4363.0199999999995
+    },
+    {
+      "name": "aten::t",
+      "calls": 960,
+      "inclusive_us": 12386.760000000013,
+      "self_us": 4241.239999999998
+    },
+    {
+      "name": "aclnnMatmul",
+      "calls": 970,
+      "inclusive_us": 3742.8699999999994,
+      "self_us": 3742.8699999999994
+    },
+    {
+      "name": "aclnnPowTensorScalar",
+      "calls": 1150,
+      "inclusive_us": 3718.910000000002,
+      "self_us": 3718.910000000002
+    },
+    {
+      "name": "aten::split_with_sizes",
+      "calls": 564,
+      "inclusive_us": 6229.7000000000035,
+      "self_us": 3543.8399999999942
+    },
+    {
+      "name": "npu::npu_fused_infer_attention_score",
+      "calls": 60,
+      "inclusive_us": 4602.57,
+      "self_us": 3473.389999999998
+    },
+    {
+      "name": "aten::add_",
+      "calls": 656,
+      "inclusive_us": 4159.910000000001,
+      "self_us": 3445.4000000000024
+    },
+    {
+      "name": "aclnnRsqrt",
+      "calls": 1150,
+      "inclusive_us": 3371.829999999999,
+      "self_us": 3371.829999999999
+    },
+    {
+      "name": "aclnnMean",
+      "calls": 790,
+      "inclusive_us": 2499.0099999999984,
+      "self_us": 2499.0099999999984
+    },
+    {
+      "name": "aten::square",
+      "calls": 1150,
+      "inclusive_us": 22879.350000000002,
+      "self_us": 2486.389999999997
+    },
+    {
+      "name": "aten::sigmoid",
+      "calls": 360,
+      "inclusive_us": 4792.749999999998,
+      "self_us": 2480.5899999999965
+    },
+    {
+      "name": "aten::silu",
+      "calls": 402,
+      "inclusive_us": 4863.819999999999,
+      "self_us": 2358.9399999999996
+    },
+    {
+      "name": "aten::clone",
+      "calls": 564,
+      "inclusive_us": 18593.010000000002,
+      "self_us": 2356.2000000000053
+    },
+    {
+      "name": "aten::cat",
+      "calls": 176,
+      "inclusive_us": 3718.6699999999996,
+      "self_us": 2312.2799999999993
+    },
+    {
+      "name": "aten::zero_",
+      "calls": 360,
+      "inclusive_us": 3056.530000000003,
+      "self_us": 2001.3599999999988
+    },
+    {
+      "name": "aten::_index_put_impl_",
+      "calls": 48,
+      "inclusive_us": 2203.4400000000005,
+      "self_us": 1665.2500000000005
+    },
+    {
+      "name": "aten::flatten",
+      "calls": 410,
+      "inclusive_us": 3842.7700000000023,
+      "self_us": 1459.4400000000012
+    },
+    {
+      "name": "aten::zeros",
+      "calls": 320,
+      "inclusive_us": 5303.430000000004,
+      "self_us": 1434.6100000000015
+    },
+    {
+      "name": "aclnnInplaceZero",
+      "calls": 442,
+      "inclusive_us": 1338.8099999999988,
+      "self_us": 1338.8099999999988
+    },
+    {
+      "name": "aclnnSilu",
+      "calls": 402,
+      "inclusive_us": 1291.3299999999986,
+      "self_us": 1291.3299999999986
+    },
+    {
+      "name": "aclnnRepeatInterleaveIntWithDim",
+      "calls": 360,
+      "inclusive_us": 1287.9600000000005,
+      "self_us": 1287.9600000000005
+    },
+    {
+      "name": "aten::arange",
+      "calls": 152,
+      "inclusive_us": 2157.7400000000007,
+      "self_us": 1151.72
+    },
+    {
+      "name": "aten::unbind",
+      "calls": 300,
+      "inclusive_us": 3328.7299999999996,
+      "self_us": 1129.7999999999997
+    },
+    {
+      "name": "aclnnSigmoid",
+      "calls": 360,
+      "inclusive_us": 1114.3399999999997,
+      "self_us": 1114.3399999999997
+    },
+    {
+      "name": "aten::index_copy_",
+      "calls": 38,
+      "inclusive_us": 1204.06,
+      "self_us": 1071.3899999999999
+    },
+    {
+      "name": "aten::narrow",
+      "calls": 362,
+      "inclusive_us": 2587.3399999999992,
+      "self_us": 1060.829999999999
+    },
+    {
+      "name": "npu::npu_mrope",
+      "calls": 60,
+      "inclusive_us": 1539.2499999999995,
+      "self_us": 1011.4000000000003
+    },
+    {
+      "name": "aten::where",
+      "calls": 114,
+      "inclusive_us": 1972.5999999999997,
+      "self_us": 971.85
+    },
+    {
+      "name": "aten::result_type",
+      "calls": 1150,
+      "inclusive_us": 897.3800000000008,
+      "self_us": 897.3800000000008
+    },
+    {
+      "name": "aten::zeros_like",
+      "calls": 84,
+      "inclusive_us": 1535.0199999999995,
+      "self_us": 866.4199999999997
+    },
+    {
+      "name": "aten::softplus",
+      "calls": 144,
+      "inclusive_us": 1769.4299999999998,
+      "self_us": 856.2400000000004
+    },
+    {
+      "name": "aten::gt",
+      "calls": 78,
+      "inclusive_us": 1445.99,
+      "self_us": 840.9000000000002
+    },
+    {
+      "name": "aclnnIndex",
+      "calls": 278,
+      "inclusive_us": 826.6800000000001,
+      "self_us": 826.6800000000001
+    },
+    {
+      "name": "aten::resolve_conj",
+      "calls": 916,
+      "inclusive_us": 817.8699999999999,
+      "self_us": 817.8699999999999
+    },
+    {
+      "name": "aten::neg",
+      "calls": 144,
+      "inclusive_us": 1683.8100000000006,
+      "self_us": 807.0599999999995
+    },
+    {
+      "name": "aten::split",
+      "calls": 180,
+      "inclusive_us": 3284.3199999999997,
+      "self_us": 708.6500000000003
+    },
+    {
+      "name": "aclnnInplaceAdd",
+      "calls": 648,
+      "inclusive_us": 667.3700000000005,
+      "self_us": 667.3700000000005
+    },
+    {
+      "name": "aten::fill_",
+      "calls": 89,
+      "inclusive_us": 859.3499999999996,
+      "self_us": 613.8699999999999
+    },
+    {
+      "name": "aclnnCat",
+      "calls": 174,
+      "inclusive_us": 607.3500000000001,
+      "self_us": 607.3500000000001
+    },
+    {
+      "name": "aten::index_add",
+      "calls": 10,
+      "inclusive_us": 596.12,
+      "self_us": 553.99
+    },
+    {
+      "name": "aclnnArange",
+      "calls": 148,
+      "inclusive_us": 469.36999999999983,
+      "self_us": 469.36999999999983
+    },
+    {
+      "name": "aclnnNeg",
+      "calls": 144,
+      "inclusive_us": 463.4500000000001,
+      "self_us": 463.4500000000001
+    },
+    {
+      "name": "aclnnSoftplus",
+      "calls": 144,
+      "inclusive_us": 452.5800000000001,
+      "self_us": 452.5800000000001
+    },
+    {
+      "name": "_store_kv_cache_kernel",
+      "calls": 60,
+      "inclusive_us": 430.19000000000005,
+      "self_us": 430.19000000000005
+    },
+    {
+      "name": "aten::cumprod",
+      "calls": 16,
+      "inclusive_us": 875.74,
+      "self_us": 419.18000000000006
+    },
+    {
+      "name": "_sigmoid_mul_kernel",
+      "calls": 60,
+      "inclusive_us": 418.64000000000004,
+      "self_us": 418.64000000000004
+    },
+    {
+      "name": "aten::repeat",
+      "calls": 60,
+      "inclusive_us": 757.9999999999999,
+      "self_us": 417.0199999999999
+    },
+    {
+      "name": "aten::ge",
+      "calls": 46,
+      "inclusive_us": 673.63,
+      "self_us": 379.83000000000027
+    },
+    {
+      "name": "aten::masked_fill_",
+      "calls": 52,
+      "inclusive_us": 504.83000000000004,
+      "self_us": 374.4800000000001
+    },
+    {
+      "name": "aten::empty_like",
+      "calls": 76,
+      "inclusive_us": 605.5699999999998,
+      "self_us": 348.11
+    },
+    {
+      "name": "aten::alias",
+      "calls": 106,
+      "inclusive_us": 325.84999999999997,
+      "self_us": 325.84999999999997
+    },
+    {
+      "name": "aten::resolve_neg",
+      "calls": 916,
+      "inclusive_us": 322.85000000000093,
+      "self_us": 322.85000000000093
+    },
+    {
+      "name": "aclnnFusedInferAttentionScoreV3",
+      "calls": 60,
+      "inclusive_us": 309.81000000000006,
+      "self_us": 309.81000000000006
+    },
+    {
+      "name": "aten::permute",
+      "calls": 70,
+      "inclusive_us": 440.62999999999994,
+      "self_us": 308.38999999999993
+    },
+    {
+      "name": "aclnnSWhere",
+      "calls": 104,
+      "inclusive_us": 291.27999999999986,
+      "self_us": 291.27999999999986
+    },
+    {
+      "name": "aten::index_put_",
+      "calls": 48,
+      "inclusive_us": 2489.8199999999997,
+      "self_us": 286.3800000000001
+    },
+    {
+      "name": "record_event",
+      "calls": 68,
+      "inclusive_us": 280.89,
+      "self_us": 280.89
+    },
+    {
+      "name": "_fused_qkv_split_kernel",
+      "calls": 36,
+      "inclusive_us": 275.31999999999994,
+      "self_us": 275.31999999999994
+    },
+    {
+      "name": "aclnnGtScalar",
+      "calls": 76,
+      "inclusive_us": 268.6999999999999,
+      "self_us": 268.6999999999999
+    },
+    {
+      "name": "aten::index_select",
+      "calls": 18,
+      "inclusive_us": 372.9999999999999,
+      "self_us": 255.84999999999997
+    },
+    {
+      "name": "aclnnInplaceFillScalar",
+      "calls": 76,
+      "inclusive_us": 245.48000000000005,
+      "self_us": 245.48000000000005
+    },
+    {
+      "name": "aclnnNonzeroV2",
+      "calls": 72,
+      "inclusive_us": 243.56000000000003,
+      "self_us": 243.56000000000003
+    },
+    {
+      "name": "aten::bitwise_not",
+      "calls": 36,
+      "inclusive_us": 510.36000000000007,
+      "self_us": 235.91999999999996
+    },
+    {
+      "name": "aten::_foreach_copy_",
+      "calls": 8,
+      "inclusive_us": 261.89,
+      "self_us": 229.51999999999998
+    },
+    {
+      "name": "fused_gdn_gating_kernel",
+      "calls": 36,
+      "inclusive_us": 228.76,
+      "self_us": 228.76
+    },
+    {
+      "name": "aten::cumsum",
+      "calls": 14,
+      "inclusive_us": 289.16999999999996,
+      "self_us": 227.36999999999998
+    },
+    {
+      "name": "acl_memcpy_host_to_device",
+      "calls": 59,
+      "inclusive_us": 226.57000000000005,
+      "self_us": 226.57000000000005
+    },
+    {
+      "name": "aten::clamp_min",
+      "calls": 18,
+      "inclusive_us": 406.83000000000004,
+      "self_us": 224.88
+    },
+    {
+      "name": "aten::_unsafe_view",
+      "calls": 60,
+      "inclusive_us": 212.76999999999998,
+      "self_us": 212.76999999999998
+    },
+    {
+      "name": "aten::argmax",
+      "calls": 20,
+      "inclusive_us": 539.8000000000001,
+      "self_us": 205.62999999999994
+    },
+    {
+      "name": "aclnnRopeWithSinCosCache",
+      "calls": 60,
+      "inclusive_us": 193.17999999999998,
+      "self_us": 193.17999999999998
+    },
+    {
+      "name": "aten::clamp_",
+      "calls": 20,
+      "inclusive_us": 256.49,
+      "self_us": 185.88999999999993
+    },
+    {
+      "name": "aten::detach",
+      "calls": 50,
+      "inclusive_us": 250.31,
+      "self_us": 185.48000000000002
+    },
+    {
+      "name": "aclnnRepeat",
+      "calls": 60,
+      "inclusive_us": 180.34000000000003,
+      "self_us": 180.34000000000003
+    },
+    {
+      "name": "aten::contiguous",
+      "calls": 54,
+      "inclusive_us": 1386.4300000000003,
+      "self_us": 174.6500000000001
+    },
+    {
+      "name": "aclnnIndexPutImpl",
+      "calls": 48,
+      "inclusive_us": 173.22000000000006,
+      "self_us": 173.22000000000006
+    },
+    {
+      "name": "aten::empty_strided",
+      "calls": 37,
+      "inclusive_us": 573.72,
+      "self_us": 167.31
+    },
+    {
+      "name": "aten::floor_divide",
+      "calls": 10,
+      "inclusive_us": 280.16999999999996,
+      "self_us": 160.44999999999996
+    },
+    {
+      "name": "aten::reshape_as",
+      "calls": 60,
+      "inclusive_us": 398.1199999999998,
+      "self_us": 157.64000000000004
+    },
+    {
+      "name": "aten::ne",
+      "calls": 14,
+      "inclusive_us": 282.36999999999995,
+      "self_us": 152.45000000000002
+    },
+    {
+      "name": "aten::le",
+      "calls": 18,
+      "inclusive_us": 269.03,
+      "self_us": 147.57
+    },
+    {
+      "name": "aclnnGeScalar",
+      "calls": 46,
+      "inclusive_us": 146.02,
+      "self_us": 146.02
+    },
+    {
+      "name": "aten::remainder",
+      "calls": 10,
+      "inclusive_us": 230.9,
+      "self_us": 138.37
+    },
+    {
+      "name": "aclnnInplaceIndexCopy",
+      "calls": 38,
+      "inclusive_us": 132.67000000000002,
+      "self_us": 132.67000000000002
+    },
+    {
+      "name": "aten::_reshape_alias",
+      "calls": 54,
+      "inclusive_us": 254.56999999999996,
+      "self_us": 131.16999999999993
+    },
+    {
+      "name": "aten::resize_",
+      "calls": 74,
+      "inclusive_us": 130.96,
+      "self_us": 130.96
+    },
+    {
+      "name": "aclnnInplaceMaskedFillScalar",
+      "calls": 52,
+      "inclusive_us": 130.35,
+      "self_us": 130.35
+    },
+    {
+      "name": "aclnnClamp",
+      "calls": 30,
+      "inclusive_us": 117.87,
+      "self_us": 117.87
+    },
+    {
+      "name": "aten::clamp",
+      "calls": 10,
+      "inclusive_us": 209.58,
+      "self_us": 106.61
+    },
+    {
+      "name": "aclnnBitwiseNot",
+      "calls": 36,
+      "inclusive_us": 106.38,
+      "self_us": 106.38
+    },
+    {
+      "name": "aten::index_add_",
+      "calls": 10,
+      "inclusive_us": 684.14,
+      "self_us": 88.02000000000004
+    },
+    {
+      "name": "aten::bitwise_or",
+      "calls": 10,
+      "inclusive_us": 140.7,
+      "self_us": 86.89999999999998
+    },
+    {
+      "name": "aten::scalar_tensor",
+      "calls": 12,
+      "inclusive_us": 284.34999999999997,
+      "self_us": 85.53999999999998
+    },
+    {
+      "name": "_apply_stop_conditions_kernel",
+      "calls": 10,
+      "inclusive_us": 84.47999999999999,
+      "self_us": 84.47999999999999
+    },
+    {
+      "name": "aten::embedding",
+      "calls": 10,
+      "inclusive_us": 161.26,
+      "self_us": 83.77999999999999
+    },
+    {
+      "name": "aten::expand",
+      "calls": 12,
+      "inclusive_us": 98.08,
+      "self_us": 81.97
+    },
+    {
+      "name": "aten::clamp_max",
+      "calls": 10,
+      "inclusive_us": 132.42000000000002,
+      "self_us": 73.78000000000002
+    },
+    {
+      "name": "aclnnSubs",
+      "calls": 20,
+      "inclusive_us": 72.16,
+      "self_us": 72.16
+    },
+    {
+      "name": "acl_memcpy_device_to_host",
+      "calls": 20,
+      "inclusive_us": 68.09,
+      "self_us": 68.09
+    },
+    {
+      "name": "aclnnClampMin",
+      "calls": 18,
+      "inclusive_us": 67.74,
+      "self_us": 67.74
+    },
+    {
+      "name": "detach",
+      "calls": 14,
+      "inclusive_us": 64.83,
+      "self_us": 64.83
+    },
+    {
+      "name": "aclnnIndexSelect",
+      "calls": 18,
+      "inclusive_us": 64.61000000000001,
+      "self_us": 64.61000000000001
+    },
+    {
+      "name": "fused_decode_input_prep_kernel",
+      "calls": 8,
+      "inclusive_us": 63.769999999999996,
+      "self_us": 63.769999999999996
+    },
+    {
+      "name": "destroy_event",
+      "calls": 26,
+      "inclusive_us": 61.26000000000001,
+      "self_us": 61.26000000000001
+    },
+    {
+      "name": "aten::eq",
+      "calls": 8,
+      "inclusive_us": 102.55,
+      "self_us": 56.22999999999999
+    },
+    {
+      "name": "aten::index_fill_",
+      "calls": 4,
+      "inclusive_us": 53.04,
+      "self_us": 46.98
+    },
+    {
+      "name": "aclnnIndexAdd",
+      "calls": 10,
+      "inclusive_us": 42.13,
+      "self_us": 42.13
+    },
+    {
+      "name": "aten::constant_pad_nd",
+      "calls": 4,
+      "inclusive_us": 63.99,
+      "self_us": 41.55
+    },
+    {
+      "name": "aten::full_like",
+      "calls": 8,
+      "inclusive_us": 169.83999999999997,
+      "self_us": 41.51999999999999
+    },
+    {
+      "name": "aclnnFloorDivides",
+      "calls": 10,
+      "inclusive_us": 38.349999999999994,
+      "self_us": 38.349999999999994
+    },
+    {
+      "name": "aclnnNeScalar",
+      "calls": 10,
+      "inclusive_us": 35.05,
+      "self_us": 35.05
+    },
+    {
+      "name": "aclnnArgMax",
+      "calls": 10,
+      "inclusive_us": 34.339999999999996,
+      "self_us": 34.339999999999996
+    },
+    {
+      "name": "aten::expand_as",
+      "calls": 10,
+      "inclusive_us": 109.11999999999999,
+      "self_us": 33.06000000000001
+    },
+    {
+      "name": "aclnnCumsum",
+      "calls": 10,
+      "inclusive_us": 32.449999999999996,
+      "self_us": 32.449999999999996
+    },
+    {
+      "name": "aclnnForeachCopy",
+      "calls": 8,
+      "inclusive_us": 32.370000000000005,
+      "self_us": 32.370000000000005
+    },
+    {
+      "name": "aten::numpy_T",
+      "calls": 10,
+      "inclusive_us": 125.49,
+      "self_us": 32.300000000000004
+    },
+    {
+      "name": "aclnnEmbedding",
+      "calls": 10,
+      "inclusive_us": 32.24,
+      "self_us": 32.24
+    },
+    {
+      "name": "aclnnLeScalar",
+      "calls": 10,
+      "inclusive_us": 32.1,
+      "self_us": 32.1
+    },
+    {
+      "name": "aclnnRemainderTensorScalar",
+      "calls": 10,
+      "inclusive_us": 30.85,
+      "self_us": 30.85
+    },
+    {
+      "name": "aclnnRepeatInterleaveInt",
+      "calls": 8,
+      "inclusive_us": 30.689999999999998,
+      "self_us": 30.689999999999998
+    },
+    {
+      "name": "aclnnCumprod",
+      "calls": 8,
+      "inclusive_us": 30.66,
+      "self_us": 30.66
+    },
+    {
+      "name": "_zero_page_fields_kernel",
+      "calls": 5,
+      "inclusive_us": 30.3,
+      "self_us": 30.3
+    },
+    {
+      "name": "aclnnClampMax",
+      "calls": 10,
+      "inclusive_us": 29.319999999999997,
+      "self_us": 29.319999999999997
+    },
+    {
+      "name": "aclnnBitwiseOrTensor",
+      "calls": 10,
+      "inclusive_us": 28.89,
+      "self_us": 28.89
+    },
+    {
+      "name": "aclnnLeTensor",
+      "calls": 8,
+      "inclusive_us": 27.41,
+      "self_us": 27.41
+    },
+    {
+      "name": "wait_event",
+      "calls": 14,
+      "inclusive_us": 26.759999999999998,
+      "self_us": 26.759999999999998
+    },
+    {
+      "name": "aclnnInplaceAdds",
+      "calls": 8,
+      "inclusive_us": 26.25,
+      "self_us": 26.25
+    },
+    {
+      "name": "aten::max",
+      "calls": 2,
+      "inclusive_us": 36.99,
+      "self_us": 26.229999999999997
+    },
+    {
+      "name": "aten::any",
+      "calls": 4,
+      "inclusive_us": 53.46,
+      "self_us": 26.070000000000004
+    },
+    {
+      "name": "aclnnEqTensor",
+      "calls": 8,
+      "inclusive_us": 25.81,
+      "self_us": 25.81
+    },
+    {
+      "name": "aten::__or__",
+      "calls": 10,
+      "inclusive_us": 164.81,
+      "self_us": 24.11
+    },
+    {
+      "name": "aten::nonzero",
+      "calls": 2,
+      "inclusive_us": 30.84,
+      "self_us": 22.960000000000004
+    },
+    {
+      "name": "aten::full",
+      "calls": 5,
+      "inclusive_us": 89.2,
+      "self_us": 22.33
+    },
+    {
+      "name": "aten::lift_fresh",
+      "calls": 41,
+      "inclusive_us": 22.26,
+      "self_us": 22.26
+    },
+    {
+      "name": "aten::pad",
+      "calls": 4,
+      "inclusive_us": 77.75,
+      "self_us": 13.760000000000003
+    },
+    {
+      "name": "compute_position_kernel",
+      "calls": 2,
+      "inclusive_us": 12.82,
+      "self_us": 12.82
+    },
+    {
+      "name": "aclnnRepeatInterleave",
+      "calls": 4,
+      "inclusive_us": 12.68,
+      "self_us": 12.68
+    },
+    {
+      "name": "aclnnConstantPadNd",
+      "calls": 4,
+      "inclusive_us": 10.950000000000001,
+      "self_us": 10.950000000000001
+    },
+    {
+      "name": "aten::view_as",
+      "calls": 4,
+      "inclusive_us": 16.66,
+      "self_us": 9.400000000000002
+    },
+    {
+      "name": "aten::detach_",
+      "calls": 6,
+      "inclusive_us": 13.920000000000002,
+      "self_us": 7.51
+    },
+    {
+      "name": "aten::is_nonzero",
+      "calls": 4,
+      "inclusive_us": 18.15,
+      "self_us": 6.699999999999998
+    },
+    {
+      "name": "detach_",
+      "calls": 6,
+      "inclusive_us": 6.41,
+      "self_us": 6.41
+    },
+    {
+      "name": "aclnnInplaceIndexFill",
+      "calls": 4,
+      "inclusive_us": 6.0600000000000005,
+      "self_us": 6.0600000000000005
+    },
+    {
+      "name": "aten::as_strided_",
+      "calls": 2,
+      "inclusive_us": 5.59,
+      "self_us": 5.59
+    }
+  ],
+  "raw_trace_sha256": "9755f2522feea20c5918216730dea29b0dbcbbb4a0d81238863da81982143da0",
+  "repaired_unescaped_names": 10,
+  "scope": "CPU-only, profiler-instrumented, includes launch/synchronization costs; not NPU kernel durations or an uninstrumented latency baseline"
+}

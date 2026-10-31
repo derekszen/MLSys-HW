@@ -1,0 +1,639 @@
+{
+  "inputs": [
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/head-fix-regression/4B-native-tp1/result.json",
+      "role": "run",
+      "sha256": "86b365e2ea2836ae570f2560567f38c674d18d68b40029e958862ffb8091cd16"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/head-fix-regression/4B-native-tp1/hbm-loaded.txt",
+      "role": "snapshot",
+      "sha256": "ce76e1d64abf0180bc519fde5a66d4d6fd4952f9881d198e0e1b0b2970026e54"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/head-fix-regression/4B-native-tp1/hbm-length_32.txt",
+      "role": "snapshot",
+      "sha256": "ba4d471a6e528fc65d461067d051ae38094d0fb6c8c1c73f9eda13b4ead21482"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/head-fix-regression/4B-native-tp1/hbm-length_256.txt",
+      "role": "snapshot",
+      "sha256": "430e15f912e035eef86417cecad164bb47dc8e95eb6f4a3632b60964cd2fa3cf"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/head-fix-regression/4B-native-tp2/result.json",
+      "role": "run",
+      "sha256": "39e8acf8f4e8e24bab6005724f419ea195eea991378c31991892f0327e7f714e"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/head-fix-regression/4B-native-tp2/hbm-loaded.txt",
+      "role": "snapshot",
+      "sha256": "e6cb166cb297671f3a1c11875d4a657f4219ebbf64b5f142751a06a139117ea7"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/head-fix-regression/4B-native-tp2/hbm-length_32.txt",
+      "role": "snapshot",
+      "sha256": "77502c0603e483e5fc5bcc2a24a51489f96d6a3751d23ac329b41c60e98a99ee"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/head-fix-regression/4B-native-tp2/hbm-length_256.txt",
+      "role": "snapshot",
+      "sha256": "7aa7dbef9d0735d8a4227d78310b0cdf8ed40d8c704457ca978c2310ca58e309"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp32-head-confirmation-tp1/result.json",
+      "role": "run",
+      "sha256": "63e66980ee4f2a5806c1e5269c7a058df98a1da8b094b624041ac31ed0287c77"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp32-head-confirmation-tp1/hbm-loaded.txt",
+      "role": "snapshot",
+      "sha256": "ca6029d5c2ee9b46a6c5c26fb2f1e8592b555ac1c741fcec2d09621d4f2410fe"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp32-head-confirmation-tp1/hbm-length_32.txt",
+      "role": "snapshot",
+      "sha256": "6951095113bf12fe0187c8f82cddc4d72f9b2d4646cf7e2953d7df9731445cbf"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp32-head-confirmation-tp1/hbm-length_256.txt",
+      "role": "snapshot",
+      "sha256": "52bf43d44665fde76de6baccd281cf4272f7f3346f4711f6915537e1df45a371"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp32-head-confirmation-tp2/result.json",
+      "role": "run",
+      "sha256": "1e0e90b3efa1e3dccd73fae9561deeb2a62d21355e58325a7ded968887afad6f"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp32-head-confirmation-tp2/hbm-loaded.txt",
+      "role": "snapshot",
+      "sha256": "def1a96c10e6caea9abd3f37e634cb16cb6fe326d061d2fddc7274eaffe4720c"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp32-head-confirmation-tp2/hbm-length_32.txt",
+      "role": "snapshot",
+      "sha256": "8ea2e0e32cdbbd3547683a7f60c0618091d57ed179ec9f3331d36a741064ebce"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp32-head-confirmation-tp2/hbm-length_256.txt",
+      "role": "snapshot",
+      "sha256": "00a4c72f91ad12c3ca1453d255a1cd1e87b9c227cf9c358e4cb8f400ded571ba"
+    }
+  ],
+  "limitations": [
+    "Loaded, post-length_32 and post-length_256 snapshots; not peaks.",
+    "Missing scheduler PIDs mean unknown complete memory (null), never a pass or zero.",
+    "Cross-chip child allocations retained; no inferred rank mapping or whole-device totals."
+  ],
+  "rows": [
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        4036457,
+        4036458
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        4036458
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 9357
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1792825724.4174938,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 4036458,
+          "process_memory_mb": 9357,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/head-fix-regression/4B-native-tp1",
+      "snapshot": "hbm-loaded.txt",
+      "total_owned_child_process_memory_mb": 9357,
+      "unmatched_child_pids": [
+        4036457
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        4036457,
+        4036458
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        4036458
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 9581
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1792825724.4174938,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 4036458,
+          "process_memory_mb": 9581,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/head-fix-regression/4B-native-tp1",
+      "snapshot": "hbm-length_32.txt",
+      "total_owned_child_process_memory_mb": 9581,
+      "unmatched_child_pids": [
+        4036457
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        4036457,
+        4036458
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        4036458
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 9581
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1792825724.4174938,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 4036458,
+          "process_memory_mb": 9581,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/head-fix-regression/4B-native-tp1",
+      "snapshot": "hbm-length_256.txt",
+      "total_owned_child_process_memory_mb": 9581,
+      "unmatched_child_pids": [
+        4036457
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        4036807,
+        4036808,
+        4036809
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        4036808,
+        4036809
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 0,
+          "matched_child_process_memory_mb": 6042
+        },
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 5930
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1792825774.5384467,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 0,
+          "pid": 4036808,
+          "process_memory_mb": 5930,
+          "process_name": "tokenspeedsch"
+        },
+        {
+          "card": 0,
+          "chip": 0,
+          "pid": 4036809,
+          "process_memory_mb": 112,
+          "process_name": "tokenspeedsch"
+        },
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 4036809,
+          "process_memory_mb": 5930,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/head-fix-regression/4B-native-tp2",
+      "snapshot": "hbm-loaded.txt",
+      "total_owned_child_process_memory_mb": 11972,
+      "unmatched_child_pids": [
+        4036807
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        4036807,
+        4036808,
+        4036809
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        4036808,
+        4036809
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 0,
+          "matched_child_process_memory_mb": 6267
+        },
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 6155
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1792825774.5384467,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 0,
+          "pid": 4036808,
+          "process_memory_mb": 6155,
+          "process_name": "tokenspeedsch"
+        },
+        {
+          "card": 0,
+          "chip": 0,
+          "pid": 4036809,
+          "process_memory_mb": 112,
+          "process_name": "tokenspeedsch"
+        },
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 4036809,
+          "process_memory_mb": 6155,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/head-fix-regression/4B-native-tp2",
+      "snapshot": "hbm-length_32.txt",
+      "total_owned_child_process_memory_mb": 12422,
+      "unmatched_child_pids": [
+        4036807
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        4036807,
+        4036808,
+        4036809
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        4036808,
+        4036809
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 0,
+          "matched_child_process_memory_mb": 6267
+        },
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 6155
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1792825774.5384467,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 0,
+          "pid": 4036808,
+          "process_memory_mb": 6155,
+          "process_name": "tokenspeedsch"
+        },
+        {
+          "card": 0,
+          "chip": 0,
+          "pid": 4036809,
+          "process_memory_mb": 112,
+          "process_name": "tokenspeedsch"
+        },
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 4036809,
+          "process_memory_mb": 6155,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/head-fix-regression/4B-native-tp2",
+      "snapshot": "hbm-length_256.txt",
+      "total_owned_child_process_memory_mb": 12422,
+      "unmatched_child_pids": [
+        4036807
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        4033905,
+        4033906
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        4033906
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 11525
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1792825278.044898,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 4033906,
+          "process_memory_mb": 11525,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp32-head-confirmation-tp1",
+      "snapshot": "hbm-loaded.txt",
+      "total_owned_child_process_memory_mb": 11525,
+      "unmatched_child_pids": [
+        4033905
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        4033905,
+        4033906
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        4033906
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 14175
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1792825278.044898,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 4033906,
+          "process_memory_mb": 14175,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp32-head-confirmation-tp1",
+      "snapshot": "hbm-length_32.txt",
+      "total_owned_child_process_memory_mb": 14175,
+      "unmatched_child_pids": [
+        4033905
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        4033905,
+        4033906
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        4033906
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 14175
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1792825278.044898,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 4033906,
+          "process_memory_mb": 14175,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp32-head-confirmation-tp1",
+      "snapshot": "hbm-length_256.txt",
+      "total_owned_child_process_memory_mb": 14175,
+      "unmatched_child_pids": [
+        4033905
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        4034160,
+        4034161,
+        4034162
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        4034161,
+        4034162
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 0,
+          "matched_child_process_memory_mb": 7000
+        },
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 6888
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1792825329.136848,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 0,
+          "pid": 4034161,
+          "process_memory_mb": 6888,
+          "process_name": "tokenspeedsch"
+        },
+        {
+          "card": 0,
+          "chip": 0,
+          "pid": 4034162,
+          "process_memory_mb": 112,
+          "process_name": "tokenspeedsch"
+        },
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 4034162,
+          "process_memory_mb": 6888,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp32-head-confirmation-tp2",
+      "snapshot": "hbm-loaded.txt",
+      "total_owned_child_process_memory_mb": 13888,
+      "unmatched_child_pids": [
+        4034160
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        4034160,
+        4034161,
+        4034162
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        4034161,
+        4034162
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 0,
+          "matched_child_process_memory_mb": 8439
+        },
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 8327
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1792825329.136848,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 0,
+          "pid": 4034161,
+          "process_memory_mb": 8327,
+          "process_name": "tokenspeedsch"
+        },
+        {
+          "card": 0,
+          "chip": 0,
+          "pid": 4034162,
+          "process_memory_mb": 112,
+          "process_name": "tokenspeedsch"
+        },
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 4034162,
+          "process_memory_mb": 8327,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp32-head-confirmation-tp2",
+      "snapshot": "hbm-length_32.txt",
+      "total_owned_child_process_memory_mb": 16766,
+      "unmatched_child_pids": [
+        4034160
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        4034160,
+        4034161,
+        4034162
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        4034161,
+        4034162
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 0,
+          "matched_child_process_memory_mb": 8439
+        },
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 8327
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1792825329.136848,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 0,
+          "pid": 4034161,
+          "process_memory_mb": 8327,
+          "process_name": "tokenspeedsch"
+        },
+        {
+          "card": 0,
+          "chip": 0,
+          "pid": 4034162,
+          "process_memory_mb": 112,
+          "process_name": "tokenspeedsch"
+        },
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 4034162,
+          "process_memory_mb": 8327,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-fp32-head-confirmation-tp2",
+      "snapshot": "hbm-length_256.txt",
+      "total_owned_child_process_memory_mb": 16766,
+      "unmatched_child_pids": [
+        4034160
+      ]
+    }
+  ],
+  "scope": "Only captured child PIDs, using summarize_large_run.owned_hbm; no parent or unrelated memory.",
+  "units": "MB as labeled by npu-smi; no implicit GiB conversion"
+}

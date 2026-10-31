@@ -1,0 +1,120 @@
+{
+  "concurrency": 1,
+  "fingerprints": {
+    "cases_sha256": "5ffed43aa943d6951a337562beeec9680389408e1699f1537e3ce96a7a6b9e66",
+    "config_sha256": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+    "manifest_sha256": "a66e971f82ed3d450c2af83cbfc6c8e30a484fde591a14ad073cc4d204c4a9f2"
+  },
+  "inputs": [
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/9B-fp16-cachefix-correctness-tp1-c1/result.json",
+      "role": "tp1_correctness",
+      "sha256": "9eee4061e2136634b807a5298700062f009406d16547eea403c6dc5db5058940"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/9B-fp16-cachefix-correctness-tp2-c1/result.json",
+      "role": "tp2_correctness",
+      "sha256": "11b30adfdfbfc6c93d661c7e48cabe85ffa6c0ef342153592b90f535001fa1c0"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/cases.json",
+      "role": "cases",
+      "sha256": "5ffed43aa943d6951a337562beeec9680389408e1699f1537e3ce96a7a6b9e66"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/metadata/Qwen3.5-9B/source-manifest.json",
+      "role": "manifest",
+      "sha256": "a66e971f82ed3d450c2af83cbfc6c8e30a484fde591a14ad073cc4d204c4a9f2"
+    },
+    {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/metadata/Qwen3.5-9B/config.json",
+      "role": "model_config",
+      "sha256": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05"
+    }
+  ],
+  "limitations": [
+    "TP agreement is not independent reference accuracy certification.",
+    "No full-logit comparison; exact greedy IDs and selected logprobs only."
+  ],
+  "model": "Qwen/Qwen3.5-9B",
+  "runtime_versions": {
+    "torch": "2.9.0+cpu",
+    "torch_npu": "2.9.0",
+    "triton": "3.2.0"
+  },
+  "shared_config": {
+    "base_gpu_id": 0,
+    "chunked_prefill_size": 128,
+    "device": "npu",
+    "disable_autotune": true,
+    "disable_kvstore": true,
+    "disable_pdl": true,
+    "disable_prefill_graph": true,
+    "distributed_timeout_seconds": 60,
+    "dtype": "float16",
+    "enable_output_logprobs": true,
+    "enable_prefix_caching": false,
+    "enforce_eager": true,
+    "ep_size": 1,
+    "gpu_id_step": 1,
+    "gpu_memory_utilization": 0.45,
+    "kv_cache_dtype": "float16",
+    "language_model_only": true,
+    "log_level": "info",
+    "mamba_ssm_dtype": "float32",
+    "max_model_len": 512,
+    "max_num_seqs": 2,
+    "max_prefill_tokens": 128,
+    "max_total_tokens": 16384,
+    "model": "/home/u2501213387/MLSys-HW/homework-2/models/Qwen3.5-9B",
+    "pipeline_parallel_size": 1,
+    "sampling_backend": "greedy",
+    "seed": 42,
+    "trust_remote_code": false
+  },
+  "source_trees": {
+    "python": {
+      "file_count": 537,
+      "sha256": "be5b7fc59e7991c48c28debcd21772f0505f3362e9fd0f80b1f915b792624140"
+    },
+    "tokenspeed-kernel-npu/python": {
+      "file_count": 20,
+      "sha256": "7a02b8ec4b1c35d8cc756d96c31c665371d68bd0b123d9a785901df7a4cd46d1"
+    },
+    "tokenspeed-kernel/python": {
+      "file_count": 630,
+      "sha256": "36489c6490fe5290df76f617b4e8a224129292b977d10a19abaffba921bcc23f"
+    }
+  },
+  "strict_tp_comparison": {
+    "cases": [
+      {
+        "case": "smoke",
+        "greedy_exact": true,
+        "max_selected_logprob_error": 0.005827903747558594,
+        "passed": true,
+        "repeat": 0,
+        "request": 0
+      },
+      {
+        "case": "length_32",
+        "greedy_exact": true,
+        "max_selected_logprob_error": 0.00342366099357605,
+        "passed": true,
+        "repeat": 0,
+        "request": 0
+      },
+      {
+        "case": "length_256",
+        "greedy_exact": true,
+        "max_selected_logprob_error": 0.0015065690968185663,
+        "passed": true,
+        "repeat": 0,
+        "request": 0
+      }
+    ],
+    "passed": true,
+    "scope": "greedy IDs and selected logprobs, not full logits; inspect rank/device logs separately",
+    "selected_logprob_atol": 0.15
+  }
+}

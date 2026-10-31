@@ -1,0 +1,10 @@
+# Preserve the course CANN / torch_npu ABI; never resolve CUDA Torch here.
+torch==2.9.0+cpu
+torch-npu==2.9.0
+triton-ascend==3.2.1
+# Prevent accidental installation of the unrelated CUDA Triton distribution.
+triton===not-installed-on-ascend
+transformers==5.12.0
+tokenspeed-scheduler==0.1.42
+apache-tvm-ffi==0.1.13
+compressed-tensors==0.15.0

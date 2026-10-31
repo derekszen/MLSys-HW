@@ -1,0 +1,3 @@
+[submodule "homework-1/tokenspeed"]
+	path = homework-1/tokenspeed
+	url = https://github.com/lightseekorg/tokenspeed.git

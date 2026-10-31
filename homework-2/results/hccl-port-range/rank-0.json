@@ -1,0 +1,156 @@
+{
+  "backend": "hccl",
+  "checks": [
+    {
+      "actual": [
+        4.0,
+        6.0,
+        8.0,
+        10.0
+      ],
+      "collective": "all_reduce",
+      "dtype": "float32",
+      "expected": [
+        4,
+        6,
+        8,
+        10
+      ],
+      "verified": true
+    },
+    {
+      "actual": [
+        [
+          0.0,
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          4.0,
+          5.0,
+          6.0,
+          7.0
+        ]
+      ],
+      "collective": "all_gather",
+      "dtype": "float32",
+      "expected": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          5,
+          6,
+          7
+        ]
+      ],
+      "verified": true
+    },
+    {
+      "actual": [
+        8.0,
+        10.0,
+        12.0,
+        14.0
+      ],
+      "collective": "reduce_scatter",
+      "dtype": "float32",
+      "expected": [
+        8,
+        10,
+        12,
+        14
+      ],
+      "verified": true
+    },
+    {
+      "actual": [
+        4.0,
+        6.0,
+        8.0,
+        10.0
+      ],
+      "collective": "all_reduce",
+      "dtype": "bfloat16",
+      "expected": [
+        4,
+        6,
+        8,
+        10
+      ],
+      "verified": true
+    },
+    {
+      "actual": [
+        [
+          0.0,
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          4.0,
+          5.0,
+          6.0,
+          7.0
+        ]
+      ],
+      "collective": "all_gather",
+      "dtype": "bfloat16",
+      "expected": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          5,
+          6,
+          7
+        ]
+      ],
+      "verified": true
+    },
+    {
+      "actual": [
+        8.0,
+        10.0,
+        12.0,
+        14.0
+      ],
+      "collective": "reduce_scatter",
+      "dtype": "bfloat16",
+      "expected": [
+        8,
+        10,
+        12,
+        14
+      ],
+      "verified": true
+    }
+  ],
+  "device_name": "Ascend910_9362",
+  "logical_device": 0,
+  "memory": {
+    "allocated_bytes": 0,
+    "peak_allocated_bytes": 7680,
+    "peak_reserved_bytes": 2097152,
+    "reserved_bytes": 2097152
+  },
+  "passed": true,
+  "physical_device_requested": "0",
+  "pid": 2667362,
+  "rank": 0,
+  "run_id": "ab590a333b8142149709d98389996187",
+  "torch_npu_version": "2.9.0",
+  "torch_version": "2.9.0+cpu",
+  "visible_devices": "0,1",
+  "world_size": 2
+}

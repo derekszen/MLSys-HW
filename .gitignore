@@ -5,6 +5,58 @@
 !.env.example
 *.log
 
+# Python environments, caches, coverage and build outputs
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Local model downloads (retain small config/source manifests in results/metadata)
+homework-*/models/
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+
+# Private access material and personal machine troubleshooting; never publish
+.ssh/
+*.key
+*.pem
+credentials.json
+credentials.env
+/homework-1/docs/vpn-access.md
+/homework-1/ISSUES.md
+/homework-2/ISSUES.md
+/homework-2/results/access-check.txt
+
+# Bounded NPU captures: keep deterministic .trace.json.gz archives, not raw copies
+/homework-2/results/0.8B-npu-batch-experiment-c1/hw2-npu-c1-input32-TP0.trace.json
+/homework-2/results/0.8B-npu-batch-experiment-c1/hw2-npu-c1-input32-TP1.trace.json
+/homework-2/results/0.8B-npu-batch-experiment-c2/hw2-npu-c2-input32-TP0.trace.json
+/homework-2/results/0.8B-npu-batch-experiment-c2/hw2-npu-c2-input32-TP1.trace.json
+
+# Recurrent-decode diagnostics: retain verified deterministic .npy.gz archives
+/homework-2/results/4B-decode-probe-fp16-tp1/*/*.npy
+/homework-2/results/4B-decode-probe-fp16-tp1-retry/*/*.npy
+/homework-2/results/4B-decode-probe-fp16-tp2-retry/*/*.npy
+
+# Rebuildable submission PDFs/archives; scripts, reports and guide remain tracked
+/submissions/*.pdf
+/submissions/*.zip
+/submissions/manifest.json
+/submissions/SHA256SUMS
+/submissions/verification.json
+/submissions/local-verification.txt
+
 # IDE
 .idea/
 .vscode/

@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "label": "length_32-repeat1",
+  "step_index": 15,
+  "rank": 0,
+  "pid": 4020827,
+  "plan_sha256": "b9811beb4ca24745abb6c1f909042923cf2f6db299dc6a5eb95ad54895372ea4",
+  "forward_mode": "DECODE",
+  "input_ids": [
+    3983
+  ],
+  "num_extends": 0,
+  "input_num_tokens": 1,
+  "native_logits_dtype": "torch.float16",
+  "hidden_dtype": "torch.float16",
+  "top10": [
+    {
+      "token": 440,
+      "logit": 24.203125,
+      "logprob": -0.008805492892861366
+    },
+    {
+      "token": 321,
+      "logit": 19.078125,
+      "logprob": -5.133805274963379
+    },
+    {
+      "token": 13,
+      "logit": 17.015625,
+      "logprob": -7.196305274963379
+    },
+    {
+      "token": 11,
+      "logit": 16.53125,
+      "logprob": -7.680680274963379
+    },
+    {
+      "token": 318,
+      "logit": 15.6328125,
+      "logprob": -8.579117774963379
+    },
+    {
+      "token": 271,
+      "logit": 15.3671875,
+      "logprob": -8.844742774963379
+    },
+    {
+      "token": 310,
+      "logit": 15.2265625,
+      "logprob": -8.985367774963379
+    },
+    {
+      "token": 364,
+      "logit": 15.15625,
+      "logprob": -9.055680274963379
+    },
+    {
+      "token": 198,
+      "logit": 15.1171875,
+      "logprob": -9.094742774963379
+    },
+    {
+      "token": 421,
+      "logit": 14.8828125,
+      "logprob": -9.329117774963379
+    }
+  ],
+  "max_tied_ids": [
+    440
+  ],
+  "candidates": {
+    "760": {
+      "logit": 10.171875,
+      "logprob": -14.040055274963379
+    },
+    "20943": {
+      "logit": 9.09375,
+      "logprob": -15.118180274963379
+    },
+    "1118": {
+      "logit": 9.78125,
+      "logprob": -14.430680274963379
+    },
+    "2614": {
+      "logit": 7.46875,
+      "logprob": -16.743181228637695
+    }
+  },
+  "candidate_dot_fp64": {
+    "760": 10.169950242161576,
+    "20943": 9.09025049835327,
+    "1118": 9.78458923008293,
+    "2614": 7.468578391504707
+  },
+  "lm_head_shard": {
+    "start": 0,
+    "end": 248320
+  },
+  "tensors": {
+    "logits": {
+      "path": "step15-logits.npy",
+      "sha256": "503181a9b81b2def61af72258433b36224f5324c2f76687668e204a1aad55545",
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    "hidden": {
+      "path": "step15-hidden.npy",
+      "sha256": "5a86213e6bd0afce754dadd37b4281cd6e90f327957cb79ab9f856d56646ccbc",
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    }
+  },
+  "observer": "unmodified native output; CPU copies and FP64 candidate dots only"
+}

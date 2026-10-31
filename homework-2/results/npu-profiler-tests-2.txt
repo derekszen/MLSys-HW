@@ -1,0 +1,32 @@
+..........                                                               [100%]
+=============================== warnings summary ===============================
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+test/runtime/test_npu_profile.py::test_captures_device_work_from_preexisting_forward_thread[activities0]
+test/runtime/test_npu_profile.py::test_captures_device_work_from_preexisting_forward_thread[activities1]
+test/runtime/test_npu_profile.py::test_num_steps_bounds_device_capture
+test/runtime/test_npu_profile.py::test_unwritable_export_fails_and_allows_retry
+test/runtime/test_npu_profile.py::test_failed_stage_export_disarms_schedule
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+    warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+test/runtime/test_npu_profile.py::test_captures_device_work_from_preexisting_forward_thread[activities0]
+test/runtime/test_npu_profile.py::test_captures_device_work_from_preexisting_forward_thread[activities1]
+test/runtime/test_npu_profile.py::test_num_steps_bounds_device_capture
+test/runtime/test_npu_profile.py::test_unwritable_export_fails_and_allows_retry
+test/runtime/test_npu_profile.py::test_failed_stage_export_disarms_schedule
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+    warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66: UserWarning: Permission mismatch: The owner of /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/lib/libop_plugin_atb.so does not match.
+    warnings.warn(f"Permission mismatch: The owner of {path} does not match.")
+
+test/runtime/test_npu_profile.py::test_captures_device_work_from_preexisting_forward_thread[activities0]
+  /home/u2501213387/MLSys-HW/homework-1/tokenspeed/test/runtime/test_npu_profile.py:79: UserWarning: Cannot create tensor with interal format while allow_internel_format=False, tensor will be created with base format. (Triggered internally at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:338.)
+    weight = torch.ones_like(x)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+10 passed, 16 warnings in 24.75s

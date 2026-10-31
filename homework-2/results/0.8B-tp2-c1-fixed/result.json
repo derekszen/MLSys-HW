@@ -1,0 +1,456 @@
+{
+  "status": "generation_completed_not_yet_compared",
+  "tp": 2,
+  "physical_devices_requested": [
+    0,
+    1
+  ],
+  "config": {
+    "model": "/home/u2501213387/MLSys-HW/homework-1/models/Qwen3.5-0.8B",
+    "device": "npu",
+    "dtype": "bfloat16",
+    "language_model_only": true,
+    "trust_remote_code": false,
+    "world_size": 2,
+    "attn_tp_size": 2,
+    "dense_tp_size": 2,
+    "moe_tp_size": 2,
+    "lm_head_tp_size": 2,
+    "ep_size": 1,
+    "pipeline_parallel_size": 1,
+    "base_gpu_id": 0,
+    "gpu_id_step": 1,
+    "max_model_len": 512,
+    "max_num_seqs": 2,
+    "max_total_tokens": 16384,
+    "chunked_prefill_size": 128,
+    "max_prefill_tokens": 128,
+    "gpu_memory_utilization": 0.12,
+    "mamba_ssm_dtype": "float32",
+    "sampling_backend": "greedy",
+    "enforce_eager": true,
+    "disable_prefill_graph": true,
+    "disable_pdl": true,
+    "disable_autotune": true,
+    "enable_prefix_caching": false,
+    "disable_kvstore": true,
+    "enable_output_logprobs": true,
+    "seed": 42,
+    "log_level": "info",
+    "port": 31889,
+    "distributed_timeout_seconds": 60
+  },
+  "mode": "correctness",
+  "concurrency": 1,
+  "manifest_sha256": "3e9ccd40c3754d454e97b2a0c6744cf382fbe9318e5c02882a0d8a493cd45a89",
+  "config_sha256": "b90b86f35c8e6925ef74ee04d0e758f0a845c83a42089ad82bbaa948de9b4204",
+  "cases_sha256": "5ffed43aa943d6951a337562beeec9680389408e1699f1537e3ce96a7a6b9e66",
+  "runs": [
+    {
+      "case": "smoke",
+      "repeat": 0,
+      "input_tokens": 5,
+      "output_tokens_per_request": 16,
+      "batch_seconds": 1.2905991801526397,
+      "aggregate_output_tokens_per_second": 12.397342448418163,
+      "outputs": [
+        {
+          "text": " Paris.\nThe capital of France is Paris.\nThe capital of France is",
+          "output_ids": [
+            11751,
+            13,
+            198,
+            760,
+            6511,
+            314,
+            9338,
+            369,
+            11751,
+            13,
+            198,
+            760,
+            6511,
+            314,
+            9338,
+            369
+          ],
+          "meta_info": {
+            "id": "76bffe33521f448ea1572c25e122ca06",
+            "finish_reason": {
+              "type": "length",
+              "length": 16
+            },
+            "prompt_tokens": 5,
+            "weight_version": "default",
+            "input_token_logprobs": [
+              [
+                null,
+                369,
+                null
+              ]
+            ],
+            "output_token_logprobs": [
+              [
+                -2.038424491882324,
+                11751,
+                null
+              ],
+              [
+                -0.6341814398765564,
+                13,
+                null
+              ],
+              [
+                -1.086025595664978,
+                198,
+                null
+              ],
+              [
+                -1.6778576374053955,
+                760,
+                null
+              ],
+              [
+                -1.3835995197296143,
+                6511,
+                null
+              ],
+              [
+                -0.05615098401904106,
+                314,
+                null
+              ],
+              [
+                -1.2977643013000488,
+                9338,
+                null
+              ],
+              [
+                -0.13367444276809692,
+                369,
+                null
+              ],
+              [
+                -0.854748010635376,
+                11751,
+                null
+              ],
+              [
+                -0.0760776624083519,
+                13,
+                null
+              ],
+              [
+                -0.1370362937450409,
+                198,
+                null
+              ],
+              [
+                -0.4738439619541168,
+                760,
+                null
+              ],
+              [
+                -0.09233812987804413,
+                6511,
+                null
+              ],
+              [
+                -0.011786581948399544,
+                314,
+                null
+              ],
+              [
+                -0.026693997904658318,
+                9338,
+                null
+              ],
+              [
+                -0.005354705266654491,
+                369,
+                null
+              ]
+            ],
+            "completion_tokens": 16,
+            "cached_tokens": 0,
+            "e2e_latency": 1.289999008178711
+          },
+          "output_extra_info": {
+            "decode_prefix_len": 0
+          }
+        }
+      ]
+    },
+    {
+      "case": "length_32",
+      "repeat": 0,
+      "input_tokens": 32,
+      "output_tokens_per_request": 16,
+      "batch_seconds": 1.3840637898538262,
+      "aggregate_output_tokens_per_second": 11.560160822999201,
+      "outputs": [
+        {
+          "text": " experiment checks numerical accuracy before measuring performance. Machine learning systems combine mathematical models with efficient",
+          "output_ids": [
+            9064,
+            11988,
+            33625,
+            13016,
+            1518,
+            28043,
+            4906,
+            13,
+            12588,
+            6618,
+            5757,
+            15491,
+            34780,
+            3983,
+            440,
+            10727
+          ],
+          "meta_info": {
+            "id": "ffd8740100c74aa0bd35ed83c9ae42da",
+            "finish_reason": {
+              "type": "length",
+              "length": 16
+            },
+            "prompt_tokens": 32,
+            "weight_version": "default",
+            "input_token_logprobs": [
+              [
+                null,
+                14294,
+                null
+              ]
+            ],
+            "output_token_logprobs": [
+              [
+                -0.003137667663395405,
+                9064,
+                null
+              ],
+              [
+                -0.019753988832235336,
+                11988,
+                null
+              ],
+              [
+                -0.007602094206959009,
+                33625,
+                null
+              ],
+              [
+                -0.0011096993694081903,
+                13016,
+                null
+              ],
+              [
+                -0.012562546879053116,
+                1518,
+                null
+              ],
+              [
+                -0.0075154900550842285,
+                28043,
+                null
+              ],
+              [
+                -0.003929395228624344,
+                4906,
+                null
+              ],
+              [
+                -0.055386584252119064,
+                13,
+                null
+              ],
+              [
+                -0.9916479587554932,
+                12588,
+                null
+              ],
+              [
+                -0.02628988027572632,
+                6618,
+                null
+              ],
+              [
+                -0.016966668888926506,
+                5757,
+                null
+              ],
+              [
+                -0.04575624316930771,
+                15491,
+                null
+              ],
+              [
+                -0.014326454140245914,
+                34780,
+                null
+              ],
+              [
+                -0.002548424992710352,
+                3983,
+                null
+              ],
+              [
+                -0.006133305840194225,
+                440,
+                null
+              ],
+              [
+                -0.0014143711887300014,
+                10727,
+                null
+              ]
+            ],
+            "completion_tokens": 16,
+            "cached_tokens": 0,
+            "e2e_latency": 1.3833959102630615
+          },
+          "output_extra_info": {
+            "decode_prefix_len": 0
+          }
+        }
+      ]
+    },
+    {
+      "case": "length_256",
+      "repeat": 0,
+      "input_tokens": 256,
+      "output_tokens_per_request": 16,
+      "batch_seconds": 2.158863120013848,
+      "aggregate_output_tokens_per_second": 7.411308225922803,
+      "outputs": [
+        {
+          "text": " before measuring performance. Machine learning systems combine mathematical models with efficient hardware. A reliable",
+          "output_ids": [
+            1518,
+            28043,
+            4906,
+            13,
+            12588,
+            6618,
+            5757,
+            15491,
+            34780,
+            3983,
+            440,
+            10727,
+            11436,
+            13,
+            357,
+            14294
+          ],
+          "meta_info": {
+            "id": "ba96c32148b04aa9b4402eb963a54f12",
+            "finish_reason": {
+              "type": "length",
+              "length": 16
+            },
+            "prompt_tokens": 256,
+            "weight_version": "default",
+            "input_token_logprobs": [
+              [
+                null,
+                13016,
+                null
+              ]
+            ],
+            "output_token_logprobs": [
+              [
+                -0.00011216964776394889,
+                1518,
+                null
+              ],
+              [
+                -0.00020895204215776175,
+                28043,
+                null
+              ],
+              [
+                -7.688703044550493e-05,
+                4906,
+                null
+              ],
+              [
+                -0.00040713604539632797,
+                13,
+                null
+              ],
+              [
+                -0.026106979697942734,
+                12588,
+                null
+              ],
+              [
+                -0.0006192197324708104,
+                6618,
+                null
+              ],
+              [
+                -0.00039307496626861393,
+                5757,
+                null
+              ],
+              [
+                -0.0007383481133729219,
+                15491,
+                null
+              ],
+              [
+                -0.0007641970878466964,
+                34780,
+                null
+              ],
+              [
+                -7.486063259420916e-05,
+                3983,
+                null
+              ],
+              [
+                -0.0001575822534505278,
+                440,
+                null
+              ],
+              [
+                -7.092700980138034e-05,
+                10727,
+                null
+              ],
+              [
+                -6.151010165922344e-05,
+                11436,
+                null
+              ],
+              [
+                -0.000210263067856431,
+                13,
+                null
+              ],
+              [
+                -0.0032930930610746145,
+                357,
+                null
+              ],
+              [
+                -9.63164638960734e-05,
+                14294,
+                null
+              ]
+            ],
+            "completion_tokens": 16,
+            "cached_tokens": 0,
+            "e2e_latency": 2.1584038734436035
+          },
+          "output_extra_info": {
+            "decode_prefix_len": 0
+          }
+        }
+      ]
+    }
+  ],
+  "measurement": "batch wall latency/aggregate throughput; not TTFT, TPOT or isolated communication timing"
+}

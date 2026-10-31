@@ -1,0 +1,18 @@
+title = "MLSys-HW secret scanning"
+
+[extend]
+useDefault = true
+
+# Reviewed false positives only. These are complete Python-file SHA256 inventory
+# lines, not arbitrary hex strings, API tokens, or whole-file exclusions.
+[[allowlists]]
+description = "Recorded source-file SHA256 inventories"
+targetRules = ["generic-api-key"]
+regexTarget = "line"
+regexes = ['''^\s*"[^"]+\.py": "[0-9a-f]{64}",?\s*$''']
+
+[[allowlists]]
+description = "Transformers model class import, not a credential"
+targetRules = ["generic-api-key"]
+regexTarget = "line"
+regexes = ['''^\s*from transformers import AutoTokenizer, Qwen3_5ForConditionalGeneration\s*$''']

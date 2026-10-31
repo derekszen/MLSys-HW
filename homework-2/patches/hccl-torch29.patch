@@ -1,0 +1,2006 @@
+diff --git a/docs/hccl-torch29.md b/docs/hccl-torch29.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..b172867df6448af2f7cd6ab7add861ee84fa52ae
+--- /dev/null
++++ b/docs/hccl-torch29.md
+@@ -0,0 +1,71 @@
++# Two-rank HCCL runtime regression test (HW2)
++
++`test/runtime/test_hccl_torch29.py` exercises the real `HcclBackend` on two
++spawned processes, one Ascend NPU per rank. It uses no mocks, model weights,
++remote access, or extra runtime communicators. Each child initializes an owned
++HCCL world group and registers it with
++`pg_manager.register_process_group("hccl", (0, 1), dist.group.WORLD)`.
++
++## Run
++
++Use an environment with PyTorch 2.9, compatible torch-npu/CANN, pytest, and the
++repository's runtime dependencies already available. From the repository root:
++
++```bash
++ASCEND_RT_VISIBLE_DEVICES=0,1 \
++  PYTHONPATH="$PWD/python${PYTHONPATH:+:$PYTHONPATH}" \
++  python -m pytest test/runtime/test_hccl_torch29.py -v -ra
++```
++
++Set visibility in the **parent**, before starting Python. The test requires
++exactly two visible NPUs and does not choose devices or rewrite visibility.
++Any existing `HCCL_NPU_SOCKET_PORT_RANGE` is inherited unchanged by both ranks;
++retain the host's assigned range when running this command. Run once, without
++pytest-xdist or concurrent tests competing for these devices.
++
++A host without torch-npu or available NPUs may skip. **An HW2 hardware validation
++requires `1 passed`, not a skip.** Import errors in an installed torch-npu,
++incorrect visibility, non-two-device configurations, collective errors, and
++wrong results fail rather than being treated as missing hardware.
++
++## Coverage
++
++- BF16 and FP32 all-gather: exact rank-ordered data in the caller's supplied
++  offset output buffer, stable buffer identity/address, untouched guard rows,
++  and allocating gathers along dimensions `0`, `1`, and `-1`.
++- BF16 and FP32 in-place SUM, equal-row `reduce_scatter`, and token
++  reduce-scatter with equal, uneven, and empty-owner row counts. Ragged token
++  all-gather checks rank ordering and removal of padding, including strided
++  inputs and either rank owning the larger shard.
++- Small INT64 MAX at one element, six elements, and the 512-element/4 KiB
++  boundary: exact high/low bits, signed extremes, original output identity,
++  strided views (including a single element with stride three), guard storage,
++  and a transposed matrix requiring copy-back. One rank uses a strided layout
++  while its peer is contiguous to check agreement on the collective path.
++- Singleton groups on both ranks: input identity for all-reduce, all-gather,
++  reduce-scatter, and contiguous token reduce-scatter; correct explicit-output
++  copies and token all-gather values. Singleton groups are not registered, so
++  these paths cannot accidentally require an HCCL communicator.
++
++The INT64 checks enforce the eager-path bit-preservation contract in
++[Ascend vocabulary-parallel greedy selection](design/unified_path.md#ascend-vocabulary-parallel-greedy-selection).
++They do not establish graph capture/replay support or model-level correctness.
++All floating-point inputs and expected sums are small exactly representable
++integers, so every comparison uses zero absolute and relative tolerance.
++
++## Regression and process ownership
++
++The runtime method name `all_gather_single` remains unchanged; its implementation
++must call PyTorch's `all_gather_into_tensor`. Both ordinary and uneven-token
++reduce-scatter must call `reduce_scatter_tensor`. The test checks results through
++`HcclBackend`, not symbol availability, and installs no compatibility aliases.
++On a PyTorch 2.9 stack lacking the old `torch.distributed.*_single` aliases, the
++unfixed backend fails when the actual collective is invoked.
++
++Each process group has a 60-second timeout. The parent enforces a 240-second
++wall-clock deadline for its children, including group teardown, and preserves
++rank tracebacks before potentially blocking teardown. Rendezvous uses a fresh
++local temporary file rather than a released TCP port. On failure or timeout,
++the parent terminates and, if necessary, kills **only its two owned child
++processes**, with up to two five-second cleanup waits. It never searches for
++or signals other users' processes. A timeout is a test failure, not a skip.
+diff --git a/docs/lm-head-precision.md b/docs/lm-head-precision.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..29f1da05ae3848a08069481ebc1e3747ef106b6e
+--- /dev/null
++++ b/docs/lm-head-precision.md
+@@ -0,0 +1,81 @@
++# Optional LM-head compute precision
++
++`--lm-head-compute-dtype float32` widens only the final, unquantized
++hidden-to-vocabulary projection. The Python equivalent is:
++
++```python
++ServerArgs(model="/path/to/model", dtype="float16", lm_head_compute_dtype="float32")
++```
++
++Omit the option (`lm_head_compute_dtype=None` in Python) to retain existing
++native arithmetic, dtype and kernel selection. There is no implicit change
++for FP16 models. The only supported explicit value is `float32`; other
++values are rejected in both CLI and Python configuration.
++
++## Arithmetic and scope
++
++The override computes the projection as
++`F.linear(hidden_states.float(), weight.float(), bias.float())` (without a
++bias when none was supplied). Inputs, accumulation and output logits use
++FP32, with autocast disabled around this operation. This is **not** a cast
++of an already-rounded FP16/BF16 result. For example, scores `1` and
++`1 + 1/4096` both round to FP16 `1`; widening those rounded logits cannot
++recover the ordering, whereas projecting the stored half operands in FP32
++can retain it. The projection follows PyTorch's device/backend matmul
++policy; the existing TF32 launch controls remain separate.
++
++Stored parameters, checkpoint dtype, tied embedding weights and incoming
++activations are unchanged. No FP32 weight cache is kept: each forward sees
++the current weight. Transformer/recurrent layers, SSM state precision and
++cache precision are not changed by this option.
++
++The result continues through the existing `LogitsProcessor._get_logits`
++path: logit scaling, vocabulary gathering or layout exchanges, vocabulary
++padding removal, softcapping and then sampling. Both sampled rows and
++prompt-logprob rows use this projection. Distributed greedy argmax continues
++to select its already-prepared state by the emitted logits dtype.
++
++Supported heads have an ordinary dense `[vocab shard, hidden]` FP16, BF16 or
++FP32 weight, either without a quantization method or with the runtime's
++unquantized embedding/linear method. Hidden states must be 2D, use one of
++these dtypes, and match the weight's width and device. An explicitly
++supplied bias must match the vocabulary shard and device. Quantized methods
++(including stale methods that the native path might otherwise bypass), packed
++or unsupported weight dtypes, weightless quantized heads and incompatible
++shapes are refused rather than silently ignoring the override. Head checks
++run during communication preparation and also guard direct projection calls.
++
++The option is refused with a bitwise numerics envelope: this direct PyTorch
++projection does not use the envelope's planned batch-invariant GEMM.
++See [Numerics envelopes](design/numerics.md) for that contract and its
++explicit exclusion of topology invariance.
++
++## Cost and numerical limits
++
++For a lower-precision head, each projection converts its weight shard and
++selected hidden rows to FP32. A converted weight takes four bytes per element
++of **transient extra memory**, in addition to the unchanged stored parameter.
++Prompt-logprob chunking repeats that conversion per chunk. Wider logits take
++four bytes per element and increase vocabulary collective traffic relative
++to FP16/BF16 (typically twice as many payload bytes); BF16-only multicast
++logits gathering is not used for FP32 logits. Sharded-argmax configurations
++can still avoid the full-vocabulary gather. Conversion, GEMM and communication
++may all cost more time; measure on the intended device and workload.
++
++Higher final-head precision can prevent some low-precision rounding ties,
++but it does not eliminate differences in earlier activations, reduction
++order, kernels or parallel layouts. It is **not a topology-invariance
++guarantee**, a general greedy-agreement guarantee, or a claim that every
++model's TP1/TP2 divergence is fixed. Validate complete generations and
++logprobs on the intended deployment.
++
++## Focused CPU tests
++
++```sh
++python -m pytest -q test/runtime/test_lm_head_precision.py
++```
++
++These tests use real CPU tensors for native and widened projections, a
++half-precision rounding tie, tied-weight/input preservation, autocast,
++layout/gather results, configuration publication and rejection boundaries.
++Only the missing peer in the vocabulary-gather test is substituted.
+diff --git a/docs/npu-profile.md b/docs/npu-profile.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..6f462c011008198dfa655fffd73b826405c6859d
+--- /dev/null
++++ b/docs/npu-profile.md
+@@ -0,0 +1,80 @@
++# Explicit NPU profiling
++
++On a server configured with `device="npu"`, request `activities=["NPU"]`
++(or `["CPU", "NPU"]`) through the existing scheduler profile-control API.
++NPU selection is explicit: omitting activities still selects the existing
++CPU/GPU profiler, not the vendor NPU profiler.
++
++For example, with an existing async engine/control client `llm`:
++
++```python
++await llm.start_profile(
++    activities=["NPU"],
++    output_dir="/tmp/npu-profile",
++    profile_id="short-window",
++    with_stack=False,
++    record_shapes=False,
++)
++try:
++    # Submit a small, bounded generation workload through the same engine.
++    ...
++finally:
++    await llm.stop_profile()
++```
++
++Alternatively, supply `num_steps` to end the window automatically; `start_step`
++and the existing stage scheduling are also supported. Do not issue a second
++stop after an automatic stop. Keep captures short: profiling perturbs timings
++and the vendor may retain raw diagnostic files in its own working directory.
++
++## Capture contract
++
++- The target is **NPU device events**, including work issued by the already
++  running forward thread. Optional CPU activity does **not** promise all-thread
++  CPU phase ranges or complete host/device correlation. CPU-only/GPU profiling
++  retains its existing all-thread capability checks and behavior.
++- Only NPU and optional CPU may be combined. GPU, PROTON, CUDA_PROFILER, MEM,
++  and other activities are rejected before arming any schedule. A non-NPU
++  server also rejects an explicit NPU request.
++- The optional `torch_npu.profiler` backend is imported only for explicit NPU
++  requests. It is a diagnostic dependency, not a kernel-runtime bypass.
++  `ProfilerActivity.NPU` and optional `ProfilerActivity.CPU` use vendor
++  `_ExperimentalConfig(profiler_level=ProfilerLevel.Level1)` for HCCL events;
++  no hardware metrics are enabled. Stack and shape capture default to false
++  in the worker's NPU path; pass them explicitly as above through clients
++  that supply their own defaults.
++
++Each worker exports
++`<profile_id>-<rank-tag>[-<stage>].trace.json`, where rank tags retain the
++existing `TP<n>` / `DP<n>-TP<n>` naming. NPU output is **uncompressed `.json`**,
++as required by the vendor exporter; existing CPU/GPU output remains
++`.trace.json.gz`. Open the JSON in a Chrome-trace-compatible viewer and inspect
++actual device kernels, not just host annotations.
++
++Vendor APIs can log and suppress failures. Start checks the vendor's active
++profiling path when that diagnostic is exposed; the final success check is a
++fresh, nonempty, parseable Chrome JSON file at the requested export path.
++A start response is not proof of a successful capture. Finalization failures
++return a failed `ProfileReqOutput` (the async client raises), disarm the
++schedule, and permit a retry. Attention-TP peers rendezvous and agree failures
++on CPU at initialization, start, and stop, including local export failures;
++one rank cannot report success while another rank failed to write its trace.
++Automatic/staged failures are also logged by the worker.
++
++## Hardware verification
++
++From the repository root, in an existing NPU runtime environment:
++
++```sh
++python -m pytest -q test/runtime/test_npu_profile.py
++python -m pytest -q test/runtime/test_request_handler_profile.py
++```
++
++The new tests use real vendor profiling and actual matrix multiplication on a
++Python worker thread created and warmed before capture. They require parseable
++traces containing device compute kernels, exercise step-bounded capture,
++failed export/retry and stage-schedule cleanup, and check rejected requests
++without mock call choreography. Tests skip without an available NPU; the
++read-only export case also skips when filesystem privileges bypass permissions.
++These isolated handler tests do not replace a real multi-rank Engine/HCCL
++profile run.
+diff --git a/docs/qwen35-cache-precision.md b/docs/qwen35-cache-precision.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..4c4b19a279c0d50e7648d5066c9518768accbd3d
+--- /dev/null
++++ b/docs/qwen35-cache-precision.md
+@@ -0,0 +1,61 @@
++# Qwen3.5 cache precision
++
++Qwen3.5 GDN has three independent precision settings. Its cache recipe records
++these dtypes in the memory plan; the arena creates typed views directly from
++that plan, without runtime casts to repair mismatches.
++
++| Cache field | Precision source | Default behavior |
++| --- | --- | --- |
++| Conv history | Declared activation dtype, `AttnConfig.dtype` | BF16 activations retain BF16 history |
++| Recurrent SSM state | `TOKENSPEED_MAMBA_SSM_DTYPE`, published from `--mamba-ssm-dtype` | FP32; BF16 remains an explicit alternative |
++| Full-attention K/V | `--kv-cache-dtype` / Python `kv_cache_dtype` | `auto` still means BF16, independently of activation dtype |
++
++## Explicit FP16 configuration
++
++Select both `--dtype float16` and `--kv-cache-dtype float16` for FP16 activations,
++FP16 conv history, and FP16 full-attention K/V storage. Leave
++`--mamba-ssm-dtype float32` for FP32 recurrent state. The corresponding Python
++engine arguments are `dtype="float16"`, `kv_cache_dtype="float16"`, and
++`mamba_ssm_dtype="float32"`.
++
++Setting only `--dtype float16` changes conv history to FP16 but **does not**
++change `auto` KV storage: K/V stays BF16. Explicit `--kv-cache-dtype bfloat16`
++has the same KV storage behavior. BF16 activation configurations preserve the
++previous BF16 conv-history contract.
++
++The Qwen GDN recipe accepts FP16, BF16, and FP32 activation dtypes for conv
++history and rejects other activation dtypes when declaring the state fields.
++This is a planning contract, not a promise that every attention or conv backend
++supports all three types. Backend capability checks still apply. FP32 is not
++added as a KV-cache dtype choice.
++
++## Storage and transfer contracts
++
++FP16 and BF16 both use two bytes per element, but have different encodings.
++Plans and serialized cache-transfer contracts retain the dtype name, not just
++its byte width. Peer validation must reject FP16/BF16 field mismatches even
++when field shapes, strides, and allocation sizes match. Transfer peers need
++compatible activation, SSM, and KV precision settings; equal byte sizes do not
++make their state interchangeable.
++
++FP8 aliases, scatter-backed FP8 byte views, and MXFP8 handling are unchanged.
++In particular, the Qwen GDN recipe still rejects the MXFP8 interleaved scale
++layout. This change does not relax conv validators, add casts, or change any
++kernel implementation.
++
++## CPU regression tests
++
++From the TokenSpeed repository root, in an existing runtime environment with
++PyTorch and pytest installed:
++
++```sh
++PYTHONPATH=python:tokenspeed-kernel/python python -m pytest -q test/runtime/test_qwen35_cache_precision.py
++```
++
++The tests use real attention components, Qwen GDN recipes, group declarations,
++packed memory plans, small CPU cache arenas, and serialized transfer contracts.
++They cover activation/SSM/KV precision independence, unchanged BF16 defaults,
++explicit FP16 CLI and Python arguments, dtype-aware peer rejection, and the
++existing quantized-cache behavior. They do not load weights or run accelerator
++kernels. An actual NPU launch is separate verification; these tests alone do
++not establish end-to-end FP16 model correctness.
+diff --git a/python/tokenspeed/runtime/distributed/comm_backend/hccl.py b/python/tokenspeed/runtime/distributed/comm_backend/hccl.py
+index 80a0aa4f0caeb5cf33fa17626afd3505e465bcce..694111a865c61ef8687b3a64d23824271a0e8e1e 100644
+--- a/python/tokenspeed/runtime/distributed/comm_backend/hccl.py
++++ b/python/tokenspeed/runtime/distributed/comm_backend/hccl.py
+@@ -105,7 +105,9 @@ class HcclBackend(CommBackend):
+         if len(group) == 1:
+             output.copy_(input)
+             return
+-        dist.all_gather_single(output, input, group=self._process_group(group))
++        # The course torch_npu stack uses PyTorch 2.9, whose public tensor
++        # collective API predates the all_gather_single spelling.
++        dist.all_gather_into_tensor(output, input, group=self._process_group(group))
+ 
+     def reduce_scatter(self, tensor: torch.Tensor, group: Group) -> torch.Tensor:
+         if len(group) == 1:
+@@ -115,7 +117,7 @@ class HcclBackend(CommBackend):
+             dtype=tensor.dtype,
+             device=tensor.device,
+         )
+-        dist.reduce_scatter_single(output, tensor, group=self._process_group(group))
++        dist.reduce_scatter_tensor(output, tensor, group=self._process_group(group))
+         return output
+ 
+     def all_to_all_single(
+@@ -190,7 +192,7 @@ class HcclBackend(CommBackend):
+         if len(group) == 1:
+             output.copy_(padded)
+         else:
+-            dist.reduce_scatter_single(
++            dist.reduce_scatter_tensor(
+                 output,
+                 padded.contiguous(),
+                 group=self._process_group(group),
+diff --git a/python/tokenspeed/runtime/engine/request_handler.py b/python/tokenspeed/runtime/engine/request_handler.py
+index 9c7edf0918a9cf12124e5a140ee3e5c115654d7a..6b9f1b9b296caf724da3955a3a5433ebcd218ca6 100644
+--- a/python/tokenspeed/runtime/engine/request_handler.py
++++ b/python/tokenspeed/runtime/engine/request_handler.py
+@@ -20,6 +20,7 @@
+ 
+ from __future__ import annotations
+ 
++import json
+ import logging
+ import os
+ from collections import deque
+@@ -200,6 +201,21 @@ def _all_thread_profile_config():
+         raise RuntimeError(str(exc)) from exc
+ 
+ 
++def _npu_profile_config(activities: list[str]):
++    # Diagnostic backend only, not a kernel-runtime bypass. Keep this optional
++    # vendor import off every path that did not explicitly request NPU events.
++    import torch_npu.profiler as npu_profiler
++
++    selected = [npu_profiler.ProfilerActivity.NPU]
++    if "CPU" in activities:
++        selected.append(npu_profiler.ProfilerActivity.CPU)
++    # Level1 includes HCCL events; do not enable hardware metrics.
++    config = npu_profiler._ExperimentalConfig(
++        profiler_level=npu_profiler.ProfilerLevel.Level1
++    )
++    return npu_profiler, selected, config
++
++
+ class RequestHandler:
+     """
+     1. Recv Reqs from ZMQ
+@@ -950,6 +966,27 @@ class RequestHandler:
+         # All validation must precede any state mutation: the event loop runs
+         # _profile_batch_predicate on every batch, so a rejected request that
+         # left partial profiler state behind would crash the scheduler.
++        if "NPU" in activities:
++            conflicting = sorted(set(activities) - {"CPU", "NPU"})
++            if conflicting:
++                return ProfileReqOutput(
++                    success=False,
++                    message="NPU profiling supports only NPU and optional CPU; "
++                    f"cannot combine NPU with {', '.join(conflicting)}.",
++                )
++            if self.server_args.device != "npu":
++                return ProfileReqOutput(
++                    success=False,
++                    message="NPU profiling requires a server configured with device='npu'.",
++                )
++            error = None
++            try:
++                _npu_profile_config(activities)
++            except Exception as exc:
++                error = f"NPU profiling is unavailable: {exc}"
++            error = self._npu_profile_sync_error(error)
++            if error is not None:
++                return ProfileReqOutput(success=False, message=error)
+         if "PROTON" in activities:
+             conflicting = sorted({"GPU", "CUDA_PROFILER"} & set(activities))
+             if conflicting:
+@@ -1000,7 +1037,7 @@ class RequestHandler:
+                     "the server with --expert-distribution-recorder-mode stat.",
+                 )
+ 
+-        if {"CPU", "GPU"} & set(activities):
++        if "NPU" not in activities and {"CPU", "GPU"} & set(activities):
+             try:
+                 _all_thread_profile_config()
+             except RuntimeError as exc:
+@@ -1047,6 +1084,9 @@ class RequestHandler:
+         with_stack = self.torch_profiler_with_stack
+         record_shapes = self.torch_profiler_record_shapes
+ 
++        if "NPU" in activities:
++            return self._start_npu_profile()
++
+         activity_map = {
+             "CPU": torch.profiler.ProfilerActivity.CPU,
+             "GPU": torch.profiler.ProfilerActivity.CUDA,
+@@ -1150,6 +1190,112 @@ class RequestHandler:
+             self._profile_sync_buf, group=self.attn_tp_cpu_group
+         )
+ 
++    def _npu_profile_sync_error(self, error: str | None) -> str | None:
++        # Every TP peer participates even if local start/stop/export failed.
++        # Share failure as well as rendezvousing, so TP0 cannot report success
++        # when another rank produced no trace. This is CPU-only like _profile_sync.
++        self._profile_sync_buf.fill_(int(error is not None))
++        try:
++            self._profile_sync()
++            if self._profile_sync_buf.item() and error is None:
++                error = "NPU profiling failed on an attention TP peer; see its worker log."
++        finally:
++            self._profile_sync_buf.zero_()
++        return error
++
++    def _start_npu_profile(self) -> ProfileReqOutput:
++        error = None
++        try:
++            backend, activities, config = _npu_profile_config(self.profiler_activities)
++            self.torch_profiler = backend.profile(
++                activities=activities,
++                record_shapes=(
++                    self.torch_profiler_record_shapes
++                    if self.torch_profiler_record_shapes is not None
++                    else False
++                ),
++                with_stack=(
++                    self.torch_profiler_with_stack
++                    if self.torch_profiler_with_stack is not None
++                    else False
++                ),
++                experimental_config=config,
++            )
++            self.torch_profiler.start()
++            # Some vendor versions log and suppress initialization exceptions.
++            # Use this diagnostic only when exposed, not as a required API;
++            # the fresh, nonempty JSON artifact at stop is the final check.
++            prof_if = getattr(self.torch_profiler, "prof_if", None)
++            if (
++                prof_if is not None
++                and hasattr(prof_if, "prof_path")
++                and not prof_if.prof_path
++            ):
++                raise RuntimeError(
++                    "vendor profiler did not initialize an active profiling path"
++                )
++        except Exception as exc:
++            logger.exception("Failed to start NPU profiling")
++            error = f"Failed to start NPU profiling: {exc}"
++        error = self._npu_profile_sync_error(error)
++        if error is not None:
++            if self.torch_profiler is not None:
++                try:
++                    self.torch_profiler.stop()
++                except Exception:
++                    logger.exception("Failed to clean up NPU profiling")
++            self.init_profiler()
++            return ProfileReqOutput(success=False, message=error)
++        self.profile_in_progress = True
++        logger.info(
++            f"NPU profiling starts; traces will be saved to {self.profiler_output_dir}"
++        )
++        return ProfileReqOutput(
++            success=True,
++            message="NPU profiling started (device events; no all-thread CPU phase guarantee).",
++        )
++
++    def _stop_npu_profile(self, stage: ForwardMode | None) -> ProfileReqOutput:
++        stage_suffix = f"-{stage.name}" if stage else ""
++        error = None
++        try:
++            self.torch_profiler.stop()
++            output = Path(self.profiler_output_dir)
++            output.mkdir(parents=True, exist_ok=True)
++            trace = output / (
++                f"{self.profile_id}-{self.profile_rank_tag}{stage_suffix}.trace.json"
++            )
++            # The vendor exporter requires .json, not .gz, and may suppress
++            # failures. Never accept a stale artifact from an earlier window.
++            trace.unlink(missing_ok=True)
++            self.torch_profiler.export_chrome_trace(str(trace))
++            if not trace.is_file() or trace.stat().st_size == 0:
++                raise RuntimeError(
++                    f"vendor profiler produced no nonempty JSON trace at {trace}"
++                )
++            with trace.open() as source:
++                document = json.load(source)
++            # CANN can export either a Chrome event array or a traceEvents object.
++            events = document.get("traceEvents") if isinstance(document, dict) else document
++            if not isinstance(events, list) or not events:
++                raise RuntimeError(
++                    f"vendor profiler produced no Chrome trace events at {trace}"
++                )
++        except Exception as exc:
++            logger.exception("Failed to finalize NPU profiling")
++            error = f"Failed to finalize NPU profiling: {exc}"
++        finally:
++            self.torch_profiler = None
++            self.profile_in_progress = False
++            self.profiler_start_forward_ct = None
++            self.profiler_target_forward_ct = None
++        error = self._npu_profile_sync_error(error)
++        if error is not None:
++            self.init_profiler()
++            return ProfileReqOutput(success=False, message=error)
++        logger.info(f"NPU profiling done. Traces are saved to: {self.profiler_output_dir}")
++        return ProfileReqOutput(success=True, message="Succeeded.")
++
+     def stop_profile(self, stage: ForwardMode | None = None) -> ProfileReqOutput | None:
+         if not self.profile_in_progress:
+             return ProfileReqOutput(
+@@ -1157,6 +1303,9 @@ class RequestHandler:
+                 message="Profiling is not in progress. Call /start_profile first.",
+             )
+ 
++        if "NPU" in self.profiler_activities:
++            return self._stop_npu_profile(stage)
++
+         Path(self.profiler_output_dir).mkdir(parents=True, exist_ok=True)
+ 
+         stage_suffix = f"-{stage.name}" if stage else ""
+@@ -1243,6 +1392,8 @@ class RequestHandler:
+             if forward_mode.is_extend_or_mixed():
+                 if self.profiler_prefill_ct == 0:
+                     self.start_profile(forward_mode)
++                    if not self.profile_by_stage:
++                        return  # A failed NPU start cleared the stage schedule.
+                 self.profiler_prefill_ct += 1
+                 if self.profiler_prefill_ct > self.profiler_target_prefill_ct:
+                     if self.profile_in_progress:
+@@ -1251,7 +1402,11 @@ class RequestHandler:
+                 if self.profiler_decode_ct == 0:
+                     if self.profile_in_progress:
+                         self.stop_profile(ForwardMode.EXTEND)
++                        if not self.profile_by_stage:
++                            return  # A failed NPU stop cleared the stage schedule.
+                     self.start_profile(forward_mode)
++                    if not self.profile_by_stage:
++                        return
+                 self.profiler_decode_ct += 1
+                 if self.profiler_decode_ct > self.profiler_target_decode_ct:
+                     if self.profile_in_progress:
+diff --git a/python/tokenspeed/runtime/layers/attention/configs/base.py b/python/tokenspeed/runtime/layers/attention/configs/base.py
+index 42aa71f6584bbe27035726834867c6cb147508bc..3e1612c8b3d07c37487dea4756ca4fa00a1dac38 100644
+--- a/python/tokenspeed/runtime/layers/attention/configs/base.py
++++ b/python/tokenspeed/runtime/layers/attention/configs/base.py
+@@ -100,6 +100,8 @@ def resolve_cache_layer_types(
+ def resolve_dtype(kv_cache_dtype_str: str) -> torch.dtype:
+     if kv_cache_dtype_str == "auto" or kv_cache_dtype_str == "bfloat16":
+         return torch.bfloat16
++    elif kv_cache_dtype_str == "float16":
++        return torch.float16
+     elif kv_cache_dtype_str in ("fp8", "fp8_e4m3"):
+         return torch.float8_e4m3fn
+     elif kv_cache_dtype_str == "mxfp8":
+diff --git a/python/tokenspeed/runtime/layers/attention/kv_cache/recipes/qwen35.py b/python/tokenspeed/runtime/layers/attention/kv_cache/recipes/qwen35.py
+index bca1317de6584eaca3e7c9752f693e1e14bc9e12..191cfc53d0579c6414dba645240582d398ead066 100644
+--- a/python/tokenspeed/runtime/layers/attention/kv_cache/recipes/qwen35.py
++++ b/python/tokenspeed/runtime/layers/attention/kv_cache/recipes/qwen35.py
+@@ -181,16 +181,22 @@ class QwenGDNRecipe(CacheRecipe):
+     def _state_shapes(self):
+         """Per-rank GDN state shapes from the linear component.
+ 
+-        Dtypes are the recipe's contract: conv bf16, SSM per the engine env.
++        Conv history follows activation dtype; SSM precision is independent.
+         """
+         linear_attn = self.attn_config.component(LinearAttnConfig)
++        conv_dtype = self.attn_config.dtype
++        if conv_dtype not in (torch.float16, torch.bfloat16, torch.float32):
++            raise ValueError(
++                "Qwen GDN conv history requires float16, bfloat16 or float32 "
++                f"activations, got {conv_dtype}"
++            )
+         ssm_dtype = {
+             "float32": torch.float32,
+             "bfloat16": torch.bfloat16,
+         }[envs.TOKENSPEED_MAMBA_SSM_DTYPE.get()]
+         return (
+             linear_attn.conv_state_shape,
+-            cache_dtype_name(torch.bfloat16),
++            cache_dtype_name(conv_dtype),
+             linear_attn.temporal_state_shape,
+             cache_dtype_name(ssm_dtype),
+         )
+diff --git a/python/tokenspeed/runtime/layers/logits_processor.py b/python/tokenspeed/runtime/layers/logits_processor.py
+index 33a05131ffe8a59ec68b399a853bd8b309a257a2..a7824d002355ecff805ee12e8a3d48619330a4b9 100755
+--- a/python/tokenspeed/runtime/layers/logits_processor.py
++++ b/python/tokenspeed/runtime/layers/logits_processor.py
+@@ -23,6 +23,7 @@
+ import dataclasses
+ 
+ import torch
++import torch.nn.functional as F
+ from tokenspeed_kernel.ops.communication.triton import all_gather_inner, create_state
+ from tokenspeed_kernel.ops.gemm import mm as kernel_mm
+ from tokenspeed_kernel.ops.sampling import argmax as sampling_argmax
+@@ -133,6 +134,43 @@ def should_apply_lm_head_quant_method(lm_head, quant_method) -> bool:
+     return True
+ 
+ 
++def _validate_float32_lm_head(lm_head) -> torch.Tensor:
++    """Require an ordinary, unquantized [vocab shard, hidden] weight."""
++    from tokenspeed.runtime.layers.dense.unquant import UnquantizedLinearMethod
++    from tokenspeed.runtime.layers.vocab_parallel_embedding import (
++        UnquantizedEmbeddingMethod,
++    )
++
++    quant_method = getattr(lm_head, "quant_method", None)
++    if quant_method is not None and not isinstance(
++        quant_method, (UnquantizedLinearMethod, UnquantizedEmbeddingMethod)
++    ):
++        # Do not trust the native fallback's layout heuristics here: a stale
++        # quant method or a weightless/packed head cannot honor this override.
++        raise ValueError(
++            "--lm-head-compute-dtype requires an unquantized LM head; "
++            f"got {type(quant_method).__name__}"
++        )
++    weight = getattr(lm_head, "weight", None)
++    if (
++        not isinstance(weight, torch.Tensor)
++        or weight.layout != torch.strided
++        or weight.ndim != 2
++        or weight.dtype not in (torch.float16, torch.bfloat16, torch.float32)
++    ):
++        raise ValueError(
++            "--lm-head-compute-dtype requires a dense 2D FP16, BF16 or FP32 "
++            "LM-head weight in [vocab shard, hidden] layout"
++        )
++    if isinstance(lm_head, VocabParallelEmbedding) and (
++        weight.shape != (lm_head.num_embeddings_per_partition, lm_head.embedding_dim)
++    ):
++        raise ValueError(
++            "--lm-head-compute-dtype requires [vocab shard, hidden] weight layout"
++        )
++    return weight
++
++
+ def _force_deterministic_rsag() -> bool:
+     """``--force-deterministic-rsag``: NCCL only, even for the pure-data-movement
+     multicast gather of the logits."""
+@@ -376,6 +414,22 @@ class LogitsProcessor(nn.Module):
+         self._logits_layout_executor: LogitsLayoutExecutor | None = None
+         from tokenspeed.runtime.utils.env import global_server_args_dict
+ 
++        # Omission retains every native projection path. The override widens
++        # operands before the GEMM, not logits after low-precision rounding.
++        self.lm_head_compute_dtype: torch.dtype | None = (
++            torch.float32
++            if global_server_args_dict.get("lm_head_compute_dtype") == "float32"
++            else None
++        )
++        if (
++            self.lm_head_compute_dtype is not None
++            and global_server_args_dict["numerics"] in BITWISE_ENVELOPES
++        ):
++            raise ValueError(
++                "--lm-head-compute-dtype cannot be combined with a bitwise "
++                "numerics envelope: the FP32 projection has no batch-invariant plan"
++            )
++
+         # --logprob-order: the log-softmax behind input (prompt) logprobs.
+         self.logprob_order: str = global_server_args_dict["logprob_order"]
+         if (
+@@ -669,6 +723,8 @@ class LogitsProcessor(nn.Module):
+         replacement reprobes only when its shard width, device or the
+         sampling gate changes.
+         """
++        if self.lm_head_compute_dtype is not None:
++            _validate_float32_lm_head(lm_head)
+         enabled = self.do_argmax and self._dist_argmax_eligible()
+         geometry = (
+             (lm_head.num_embeddings_per_partition, lm_head.weight.device)
+@@ -1152,7 +1208,38 @@ class LogitsProcessor(nn.Module):
+             )
+ 
+         quant_method = getattr(lm_head, "quant_method", None)
+-        if should_apply_lm_head_quant_method(lm_head, quant_method):
++        if self.lm_head_compute_dtype is not None:
++            weight = _validate_float32_lm_head(lm_head)
++            if (
++                hidden_states.ndim != 2
++                or hidden_states.shape[1] != weight.shape[1]
++                or hidden_states.dtype
++                not in (torch.float16, torch.bfloat16, torch.float32)
++                or hidden_states.device != weight.device
++            ):
++                raise ValueError(
++                    "--lm-head-compute-dtype requires 2D FP16, BF16 or FP32 "
++                    "hidden states matching the LM-head width and device"
++                )
++            if embedding_bias is not None and (
++                embedding_bias.shape != (weight.shape[0],)
++                or embedding_bias.dtype
++                not in (torch.float16, torch.bfloat16, torch.float32)
++                or embedding_bias.device != weight.device
++            ):
++                raise ValueError(
++                    "--lm-head-compute-dtype requires a floating bias matching "
++                    "the LM-head vocabulary shard and device"
++                )
++            # Keep parameters (including tied embeddings) and activations intact.
++            # Disable autocast so it cannot narrow these operands again.
++            with torch.autocast(device_type=hidden_states.device.type, enabled=False):
++                logits = F.linear(
++                    hidden_states.float(),
++                    weight.float(),
++                    None if embedding_bias is None else embedding_bias.float(),
++                )
++        elif should_apply_lm_head_quant_method(lm_head, quant_method):
+             logits = quant_method.apply(lm_head, hidden_states, embedding_bias)
+         elif hasattr(lm_head, "weight"):
+             from tokenspeed.runtime.utils.env import global_server_args_dict
+diff --git a/python/tokenspeed/runtime/utils/env.py b/python/tokenspeed/runtime/utils/env.py
+index 3f9d0d6fff97366f010ac5f12f108b8746ede1e8..4bf2b227095fad5fa361eea82763df6e850683a6 100755
+--- a/python/tokenspeed/runtime/utils/env.py
++++ b/python/tokenspeed/runtime/utils/env.py
+@@ -49,6 +49,7 @@ global_server_args_dict: dict = {
+     "layer_boundary_norm": ServerArgs.layer_boundary_norm,
+     "router_topk": ServerArgs.router_topk,
+     "logprob_order": ServerArgs.logprob_order,
++    "lm_head_compute_dtype": ServerArgs.lm_head_compute_dtype,
+     "moe_combine_order": ServerArgs.moe_combine_order,
+     "dsa_slot_order": ServerArgs.dsa_slot_order,
+     "tp_batch_invariant": ServerArgs.tp_batch_invariant,
+@@ -109,6 +110,7 @@ def global_server_args_dict_update(server_args: ServerArgs):
+             "layer_boundary_norm": server_args.layer_boundary_norm,
+             "router_topk": server_args.router_topk,
+             "logprob_order": server_args.logprob_order,
++            "lm_head_compute_dtype": server_args.lm_head_compute_dtype,
+             "moe_combine_order": server_args.moe_combine_order,
+             "dsa_slot_order": server_args.dsa_slot_order,
+             "tp_batch_invariant": server_args.tp_batch_invariant,
+diff --git a/python/tokenspeed/runtime/utils/server_args.py b/python/tokenspeed/runtime/utils/server_args.py
+index 5a9c22bb95cf3504a3213beb847c9055cd153cc3..84668b05447f6f6030684a6d80f66b6d6bb6aa23 100755
+--- a/python/tokenspeed/runtime/utils/server_args.py
++++ b/python/tokenspeed/runtime/utils/server_args.py
+@@ -34,6 +34,7 @@ from tokenspeed_kernel.ops.attention.gdn.triton import CHUNK_SIZE as FLA_CHUNK_S
+ from tokenspeed_kernel.platform import current_platform
+ 
+ from tokenspeed.runtime.configs.numerics import (
++    BITWISE_ENVELOPES,
+     DSA_SLOT_ORDERS,
+     LAYER_BOUNDARY_NORMS,
+     LOGPROB_ORDERS,
+@@ -71,6 +72,8 @@ from tokenspeed.runtime.utils.spec_block_geometry import (
+ 
+ logger = get_colorful_logger(__name__)
+ 
++_KV_CACHE_DTYPES = ("auto", "bfloat16", "float16", "fp8", "fp8_e4m3", "mxfp8")
++
+ # Sampling backends whose verify runs the draft-prob chain kernel
+ # (--enable-speculative-sampling). greedy verifies by exact match and the
+ # Triton backends by target-sampled exact match; the drafter's recorded
+@@ -350,6 +353,8 @@ class ServerArgs:
+     load_format: str = "auto"
+     trust_remote_code: bool = True
+     dtype: str = "auto"
++    # None preserves native LM-head arithmetic and kernel selection.
++    lm_head_compute_dtype: str | None = None
+     kv_cache_dtype: str = "auto"
+     kv_cache_quant_method: str = "none"
+     quantization: str | None = None
+@@ -979,6 +984,10 @@ class ServerArgs:
+                 self.max_num_seqs = 160
+ 
+     def resolve_kernel_backends(self):
++        if self.lm_head_compute_dtype is not None:
++            _require_choice(
++                "--lm-head-compute-dtype", self.lm_head_compute_dtype, ("float32",)
++            )
+         _require_choice(
+             "--dense-gemm-backend",
+             self.dense_gemm_backend,
+@@ -1779,6 +1788,14 @@ class ServerArgs:
+         all-reduce that resolver auto-enables.
+         """
+         _require_choice("--numerics", self.numerics, NUMERICS_ENVELOPES)
++        if (
++            self.lm_head_compute_dtype is not None
++            and self.numerics in BITWISE_ENVELOPES
++        ):
++            raise ValueError(
++                "--lm-head-compute-dtype cannot be combined with a bitwise "
++                "numerics envelope: the FP32 projection has no batch-invariant plan"
++            )
+         if self.numerics != "auto":
+             self._resolve_rl_bitwise()
+         # Individual switches that veto a fusion resolve_communication may
+@@ -2005,6 +2022,7 @@ class ServerArgs:
+             )
+ 
+     def validate_cache_options(self):
++        _require_choice("--kv-cache-dtype", self.kv_cache_dtype, _KV_CACHE_DTYPES)
+         if self.kvstore_storage_backend is not None and self.pipeline_parallel_size > 1:
+             raise ValueError(
+                 "Asynchronous L3 currently requires --pipeline-parallel-size 1"
+@@ -2460,12 +2478,24 @@ class ServerArgs:
+             '* "float32" for FP32 precision.',
+         )
+         parser.add_argument(
++            "--lm-head-compute-dtype",
++            type=str,
++            default=ServerArgs.lm_head_compute_dtype,
++            choices=["float32"],
++            help="Override only the unquantized final vocabulary projection with "
++            "FP32 inputs, compute and logits, without changing stored weights. "
++            "Omit to retain native arithmetic. Costs a per-forward FP32 weight "
++            "conversion and wider logits communication; incompatible with "
++            "bitwise numerics envelopes.",
++        )
++        parser.add_argument(
+             "--kv-cache-dtype",
+             type=str,
+             default=ServerArgs.kv_cache_dtype,
+-            choices=["auto", "bfloat16", "fp8", "fp8_e4m3", "mxfp8"],
++            choices=_KV_CACHE_DTYPES,
+             help='Data type for kv cache storage. "auto" and "bfloat16" store BF16 '
+-            'rows (fp16 activations convert on write). "fp8" is an alias for '
++            'rows (fp16 activations convert on write). "float16" explicitly stores '
++            'FP16 rows. "fp8" is an alias for '
+             '"fp8_e4m3" (unit scale, or the checkpoint\'s per-tensor KV-cache '
+             'scales where the model loads them). "mxfp8" stores '
+             "block-scaled fp8-e4m3 (one UE8M0 scale per 32 head_dim elements) and "
+diff --git a/test/runtime/test_hccl_torch29.py b/test/runtime/test_hccl_torch29.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..e4ba6241f1bc91fc75baffb8f4312b58c6b6af74
+--- /dev/null
++++ b/test/runtime/test_hccl_torch29.py
+@@ -0,0 +1,289 @@
++# Copyright (c) 2026 LightSeek Foundation
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++"""Real two-rank HcclBackend regression coverage; see docs/hccl-torch29.md."""
++
++import importlib.util
++import os
++import time
++import traceback
++from datetime import timedelta
++from pathlib import Path
++
++import pytest
++import torch
++import torch.distributed as dist
++import torch.multiprocessing as mp
++
++WORLD = (0, 1)
++PROCESS_GROUP_TIMEOUT_SECONDS = 60
++PARENT_TIMEOUT_SECONDS = 240
++CLEANUP_TIMEOUT_SECONDS = 5
++
++
++def _assert_exact(actual: torch.Tensor, expected: torch.Tensor) -> None:
++    torch.testing.assert_close(actual.cpu(), expected, rtol=0, atol=0)
++
++
++def _check_floating_collectives(backend, rank: int, device, dtype) -> None:
++    base = torch.arange(6, dtype=dtype).reshape(2, 3)
++    peers = [base + peer * 16 for peer in WORLD]
++    tensor = peers[rank].to(device)
++
++    # Use an offset output view so the supplied buffer, not a replacement,
++    # must receive the gathered data without overwriting neighboring rows.
++    storage = torch.full((6, 3), -99, dtype=dtype, device=device)
++    output = storage[1:5]
++    alias, pointer = output, output.data_ptr()
++    assert backend.all_gather_single(output, tensor, WORLD) is None
++    assert output is alias and output.data_ptr() == pointer
++    _assert_exact(output, torch.cat(peers))
++    _assert_exact(storage[[0, 5]], torch.full((2, 3), -99, dtype=dtype))
++    _assert_exact(tensor, peers[rank])
++
++    for dim in (0, 1, -1):
++        _assert_exact(
++            backend.all_gather(tensor, WORLD, dim=dim), torch.cat(peers, dim=dim)
++        )
++
++    reduced = tensor.clone()
++    pointer = reduced.data_ptr()
++    assert backend.all_reduce(reduced, WORLD) is reduced
++    assert reduced.data_ptr() == pointer
++    _assert_exact(reduced, peers[0] + peers[1])
++
++    base = torch.arange(12, dtype=dtype).reshape(4, 3)
++    partial = (base + rank * 16).to(device)
++    expected = (2 * base + 16)[rank * 2 : (rank + 1) * 2]
++    _assert_exact(backend.reduce_scatter(partial, WORLD), expected)
++    _assert_exact(backend.token_reduce_scatter(partial, WORLD, [2, 2]), expected)
++    _assert_exact(partial, base + rank * 16)
++
++    # Exercise both padding directions, empty owners, and the equal-row path.
++    for counts in ([1, 3], [3, 1], [0, 3], [3, 0], [2, 2]):
++        shards = [
++            torch.arange(count * 3, dtype=dtype).reshape(count, 3) + peer * 16
++            for peer, count in enumerate(counts)
++        ]
++        # A strided input also checks the backend's token gather packing.
++        local = shards[rank].t().contiguous().t().to(device)
++        gathered = backend.token_all_gather(local, WORLD, counts)
++        _assert_exact(gathered, torch.cat(shards))
++        assert gathered.is_contiguous()
++
++        base = torch.arange(sum(counts) * 3, dtype=dtype).reshape(-1, 3)
++        partial = (base + rank * 16).t().contiguous().t().to(device)
++        scattered = backend.token_reduce_scatter(partial, WORLD, counts)
++        offset = sum(counts[:rank])
++        _assert_exact(
++            scattered, (2 * base + 16)[offset : offset + counts[rank]]
++        )
++        assert scattered.is_contiguous()
++
++
++def _check_int64_max(backend, rank: int, device) -> None:
++    # Values exceed FP64's exact integer range. Equal high words with different
++    # low words also catch lossy casts and independent INT32 word reductions.
++    peers = torch.tensor(
++        [
++            [
++                (1 << 62) + 1,
++                (1 << 61) + 0xFFFFFFFF,
++                -(1 << 63),
++                -(1 << 60) + 7,
++                (1 << 63) - 2,
++                -1,
++            ],
++            [
++                (1 << 62) + 3,
++                (1 << 61) + 0x100000000,
++                -(1 << 63) + 1,
++                -(1 << 60) + 9,
++                (1 << 63) - 1,
++                0,
++            ],
++        ],
++        dtype=torch.int64,
++    )
++    for count in (1, 6, 512):  # Include the 4 KiB small-payload boundary.
++        values = peers.repeat(1, (count + 5) // 6)[:, :count]
++        expected = values.amax(dim=0)
++        for strided in (False, True):
++            # Different local layouts must still choose the same collective.
++            if strided and rank == 0:
++                backing = torch.full(
++                    (count * 3,), -123, dtype=torch.int64, device=device
++                )
++                tensor = backing[1::3]
++                tensor.copy_(values[rank].to(device))
++                # A one-element view reports contiguous despite this stride.
++                assert tensor.stride(0) == 3
++            else:
++                backing = None
++                tensor = values[rank].to(device).clone()
++            pointer = tensor.data_ptr()
++            result = backend.all_reduce(tensor, WORLD, op=dist.ReduceOp.MAX)
++            assert result is tensor and result.data_ptr() == pointer
++            _assert_exact(result, expected)
++            if backing is not None:
++                guard = torch.full((count,), -123, dtype=torch.int64)
++                _assert_exact(backing[0::3], guard)
++                _assert_exact(backing[2::3], guard)
++
++    # A transposed matrix requires reshape/copy-back, unlike a strided vector.
++    tensor = peers[rank].reshape(2, 3).t().contiguous().to(device).t()
++    pointer = tensor.data_ptr()
++    assert backend.all_reduce(tensor, WORLD, op=dist.ReduceOp.MAX) is tensor
++    assert tensor.data_ptr() == pointer
++    _assert_exact(tensor, peers.amax(dim=0).reshape(2, 3))
++
++
++def _check_singleton(backend, rank: int, device, dtype) -> None:
++    # No singleton process group is registered: identity paths need none.
++    group = (rank,)
++    expected = torch.arange(6, dtype=dtype).reshape(2, 3)
++    tensor = expected.to(device)
++    for op in (dist.ReduceOp.SUM, dist.ReduceOp.MAX):
++        assert backend.all_reduce(tensor, group, op=op) is tensor
++    for dim in (0, 1, -1):
++        assert backend.all_gather(tensor, group, dim=dim) is tensor
++    assert backend.reduce_scatter(tensor, group) is tensor
++    assert backend.token_reduce_scatter(tensor, group, [2]) is tensor
++    _assert_exact(tensor, expected)
++
++    output = torch.full_like(tensor, -99)
++    pointer = output.data_ptr()
++    assert backend.all_gather_single(output, tensor, group) is None
++    assert output.data_ptr() == pointer
++    _assert_exact(output, expected)
++    _assert_exact(backend.token_all_gather(tensor, group, [2]), expected)
++
++    output.fill_(-99)
++    assert backend.all_to_all_single(output, tensor, group) is None
++    assert output.data_ptr() == pointer
++    _assert_exact(output, expected)
++
++    key = torch.tensor([(1 << 62) + 3], dtype=torch.int64, device=device)
++    assert backend.all_reduce(key, group, op=dist.ReduceOp.MAX) is key
++    _assert_exact(key, torch.tensor([(1 << 62) + 3], dtype=torch.int64))
++
++
++def _worker(rank: int, rendezvous: str, error_path: str) -> None:
++    try:
++        import torch_npu  # noqa: F401 -- registers the NPU/HCCL implementations
++
++        from tokenspeed.runtime.distributed.comm_backend.hccl import HcclBackend
++        from tokenspeed.runtime.distributed.process_group_manager import (
++            process_group_manager as pg_manager,
++        )
++
++        device = torch.device(f"npu:{rank}")
++        torch.npu.set_device(device)
++        dist.init_process_group(
++            backend="hccl",
++            init_method=rendezvous,
++            rank=rank,
++            world_size=len(WORLD),
++            timeout=timedelta(seconds=PROCESS_GROUP_TIMEOUT_SECONDS),
++        )
++        # Register the world group this child owns; do not create another HCCL
++        # communicator through the runtime's general initialization machinery.
++        pg_manager.register_process_group("hccl", WORLD, dist.group.WORLD)
++        backend = HcclBackend()
++        for dtype in (torch.bfloat16, torch.float32):
++            _check_floating_collectives(backend, rank, device, dtype)
++            _check_singleton(backend, rank, device, dtype)
++        _check_int64_max(backend, rank, device)
++        torch.npu.synchronize()
++    except BaseException:
++        # Persist the traceback before group destruction, which can itself hang
++        # after a peer fails. The parent does not depend on a queue feeder.
++        Path(error_path).write_text(traceback.format_exc())
++        raise
++    finally:
++        if dist.is_initialized():
++            dist.destroy_process_group()
++
++
++def _stop_children(processes) -> None:
++    # Only touch Process objects created by this test; never kill by name/PID
++    # search or use a process-group-wide signal on a shared accelerator host.
++    for process in processes:
++        if process.is_alive():
++            process.terminate()
++    deadline = time.monotonic() + CLEANUP_TIMEOUT_SECONDS
++    for process in processes:
++        process.join(timeout=max(0, deadline - time.monotonic()))
++    for process in processes:
++        if process.is_alive():
++            process.kill()
++    deadline = time.monotonic() + CLEANUP_TIMEOUT_SECONDS
++    for process in processes:
++        process.join(timeout=max(0, deadline - time.monotonic()))
++
++
++def test_hccl_torch29_two_ranks(tmp_path: Path) -> None:
++    if importlib.util.find_spec("torch_npu") is None:
++        pytest.skip("requires torch-npu and two Ascend NPUs")
++    import torch_npu  # noqa: F401 -- registers torch.npu before probing it
++
++    if not torch.npu.is_available():
++        pytest.skip("requires two Ascend NPUs")
++    assert os.environ.get("ASCEND_RT_VISIBLE_DEVICES") == "0,1", (
++        "set ASCEND_RT_VISIBLE_DEVICES=0,1 in the parent before starting pytest"
++    )
++    assert torch.npu.device_count() == 2, "requires exactly two visible NPUs"
++
++    # A fresh file rendezvous avoids reserving/releasing a TCP port. Children
++    # inherit the parent's visibility and HCCL_NPU_SOCKET_PORT_RANGE unchanged.
++    rendezvous = (tmp_path / "rendezvous").as_uri()
++    errors = [tmp_path / f"rank-{rank}.error" for rank in WORLD]
++    context = mp.get_context("spawn")
++    processes = []
++    deadline = time.monotonic() + PARENT_TIMEOUT_SECONDS
++    try:
++        for rank in WORLD:
++            process = context.Process(
++                target=_worker, args=(rank, rendezvous, str(errors[rank]))
++            )
++            process.start()
++            processes.append(process)
++        while True:
++            failures = [
++                f"rank {rank}:\n{path.read_text()}"
++                for rank, path in enumerate(errors)
++                if path.exists()
++            ]
++            if failures:
++                pytest.fail("\n".join(failures), pytrace=False)
++            exitcodes = [process.exitcode for process in processes]
++            if any(code not in (None, 0) for code in exitcodes):
++                pytest.fail(f"HCCL child failed: exit codes {exitcodes}")
++            if all(code == 0 for code in exitcodes):
++                break
++            remaining = deadline - time.monotonic()
++            if remaining <= 0:
++                pytest.fail(
++                    f"HCCL ranks exceeded {PARENT_TIMEOUT_SECONDS}s parent deadline; "
++                    f"exit codes {exitcodes}"
++                )
++            time.sleep(min(0.1, remaining))
++    finally:
++        _stop_children(processes)
+diff --git a/test/runtime/test_lm_head_precision.py b/test/runtime/test_lm_head_precision.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..6ec92458fe9cbc711ac73b5d13bf3ab755399768
+--- /dev/null
++++ b/test/runtime/test_lm_head_precision.py
+@@ -0,0 +1,299 @@
++# Copyright (c) 2026 LightSeek Foundation
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++"""CPU tensor regressions for the optional final-projection precision override."""
++
++import argparse
++
++import pytest
++import torch
++import torch.nn.functional as F
++from transformers import PretrainedConfig
++
++import tokenspeed.runtime.layers.logits_processor as logits_processor_module
++from tokenspeed.runtime.execution.forward_batch_info import ForwardMode
++from tokenspeed.runtime.layers.dense.fp8 import Fp8LinearMethod
++from tokenspeed.runtime.layers.dense.unquant import UnquantizedLinearMethod
++from tokenspeed.runtime.layers.logits_processor import LogitsMetadata, LogitsProcessor
++from tokenspeed.runtime.layers.quantization.fp8 import Fp8Config
++from tokenspeed.runtime.layers.vocab_parallel_embedding import (
++    ParallelLMHead,
++    VocabParallelEmbedding,
++)
++from tokenspeed.runtime.utils.env import (
++    global_server_args_dict,
++    global_server_args_dict_update,
++)
++from tokenspeed.runtime.utils.server_args import ServerArgs
++
++
++@pytest.fixture(autouse=True)
++def isolated_launch_config(monkeypatch):
++    original = dict(global_server_args_dict)
++    global_server_args_dict.update(
++        numerics="auto", logprob_order="torch", lm_head_compute_dtype=None
++    )
++    monkeypatch.setenv("TOKENSPEED_MAMBA_SSM_DTYPE", "float32")
++    try:
++        yield
++    finally:
++        global_server_args_dict.clear()
++        global_server_args_dict.update(original)
++
++
++def _processor(vocab_size=2, **kwargs):
++    return LogitsProcessor(
++        PretrainedConfig(vocab_size=vocab_size), dp_lm_head_tp=False, **kwargs
++    )
++
++
++def _logits(processor, hidden, head, **kwargs):
++    return processor._get_logits(
++        hidden,
++        head,
++        LogitsMetadata(forward_mode=ForwardMode.DECODE, query_shard=None),
++        require_full_vocab=True,
++        **kwargs,
++    )
++
++
++def _server_args(model_dir, **kwargs):
++    return ServerArgs(
++        model=str(model_dir),
++        device="cpu",
++        world_size=1,
++        max_num_seqs=2,
++        sampling_backend="greedy",
++        disable_pdl=True,
++        **kwargs,
++    )
++
++
++class _MethodHead(torch.nn.Linear):
++    """A real dense tensor head with an explicit runtime projection method."""
++
++    def __init__(self, quant_method):
++        super().__init__(2, 2, bias=False, dtype=torch.float16)
++        self.quant_method = quant_method
++
++
++def test_float32_projection_breaks_a_half_rounding_tie_before_sampling():
++    hidden = torch.tensor([[1.0, 1 / 4096]], dtype=torch.float16)
++    head = torch.nn.Linear(2, 2, bias=False, dtype=torch.float16)
++    with torch.no_grad():
++        head.weight.copy_(torch.tensor([[1, 0], [1, 1]]))
++    metadata = LogitsMetadata(forward_mode=ForwardMode.DECODE, query_shard=None)
++    native = _processor()(None, hidden, head, metadata).next_token_logits
++    global_server_args_dict["lm_head_compute_dtype"] = "float32"
++    widened = _processor()(None, hidden, head, metadata).next_token_logits
++
++    assert native.dtype == torch.float16
++    assert native[0, 0] == native[0, 1]
++    assert native.float().argmax(-1).item() == 0  # Casting rounded logits is too late.
++    assert widened.dtype == torch.float32
++    assert widened[0, 1] > widened[0, 0]
++    assert widened.argmax(-1).item() == 1
++    torch.testing.assert_close(
++        widened, F.linear(hidden.float(), head.weight.float()), rtol=0, atol=0
++    )
++
++
++@pytest.mark.parametrize("dtype", [torch.float16, torch.bfloat16, torch.float32])
++@pytest.mark.parametrize("head_kind", ["dense", "linear_method", "parallel", "tied"])
++def test_override_preserves_inputs_weights_and_tied_embeddings(dtype, head_kind):
++    global_server_args_dict["lm_head_compute_dtype"] = "float32"
++    embedding = None
++    if head_kind == "dense":
++        head = torch.nn.Linear(2, 2, bias=False, dtype=dtype)
++    elif head_kind == "linear_method":
++        head = _MethodHead(UnquantizedLinearMethod()).to(dtype=dtype)
++    else:
++        head = ParallelLMHead(2, 2, params_dtype=dtype, padding_size=1)
++        if head_kind == "tied":
++            embedding = VocabParallelEmbedding(2, 2, params_dtype=dtype, padding_size=1)
++            head.tie_weights(embedding)
++    hidden = torch.tensor([[1, 1 / 4096], [-2, 0.5]], dtype=dtype)
++    with torch.no_grad():
++        head.weight.copy_(torch.tensor([[1, 0], [1, 1]]))
++    weight = head.weight
++    hidden_before, weight_before = hidden.clone(), weight.clone()
++    bias = torch.tensor([1 / 8192, -1 / 8192], dtype=dtype)
++    proc = _processor()
++    proc.prepare_communication(head)
++    logits = _logits(proc, hidden, head, embedding_bias=bias)
++    assert logits.dtype == torch.float32
++    torch.testing.assert_close(
++        logits, F.linear(hidden.float(), weight.float(), bias.float()), rtol=0, atol=0
++    )
++    assert head.weight is weight
++    assert head.weight.dtype == hidden.dtype == dtype
++    assert torch.equal(hidden, hidden_before)
++    assert torch.equal(head.weight, weight_before)
++    if embedding is not None:
++        assert embedding.weight is weight
++        assert torch.equal(embedding.weight, weight_before)
++
++
++@pytest.mark.parametrize("dtype", [torch.float16, torch.bfloat16, torch.float32])
++def test_omission_retains_native_arithmetic_and_dtype(dtype):
++    # Both an absent dictionary key and an explicit None mean native semantics.
++    hidden = torch.tensor([[1, 1 / 4096], [-2, 0.5]], dtype=torch.float32)
++    head = torch.nn.Linear(2, 2, bias=False, dtype=dtype)
++    with torch.no_grad():
++        head.weight.copy_(torch.tensor([[1, 0], [1, 1]]))
++    expected = hidden.to(dtype) @ head.weight.T
++    for absent in (False, True):
++        if absent:
++            global_server_args_dict.pop("lm_head_compute_dtype", None)
++        got = _logits(_processor(), hidden, head)
++        assert got.dtype == dtype
++        torch.testing.assert_close(got, expected, rtol=0, atol=0)
++
++
++def test_override_is_not_narrowed_by_cpu_autocast():
++    global_server_args_dict["lm_head_compute_dtype"] = "float32"
++    head = torch.nn.Linear(2, 2, bias=False, dtype=torch.float16)
++    hidden = torch.tensor([[1, 1 / 4096]], dtype=torch.float16)
++    with torch.no_grad():
++        head.weight.copy_(torch.tensor([[1, 0], [1, 1]]))
++    with torch.autocast("cpu", dtype=torch.bfloat16):
++        logits = _logits(_processor(), hidden, head)
++    assert logits.dtype == torch.float32
++    assert logits.argmax(-1).item() == 1
++
++
++def test_override_uses_existing_vocab_gather_scale_and_padding(monkeypatch):
++    global_server_args_dict["lm_head_compute_dtype"] = "float32"
++    hidden = torch.tensor([[1, 1 / 4096]], dtype=torch.float16)
++    head = ParallelLMHead(
++        3, 2, params_dtype=torch.float16, padding_size=4,
++        tp_rank=0, tp_size=2, tp_group=(0, 1),
++    )
++    with torch.no_grad():
++        head.weight.copy_(torch.tensor([[1, 0], [1, 1]]))
++    other_weight = torch.tensor([[0, 1], [8, 8]], dtype=torch.float16)
++    other_logits = F.linear(hidden.float(), other_weight.float())
++
++    def gather(output, shard, group):
++        # Only the absent second process is substituted; arithmetic is real CPU torch.
++        output.copy_(torch.cat((shard, other_logits), dim=0))
++
++    monkeypatch.setattr(logits_processor_module, "all_gather_single", gather)
++    proc = _processor(
++        vocab_size=3, tp_rank=0, tp_size=2, tp_group=(0, 1), logit_scale=0.5
++    )
++    # Match the second rank's scale, which is applied before the gather.
++    other_logits.mul_(0.5)
++    got = _logits(proc, hidden, head)
++    expected = F.linear(hidden.float(), torch.cat((head.weight, other_weight)).float())
++    assert got.dtype == torch.float32
++    assert got.shape == (1, 3)
++    torch.testing.assert_close(got, expected[:, :3] * 0.5, rtol=0, atol=0)
++
++
++@pytest.mark.parametrize("at_startup", [False, True])
++@pytest.mark.parametrize("weightless", [False, True])
++def test_override_refuses_a_quantized_method(at_startup, weightless):
++    global_server_args_dict["lm_head_compute_dtype"] = "float32"
++    head = _MethodHead(Fp8LinearMethod(Fp8Config()))
++    if weightless:
++        del head.weight
++    # Even a dense half weight with a stale quantized method is incompatible.
++    proc = _processor()
++    with pytest.raises(ValueError, match="requires an unquantized LM head"):
++        if at_startup:
++            proc.prepare_communication(head)
++        else:
++            _logits(proc, torch.ones(1, 2, dtype=torch.float16), head)
++
++
++@pytest.mark.parametrize("dtype", [torch.uint8, torch.int8, torch.float64])
++def test_override_refuses_unsupported_weight_dtypes(dtype):
++    global_server_args_dict["lm_head_compute_dtype"] = "float32"
++    head = torch.nn.Linear(2, 2, bias=False)
++    head.weight = torch.nn.Parameter(torch.ones(2, 2, dtype=dtype), requires_grad=False)
++    with pytest.raises(ValueError, match="dense 2D FP16, BF16 or FP32"):
++        _logits(_processor(), torch.ones(1, 2), head)
++
++
++@pytest.mark.parametrize(
++    "hidden",
++    [torch.ones(1, 3), torch.ones(1, 2, dtype=torch.int32), torch.ones(1, 1, 2)],
++)
++def test_override_refuses_incompatible_hidden_states(hidden):
++    global_server_args_dict["lm_head_compute_dtype"] = "float32"
++    with pytest.raises(ValueError, match="hidden states matching"):
++        _logits(_processor(), hidden, torch.nn.Linear(2, 2, bias=False))
++
++
++def test_override_refuses_incompatible_bias_and_weight_layout():
++    global_server_args_dict["lm_head_compute_dtype"] = "float32"
++    head = ParallelLMHead(2, 3, params_dtype=torch.float16, padding_size=1)
++    with pytest.raises(ValueError, match="floating bias matching"):
++        _logits(_processor(), torch.ones(1, 3), head, embedding_bias=torch.ones(3))
++    head.weight = torch.nn.Parameter(head.weight.T.contiguous(), requires_grad=False)
++    with pytest.raises(ValueError, match="requires \\[vocab shard, hidden\\]"):
++        _logits(_processor(), torch.ones(1, 2), head)
++
++
++@pytest.mark.parametrize("value", ["float16", "bfloat16", "auto", "float64", "", 32])
++def test_python_args_reject_unsupported_override(tmp_path, value):
++    with pytest.raises(ValueError, match="--lm-head-compute-dtype must be one of"):
++        _server_args(tmp_path, lm_head_compute_dtype=value)
++
++
++@pytest.mark.parametrize("value", [None, "float32"])
++def test_python_args_and_runtime_publication(tmp_path, value):
++    args = _server_args(tmp_path, lm_head_compute_dtype=value)
++    assert args.lm_head_compute_dtype == value
++    # Publishing an omitted option must clear a previous explicit override too.
++    global_server_args_dict["lm_head_compute_dtype"] = (
++        "float32" if value is None else None
++    )
++    global_server_args_dict_update(args)
++    head = torch.nn.Linear(2, 2, bias=False, dtype=torch.float16)
++    got = _logits(_processor(), torch.ones(1, 2, dtype=torch.float16), head)
++    assert got.dtype == (torch.float16 if value is None else torch.float32)
++
++
++@pytest.mark.parametrize("explicit", [False, True])
++def test_cli_parses_optional_override(tmp_path, explicit):
++    parser = argparse.ArgumentParser()
++    ServerArgs.add_cli_args(parser)
++    argv = [
++        "--model", str(tmp_path), "--device", "npu",
++        "--sampling-backend", "greedy", "--disable-pdl", "--disable-prefill-graph",
++    ]
++    if explicit:
++        argv += ["--lm-head-compute-dtype", "float32"]
++    args = ServerArgs.from_cli_args(parser.parse_args(argv))
++    assert args.lm_head_compute_dtype == ("float32" if explicit else None)
++    with pytest.raises(SystemExit):
++        parser.parse_args(argv + ["--lm-head-compute-dtype", "float16"])
++
++
++def test_override_refuses_bitwise_launch_and_processor(tmp_path):
++    with pytest.raises(ValueError, match="cannot be combined with a bitwise"):
++        _server_args(tmp_path, lm_head_compute_dtype="float32", numerics="rl-bitwise")
++    global_server_args_dict.update(
++        lm_head_compute_dtype="float32", numerics="rl-bitwise"
++    )
++    with pytest.raises(ValueError, match="cannot be combined with a bitwise"):
++        _processor()
+diff --git a/test/runtime/test_npu_profile.py b/test/runtime/test_npu_profile.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..3aa8846641695c1b1ea4831e8244e75e85dff536
+--- /dev/null
++++ b/test/runtime/test_npu_profile.py
+@@ -0,0 +1,235 @@
++# Copyright (c) 2026 LightSeek Foundation
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++"""Real NPU device capture from an already-running issuing thread; no mocks."""
++
++import json
++import os
++import threading
++from concurrent.futures import ThreadPoolExecutor
++
++import pytest
++
++torch = pytest.importorskip("torch")
++pytest.importorskip("torch_npu")
++if not torch.npu.is_available():
++    pytest.skip("requires an available Ascend NPU", allow_module_level=True)
++
++from tokenspeed.runtime.engine.io_struct import ProfileReq, ProfileReqType
++from tokenspeed.runtime.engine.request_handler import RequestHandler
++from tokenspeed.runtime.execution.forward_batch_info import ForwardMode
++from tokenspeed.runtime.utils.server_args import ServerArgs
++
++
++def _handler() -> RequestHandler:
++    # Exercise the real handler's profiling lifecycle without loading model
++    # weights/tokenizers or launching the scheduler. Only profile-owned state
++    # and the server's device selection are needed by this isolated test.
++    handler = RequestHandler.__new__(RequestHandler)
++    handler.server_args = ServerArgs.__new__(ServerArgs)
++    handler.server_args.device = "npu"
++    handler.forward_ct = 0
++    handler.attn_tp_size = 1
++    handler.attn_tp_cpu_group = None
++    handler.profile_rank_tag = "TP0"
++    handler._profile_sync_buf = torch.zeros(1, dtype=torch.int32, device="cpu")
++    handler.init_profiler()
++    return handler
++
++
++def _start(output_dir, *, activities, **kwargs):
++    return ProfileReq(
++        type=ProfileReqType.START_PROFILE,
++        output_dir=str(output_dir),
++        activities=activities,
++        profile_id="npu-test",
++        with_stack=False,
++        record_shapes=False,
++        **kwargs,
++    )
++
++
++@pytest.fixture
++def session(tmp_path, monkeypatch):
++    # Keep the vendor's raw diagnostic files inside the test directory too.
++    monkeypatch.chdir(tmp_path)
++    handler = _handler()
++    device = torch.npu.current_device()
++
++    def prepare():
++        torch.npu.set_device(device)
++        x = torch.ones((256, 256), dtype=torch.float16, device=f"npu:{device}")
++        weight = torch.ones_like(x)
++
++        def forward():
++            with torch.inference_mode():
++                result = torch.relu(torch.mm(x, weight) + 1)
++                torch.npu.synchronize()
++                value = result[0, 0].item()
++            return threading.get_native_id(), value
++
++        forward()  # Warm up before the profiling window.
++        return threading.get_native_id(), forward
++
++    with ThreadPoolExecutor(
++        max_workers=1, thread_name_prefix="forward-like"
++    ) as worker:
++        thread_id, forward = worker.submit(prepare).result(timeout=60)
++        try:
++            yield handler, worker, thread_id, forward
++        finally:
++            if handler.profile_in_progress:
++                handler.stop_profile()
++
++
++def _assert_device_trace(path):
++    assert path.is_file() and path.stat().st_size > 0
++    with path.open() as source:
++        document = json.load(source)
++    events = document["traceEvents"] if isinstance(document, dict) else document
++    # Host aten ranges alone are not proof of capture from the issuing thread.
++    kernels = [
++        event
++        for event in events
++        if event.get("ph") == "X"
++        and (
++            event.get("cat", "").lower() == "kernel"
++            or event.get("args", {}).get("Task Type") in {"AI_CORE", "AI_VECTOR_CORE", "MIX_AIC"}
++        )
++        and event.get("dur", 0) > 0
++    ]
++    assert kernels, "expected actual NPU device kernels, not only host annotations"
++    assert any(
++        "matmul" in event.get("name", "").lower()
++        or "gemm" in event.get("name", "").lower()
++        for event in kernels
++    ), "the forward thread's matrix multiply must appear as device work"
++
++
++@pytest.mark.parametrize("activities", [["NPU"], ["CPU", "NPU"]])
++def test_captures_device_work_from_preexisting_forward_thread(
++    session, tmp_path, activities
++):
++    handler, worker, thread_id, forward = session
++    started = handler.profile(_start(tmp_path, activities=activities))
++    assert started.success, started.message
++    actual_thread, value = worker.submit(forward).result(timeout=60)
++    assert actual_thread == thread_id
++    assert value == 257
++    stopped = handler.profile(ProfileReq(type=ProfileReqType.STOP_PROFILE))
++    assert stopped.success, stopped.message
++    assert not handler.profile_in_progress
++    assert handler.torch_profiler is None
++    _assert_device_trace(tmp_path / "npu-test-TP0.trace.json")
++    assert not (tmp_path / "npu-test-TP0.trace.json.gz").exists()
++    assert worker.submit(threading.get_native_id).result(timeout=10) == thread_id
++
++
++def test_num_steps_bounds_device_capture(session, tmp_path):
++    handler, worker, _, forward = session
++    result = handler.profile(_start(tmp_path, activities=["NPU"], num_steps=1))
++    assert result.success, result.message
++    worker.submit(forward).result(timeout=60)
++    handler.forward_ct = 1
++    handler._profile_batch_predicate(ForwardMode.DECODE)
++    assert not handler.profile_in_progress
++    assert handler.profiler_target_forward_ct is None
++    _assert_device_trace(tmp_path / "npu-test-TP0.trace.json")
++
++
++def test_unwritable_export_fails_and_allows_retry(session, tmp_path):
++    handler, worker, _, forward = session
++    output = tmp_path / "read-only"
++    output.mkdir()
++    output.chmod(0o555)
++    try:
++        if os.access(output, os.W_OK):
++            pytest.skip("requires filesystem permissions that prevent trace export")
++        result = handler.profile(_start(output, activities=["NPU"], num_steps=2))
++        assert result.success, result.message
++        worker.submit(forward).result(timeout=60)
++        result = handler.profile(ProfileReq(type=ProfileReqType.STOP_PROFILE))
++        assert not result.success
++        assert "Failed to finalize NPU profiling" in result.message
++        assert not (output / "npu-test-TP0.trace.json").exists()
++        assert not handler.profile_in_progress
++        assert handler.torch_profiler is None
++        assert handler.profiler_activities is None
++        assert handler.profiler_target_forward_ct is None
++        handler._profile_batch_predicate(ForwardMode.DECODE)
++    finally:
++        output.chmod(0o755)
++
++    # The failed vendor export must not poison a subsequent real session.
++    result = handler.profile(_start(tmp_path, activities=["NPU"]))
++    assert result.success, result.message
++    worker.submit(forward).result(timeout=60)
++    result = handler.stop_profile()
++    assert result.success, result.message
++    _assert_device_trace(tmp_path / "npu-test-TP0.trace.json")
++
++
++def test_failed_stage_export_disarms_schedule(session, tmp_path):
++    handler, worker, _, forward = session
++    blocked = tmp_path / "not-a-directory"
++    blocked.write_text("block trace-directory creation")
++    result = handler.profile(
++        _start(blocked, activities=["NPU"], profile_by_stage=True, num_steps=1)
++    )
++    assert result.success, result.message
++    handler._profile_batch_predicate(ForwardMode.EXTEND)
++    assert handler.profile_in_progress
++    worker.submit(forward).result(timeout=60)
++    handler._profile_batch_predicate(ForwardMode.DECODE)
++    assert not handler.profile_in_progress
++    assert not handler.profile_by_stage
++    assert handler.torch_profiler is None
++    handler._profile_batch_predicate(ForwardMode.EXTEND)
++    handler._profile_batch_predicate(ForwardMode.DECODE)
++
++
++@pytest.mark.parametrize("incompatible", ["GPU", "PROTON", "CUDA_PROFILER", "MEM"])
++def test_incompatible_request_leaves_state_untouched(session, tmp_path, incompatible):
++    handler, _, _, _ = session
++    before = handler.__dict__.copy()
++    result = handler.profile(
++        _start(
++            tmp_path,
++            activities=["CPU", "NPU", incompatible],
++            start_step=10,
++            num_steps=2,
++            profile_by_stage=True,
++        )
++    )
++    assert not result.success
++    assert incompatible in result.message
++    assert handler.__dict__ == before
++    handler._profile_batch_predicate(ForwardMode.EXTEND)
++    handler._profile_batch_predicate(ForwardMode.DECODE)
++
++
++def test_non_npu_server_rejects_without_mutation(session, tmp_path):
++    handler, _, _, _ = session
++    handler.server_args.device = "cpu"
++    before = handler.__dict__.copy()
++    result = handler.profile(_start(tmp_path, activities=["NPU"]))
++    assert not result.success
++    assert "device='npu'" in result.message
++    assert handler.__dict__ == before
+diff --git a/test/runtime/test_qwen35_cache_precision.py b/test/runtime/test_qwen35_cache_precision.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..77893d814d88b691ff8a6790309f6476bcd97667
+--- /dev/null
++++ b/test/runtime/test_qwen35_cache_precision.py
+@@ -0,0 +1,303 @@
++# Copyright (c) 2026 LightSeek Foundation
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++"""CPU-only Qwen3.5 cache precision contracts, with no weights or kernels."""
++
++import argparse
++from pathlib import Path
++
++import pytest
++import torch
++
++from tokenspeed.runtime.layers.attention.configs.base import AttnConfig, resolve_dtype
++from tokenspeed.runtime.layers.attention.configs.linear_attn import LinearAttnConfig
++from tokenspeed.runtime.layers.attention.configs.mha import MHAConfig
++from tokenspeed.runtime.layers.attention.kv_cache.arena import CacheArena
++from tokenspeed.runtime.layers.attention.kv_cache.recipes.plan import pack
++from tokenspeed.runtime.layers.attention.kv_cache.recipes.qwen35 import QwenGDNRecipe
++from tokenspeed.runtime.layers.attention.kv_cache.recipes.spec import (
++    FULL_ATTENTION,
++    LINEAR_ATTENTION,
++)
++from tokenspeed.runtime.pd.cache_protocol import (
++    CacheContractError,
++    CacheTransferContract,
++    validate_cache_peer_layout,
++)
++from tokenspeed.runtime.utils.server_args import ServerArgs
++
++
++@pytest.fixture(autouse=True)
++def preserve_ssm_environment(monkeypatch):
++    # ServerArgs publishes the SSM setting; restore the caller's env afterwards.
++    monkeypatch.setenv("TOKENSPEED_MAMBA_SSM_DTYPE", "float32")
++
++
++def _server_args(model_dir: Path, **kwargs) -> ServerArgs:
++    return ServerArgs(
++        model=str(model_dir),
++        device="cpu",
++        world_size=1,
++        max_num_seqs=2,
++        sampling_backend="greedy",
++        disable_pdl=True,
++        **kwargs,
++    )
++
++
++def _recipe(
++    model_dir: Path,
++    *,
++    activation_dtype: torch.dtype,
++    kv_dtype: str,
++    ssm_dtype: str,
++) -> QwenGDNRecipe:
++    args = _server_args(model_dir, kv_cache_dtype=kv_dtype, mamba_ssm_dtype=ssm_dtype)
++    config = AttnConfig(
++        device="cpu",
++        dtype=activation_dtype,
++        kv_cache_dtype=resolve_dtype(args.kv_cache_dtype),
++        kv_cache_quant_method="none",
++        kv_cache_mxfp8=args.kv_cache_dtype == "mxfp8",
++        prefix_granularity=128,
++        context_len=256,
++        max_bs=2,
++        components=(
++            MHAConfig(
++                num_attention_heads=1,
++                num_kv_heads=1,
++                head_dim=8,
++                attn_tp_size=1,
++                cache_layer_types=(LINEAR_ATTENTION, FULL_ATTENTION),
++            ),
++            LinearAttnConfig(
++                num_k_heads=1,
++                num_v_heads=1,
++                head_k_dim=32,
++                head_v_dim=32,
++                conv_kernel_size=4,
++                layer_ids=(0,),
++                tp_size=1,
++            ),
++        ),
++    )
++    return QwenGDNRecipe(
++        server_args=args,
++        # Group declaration and packing use only the attention config; no
++        # checkpoint metadata or draft model is needed for these stages.
++        model_config=None,
++        attn_config=config,
++        draft_model_config=None,
++        draft_attn_config=None,
++        cache_budget_bytes=64 << 10,
++        probe_batch_rows=None,
++        decode_input_tokens=1,
++        overlap_schedule_depth=0,
++    )
++
++
++def _arena(recipe: QwenGDNRecipe) -> CacheArena:
++    groups = recipe.groups()
++    layout = pack(
++        groups,
++        prefix_granularity=recipe.prefix_granularity,
++        cache_blocks_per_lcm_block=recipe.packing(groups),
++        alignment=recipe.alignment,
++        max_padding_fraction=recipe.max_padding_fraction,
++    )
++    recipe.check_layout(layout)
++    return CacheArena(
++        layout.bind(2),
++        "cpu",
++        cache_group_specs=tuple(spec for spec, _ in groups),
++    )
++
++
++@pytest.mark.parametrize(
++    "activation_dtype", [torch.float16, torch.bfloat16, torch.float32]
++)
++@pytest.mark.parametrize("ssm_dtype", ["float32", "bfloat16"])
++@pytest.mark.parametrize("kv_dtype", ["auto", "float16"])
++def test_state_precision_follows_activation_not_kv(
++    tmp_path, activation_dtype, ssm_dtype, kv_dtype
++):
++    recipe = _recipe(
++        tmp_path,
++        activation_dtype=activation_dtype,
++        kv_dtype=kv_dtype,
++        ssm_dtype=ssm_dtype,
++    )
++    arena = _arena(recipe)
++    linear = recipe.attn_config.component(LinearAttnConfig)
++    for field_id, shape, dtype in (
++        ("layer.0.conv", linear.conv_state_shape, activation_dtype),
++        ("layer.0.ssm", linear.temporal_state_shape, getattr(torch, ssm_dtype)),
++    ):
++        field = arena.plan.field(field_id)
++        view = arena.field(field_id)
++        assert field.dtype == str(dtype).removeprefix("torch.")
++        assert field.shape == shape
++        assert field.element_size == dtype.itemsize
++        assert view.dtype == dtype
++        assert view.shape == (arena.plan.group(field.group_id).page_count, *shape)
++        assert view.stride(0) * view.element_size() == field.page_stride_bytes
++        sample = torch.full(shape, 1.25, dtype=dtype)
++        view[1].copy_(sample)
++        assert torch.equal(view[1], sample)
++        assert torch.count_nonzero(view[0]).item() == 0
++    expected_kv_dtype = torch.float16 if kv_dtype == "float16" else torch.bfloat16
++    for field_id in ("layer.1.k", "layer.1.v"):
++        assert arena.field(field_id).dtype == expected_kv_dtype
++    assert arena.plan.arena_bytes < 64 << 10
++
++
++@pytest.mark.parametrize("activation_dtype", [torch.int8, torch.float64])
++def test_conv_rejects_unsupported_activation_dtype(tmp_path, activation_dtype):
++    recipe = _recipe(
++        tmp_path,
++        activation_dtype=activation_dtype,
++        kv_dtype="auto",
++        ssm_dtype="float32",
++    )
++    with pytest.raises(ValueError, match="conv history requires"):
++        recipe.groups()
++
++
++@pytest.mark.parametrize(
++    "name,expected",
++    [
++        ("auto", torch.bfloat16),
++        ("bfloat16", torch.bfloat16),
++        ("float16", torch.float16),
++        ("fp8", torch.float8_e4m3fn),
++        ("fp8_e4m3", torch.float8_e4m3fn),
++        ("mxfp8", torch.float8_e4m3fn),
++    ],
++)
++def test_kv_dtype_resolution_and_python_args(tmp_path, name, expected):
++    args = _server_args(tmp_path, kv_cache_dtype=name)
++    assert args.kv_cache_dtype == ("fp8_e4m3" if name == "fp8" else name)
++    assert resolve_dtype(args.kv_cache_dtype) == expected
++
++
++def test_explicit_float16_kv_cli(tmp_path):
++    parser = argparse.ArgumentParser()
++    ServerArgs.add_cli_args(parser)
++    args = ServerArgs.from_cli_args(
++        parser.parse_args(
++            [
++                "--model",
++                str(tmp_path),
++                "--device",
++                "npu",  # CLI supports accelerators; parsing allocates no device tensors.
++                "--sampling-backend",
++                "greedy",
++                "--disable-pdl",
++                "--disable-prefill-graph",
++                "--kv-cache-dtype",
++                "float16",
++            ]
++        )
++    )
++    assert args.kv_cache_dtype == "float16"
++    assert resolve_dtype(args.kv_cache_dtype) == torch.float16
++
++
++def test_invalid_kv_dtype_rejected_for_python_and_cli(tmp_path):
++    with pytest.raises(ValueError, match="--kv-cache-dtype must be one of"):
++        _server_args(tmp_path, kv_cache_dtype="float32")
++    with pytest.raises(ValueError, match="Unsupported kv_cache_dtype"):
++        resolve_dtype("float32")
++    parser = argparse.ArgumentParser()
++    ServerArgs.add_cli_args(parser)
++    with pytest.raises(SystemExit):
++        parser.parse_args(["--model", str(tmp_path), "--kv-cache-dtype", "float32"])
++
++
++@pytest.mark.parametrize("kv_dtype", ["fp8", "fp8_e4m3"])
++def test_fp8_scatter_storage_is_unchanged(tmp_path, kv_dtype):
++    arena = _arena(
++        _recipe(
++            tmp_path,
++            activation_dtype=torch.float16,
++            kv_dtype=kv_dtype,
++            ssm_dtype="float32",
++        )
++    )
++    assert arena.field("layer.0.conv").dtype == torch.float16
++    assert arena.field("layer.0.ssm").dtype == torch.float32
++    for field_id in ("layer.1.k", "layer.1.v"):
++        assert arena.plan.field(field_id).dtype == "uint8"
++        assert arena.field(field_id).dtype == torch.uint8
++
++
++def test_qwen_mxfp8_remains_unsupported(tmp_path):
++    with pytest.raises(RuntimeError, match="MXFP8 interleaved"):
++        _recipe(
++            tmp_path,
++            activation_dtype=torch.float16,
++            kv_dtype="mxfp8",
++            ssm_dtype="float32",
++        )
++
++
++@pytest.mark.parametrize("field_id", ["layer.0.conv", "layer.1.k"])
++def test_two_byte_dtypes_keep_distinct_wire_and_storage_semantics(tmp_path, field_id):
++    contracts = []
++    samples = []
++    for dtype in (torch.float16, torch.bfloat16):
++        arena = _arena(
++            _recipe(
++                tmp_path,
++                activation_dtype=(
++                    dtype if field_id.endswith("conv") else torch.bfloat16
++                ),
++                kv_dtype=(
++                    str(dtype).removeprefix("torch.")
++                    if field_id.endswith("k")
++                    else "auto"
++                ),
++                ssm_dtype="float32",
++            )
++        )
++        contract = CacheTransferContract(arena.plan, arena.cache_group_specs)
++        restored = CacheTransferContract.from_wire_bytes(contract.to_wire_bytes())
++        assert restored == contract
++        assert restored.field_dtype(field_id) == str(dtype).removeprefix("torch.")
++        validate_cache_peer_layout(contract, restored)
++        contracts.append(restored)
++        sample = arena.field(field_id)[1]
++        sample.fill_(1.25)
++        samples.append(sample.contiguous().view(torch.uint8).clone())
++    fp16, bf16 = contracts
++    assert fp16.plan.arena_bytes == bf16.plan.arena_bytes
++    assert (
++        fp16.plan.field(field_id).payload_bytes
++        == bf16.plan.field(field_id).payload_bytes
++    )
++    assert (
++        fp16.plan.field(field_id).element_size
++        == bf16.plan.field(field_id).element_size
++        == 2
++    )
++    assert fp16.to_wire_bytes() != bf16.to_wire_bytes()
++    assert not torch.equal(*samples)
++    with pytest.raises(CacheContractError, match=rf"field '{field_id}'.*semantics"):
++        validate_cache_peer_layout(fp16, bf16)

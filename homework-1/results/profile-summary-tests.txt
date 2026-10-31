@@ -1,0 +1,9 @@
+test_exclusive_time_subtracts_only_direct_children (test_profile_summary.ProfileSummaryTests.test_exclusive_time_subtracts_only_direct_children) ... ok
+test_nested_json_name_is_repaired (test_profile_summary.ProfileSummaryTests.test_nested_json_name_is_repaired) ... ok
+test_non_nested_events_fail (test_profile_summary.ProfileSummaryTests.test_non_nested_events_fail) ... ok
+test_valid_name_unchanged (test_profile_summary.ProfileSummaryTests.test_valid_name_unchanged) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+OK

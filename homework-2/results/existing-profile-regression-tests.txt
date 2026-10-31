@@ -1,0 +1,164 @@
+.....F
+=================================== FAILURES ===================================
+_ TestRequestHandlerProtonProfile.test_cpu_profile_captures_a_worker_started_before_the_session _
+
+self = <test.runtime.test_request_handler_profile.TestRequestHandlerProtonProfile object at 0xffff18822a50>
+
+    def test_cpu_profile_captures_a_worker_started_before_the_session(self):
+        if os.environ.get("TOKENSPEED_CPU_PROFILE_CANARY_CHILD") != "1":
+            # A legitimate hardware test may have initialized CUDA earlier in
+            # this suite. Prove the CPU-only canary in its own fresh process,
+            # without resetting or hiding that parent's state.
+            bootstrap = textwrap.dedent("""
+                from datetime import datetime, timezone
+                import json, os, sys
+                import pytest
+                from pathlib import Path
+                from types import SimpleNamespace
+                from unittest import mock
+    
+                names = ('ROCR_VISIBLE_DEVICES', 'HIP_VISIBLE_DEVICES',
+                         'CUDA_VISIBLE_DEVICES', 'GPU_DEVICE_ORDINAL')
+                audit = {'pid': os.getpid(),
+                         'started_utc': datetime.now(timezone.utc).isoformat(),
+                         'visibility': {name: os.environ.get(name) for name in names},
+                         'blocked_initializations': []}
+                print(json.dumps({'canary_start': audit}), flush=True)
+                expected = json.loads(sys.argv[2])
+                assert set(expected) == set(names)
+                assert audit['visibility'] == expected
+                import torch
+                audit['cuda_initialized_before'] = torch.cuda.is_initialized()
+                assert not audit['cuda_initialized_before']
+                def deny(api):
+                    def denied(*args, **kwargs):
+                        audit['blocked_initializations'].append(api)
+                        raise RuntimeError(f'CPU-only initialization guard: {api}')
+                    return denied
+                status = 1
+                try:
+                    with (
+                        mock.patch.object(torch.cuda, '_lazy_init', side_effect=deny('torch.cuda._lazy_init')),
+                        mock.patch.object(torch._C, '_cuda_init', side_effect=deny('torch._C._cuda_init')),
+                        mock.patch.object(torch.cuda, 'is_available', return_value=False),
+                        mock.patch.object(torch.cuda, 'device_count', return_value=0),
+                        mock.patch.object(torch.cuda, 'current_device', side_effect=AssertionError('hardware discovery forbidden')),
+                        mock.patch.object(torch.cuda, 'get_device_properties', side_effect=AssertionError('hardware discovery forbidden')),
+                    ):
+                        from tokenspeed_triton.backends.compiler import GPUTarget
+                        from tokenspeed_triton.runtime.driver import DriverConfig
+                        from tokenspeed_kernel.platform import ArchVersion, Platform, PlatformInfo
+                        # Keep the parent's vendor classification so importing the
+                        # real handler does not require another vendor's packages.
+                        vendor, major, minor, backend, arch, warp_size = json.loads(sys.argv[3])
+                        Platform.override(PlatformInfo(
+                            vendor=vendor, arch_version=ArchVersion(major, minor),
+                            device_name='CPU test mock', device_count=0,
+                            total_memory=0, memory_bandwidth=0, sm_count=0,
+                            max_threads_per_sm=0, max_shared_memory_per_sm=0))
+                        target = GPUTarget(backend, arch, warp_size)
+                        discovery = SimpleNamespace(get_current_target=lambda: target)
+                        with mock.patch.object(DriverConfig, 'active', new_callable=mock.PropertyMock, return_value=discovery):
+                            from tokenspeed.runtime.engine import request_handler as handler_module
+                            audit['real_request_handler_import'] = str(Path(handler_module.__file__).resolve())
+                            assert audit['real_request_handler_import'] == os.environ['TOKENSPEED_CPU_PROFILE_EXPECTED_HANDLER']
+                            status = int(pytest.main([
+                                '-q', '-p', 'no:cacheprovider',
+                                sys.argv[1] + '::TestRequestHandlerProtonProfile::test_cpu_profile_captures_a_worker_started_before_the_session',
+                            ]))
+                        assert not audit['blocked_initializations'], 'Blocked initialization is a failed canary'
+                        assert not torch.cuda.is_initialized()
+                finally:
+                    audit['cuda_initialized_after'] = torch.cuda.is_initialized()
+                    audit['ended_utc'] = datetime.now(timezone.utc).isoformat()
+                    audit['exit_code'] = status
+                    print(json.dumps({'canary_end': audit}), flush=True)
+                raise SystemExit(status)
+            """)
+            environment = _canary_child_environment(
+                os.environ,
+                expected_handler=str(Path(request_handler_mod.__file__).resolve()),
+            )
+            platform = current_platform()
+            target = triton.runtime.driver.active.get_current_target()
+            child = subprocess.run(
+                [
+                    sys.executable,
+                    "-c",
+                    bootstrap,
+                    str(Path(__file__).resolve()),
+                    json.dumps(
+                        {
+                            name: environment.get(name)
+                            for name in _CANARY_VISIBILITY_NAMES
+                        }
+                    ),
+                    json.dumps(
+                        [
+                            platform.vendor,
+                            platform.arch_version.major,
+                            platform.arch_version.minor,
+                            target.backend,
+                            target.arch,
+                            target.warp_size,
+                        ]
+                    ),
+                ],
+                env=environment,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=False,
+            )
+            print(child.stdout, end="")
+>           assert child.returncode == 0, child.stdout + child.stderr
+E           AssertionError: {"canary_start": {"pid": 2976673, "started_utc": "2026-10-24T04:59:32.830285+00:00", "visibility": {"ROCR_VISIBLE_DEVICES": null, "HIP_VISIBLE_DEVICES": null, "CUDA_VISIBLE_DEVICES": null, "GPU_DEVICE_ORDINAL": null}, "blocked_initializations": []}}
+E             {"canary_end": {"pid": 2976673, "started_utc": "2026-10-24T04:59:32.830285+00:00", "visibility": {"ROCR_VISIBLE_DEVICES": null, "HIP_VISIBLE_DEVICES": null, "CUDA_VISIBLE_DEVICES": null, "GPU_DEVICE_ORDINAL": null}, "blocked_initializations": [], "cuda_initialized_before": false, "cuda_initialized_after": false, "ended_utc": "2026-10-24T04:59:38.105605+00:00", "exit_code": 1}}
+E             [ERROR] 2026-10-24-04:59:38 (PID:2976673, Device:-1, RankID:-1) ERR99999 UNKNOWN applicaiton exception
+E             /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+E               warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+E             /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+E               warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+E             /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66: UserWarning: Permission mismatch: The owner of /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/lib/libop_plugin_atb.so does not match.
+E               warnings.warn(f"Permission mismatch: The owner of {path} does not match.")
+E             /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+E               warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+E             /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+E               warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+E             Traceback (most recent call last):
+E               File "<string>", line 29, in <module>
+E               File "/opt/miniconda3/envs/aics/lib/python3.11/unittest/mock.py", line 1446, in __enter__
+E                 original, local = self.get_original()
+E                                   ^^^^^^^^^^^^^^^^^^^
+E               File "/opt/miniconda3/envs/aics/lib/python3.11/unittest/mock.py", line 1419, in get_original
+E                 raise AttributeError(
+E             AttributeError: <module 'torch._C' from '/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch/_C.cpython-311-aarch64-linux-gnu.so'> does not have the attribute '_cuda_init'
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/home/u2501213387/MLSys-HW/homework-1/tokenspeed/../.venv/bin/python', '-c', "\nfrom datetime ...ib/python3.11/site-packages/torch/_C.cpython-311-aarch64-linux-gnu.so\'> does not have the attribute \'_cuda_init\'\n').returncode
+
+test/runtime/test_request_handler_profile.py:274: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{"canary_start": {"pid": 2976673, "started_utc": "2026-10-24T04:59:32.830285+00:00", "visibility": {"ROCR_VISIBLE_DEVICES": null, "HIP_VISIBLE_DEVICES": null, "CUDA_VISIBLE_DEVICES": null, "GPU_DEVICE_ORDINAL": null}, "blocked_initializations": []}}
+{"canary_end": {"pid": 2976673, "started_utc": "2026-10-24T04:59:32.830285+00:00", "visibility": {"ROCR_VISIBLE_DEVICES": null, "HIP_VISIBLE_DEVICES": null, "CUDA_VISIBLE_DEVICES": null, "GPU_DEVICE_ORDINAL": null}, "blocked_initializations": [], "cuda_initialized_before": false, "cuda_initialized_after": false, "ended_utc": "2026-10-24T04:59:38.105605+00:00", "exit_code": 1}}
+[ERROR] 2026-10-24-04:59:38 (PID:2976673, Device:-1, RankID:-1) ERR99999 UNKNOWN applicaiton exception
+=============================== warnings summary ===============================
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+    warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+    warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66: UserWarning: Permission mismatch: The owner of /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/lib/libop_plugin_atb.so does not match.
+    warnings.warn(f"Permission mismatch: The owner of {path} does not match.")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED test/runtime/test_request_handler_profile.py::TestRequestHandlerProtonProfile::test_cpu_profile_captures_a_worker_started_before_the_session
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 5 passed, 5 warnings in 10.66s

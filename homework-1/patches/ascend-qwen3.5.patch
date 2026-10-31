@@ -1,0 +1,4278 @@
+diff --git c/python/tokenspeed/runtime/layers/layernorm.py w/python/tokenspeed/runtime/layers/layernorm.py
+index d58df62..948cfb2 100755
+--- c/python/tokenspeed/runtime/layers/layernorm.py
++++ w/python/tokenspeed/runtime/layers/layernorm.py
+@@ -40,7 +40,8 @@ from tokenspeed_kernel.ops.communication.trtllm import (
+     reducescatter_residual_rmsnorm,
+ )
+ from tokenspeed_kernel.ops.layernorm import (
+-    add_rmsnorm,
++    gemma_add_rmsnorm,
++    gemma_rmsnorm,
+     nvfp4_copy_supported,
+     rmsnorm,
+ )
+@@ -87,11 +88,7 @@ if _is_amd:
+     _allreduce_residual_rmsnorm = iris_allreduce_residual_rmsnorm
+ elif _platform.is_nvidia:
+     from tokenspeed_kernel.ops.layernorm.cuda import rmsnorm_fused_parallel
+-    from tokenspeed_kernel.ops.layernorm.flashinfer import (
+-        gemma_fused_add_rmsnorm,
+-        gemma_rmsnorm,
+-        layernorm,
+-    )
++    from tokenspeed_kernel.ops.layernorm.flashinfer import layernorm
+ 
+     _allreduce_residual_rmsnorm = trtllm_allreduce_residual_rmsnorm
+ else:
+@@ -268,44 +265,9 @@ class GemmaRMSNorm(torch.nn.Module):
+         x: torch.Tensor,
+         residual: torch.Tensor | None = None,
+     ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+-        if x.shape[0] == 0:
+-            if residual is not None:
+-                return x, residual
+-            else:
+-                return x
+-
+-        if _is_amd:
+-            if x.shape[0] == 0:
+-                if residual is not None:
+-                    return x, residual
+-                else:
+-                    return x
+-            orig_dtype = x.dtype
+-            if residual is not None:
+-                x = x + residual
+-                residual = x
+-
+-            x = x.float()
+-            variance = x.pow(2).mean(dim=-1, keepdim=True)
+-            x = x * torch.rsqrt(variance + self.variance_epsilon)
+-            x = x * (1.0 + self.weight.float())
+-            x = x.to(orig_dtype)
+-            return x if residual is None else (x, residual)
+-        else:
+-            if residual is not None:
+-                gemma_fused_add_rmsnorm(
+-                    x,
+-                    residual,
+-                    self.weight.data,
+-                    self.variance_epsilon,
+-                )
+-                return x, residual
+-            out = gemma_rmsnorm(
+-                x,
+-                self.weight.data,
+-                self.variance_epsilon,
+-            )
+-            return out
++        return gemma_rmsnorm(
++            x, self.weight.data, self.variance_epsilon, residual=residual
++        )
+ 
+     def add_norm_with_fp8(
+         self,
+@@ -316,7 +278,7 @@ class GemmaRMSNorm(torch.nn.Module):
+         """``forward(x, residual)``, plus the normed rows in static FP8 when ``fp8_scale`` is given.
+ 
+         Returns the normed rows, their FP8 copy or ``None`` where it is not
+-        made (AMD), and the updated residual.
++        made (AMD), and the updated residual. Ascend rejects a non-None scale.
+         """
+         x, x_fp8, _, residual = self._add_norm(
+             x, residual, fp8_scale=fp8_scale, fp4_scale=None
+@@ -334,6 +296,7 @@ class GemmaRMSNorm(torch.nn.Module):
+         Returns the normed rows, their NVFP4 ``(values, scales)`` or ``None``
+         where the copy cannot equal ``fp4_quantize``'s (see
+         ``nvfp4_copy_supported``) or rows are not BF16, and the updated residual.
++        Ascend rejects a non-None scale rather than omitting the copy.
+         """
+         x, _, x_fp4, residual = self._add_norm(
+             x, residual, fp8_scale=None, fp4_scale=fp4_scale
+@@ -353,43 +316,15 @@ class GemmaRMSNorm(torch.nn.Module):
+         tuple[torch.Tensor, torch.Tensor] | None,
+         torch.Tensor,
+     ]:
+-        if _is_amd:
+-            x, residual = self(x, residual)
+-            return x, None, None, residual
+-        # The NVFP4 linear's prequantized path returns BF16 whatever the model dtype.
+-        if not (self._nvfp4_copy_supported and x.dtype == torch.bfloat16):
+-            fp4_scale = None
+-        rows, cols = x.shape
+-        x_fp8 = (
+-            None
+-            if fp8_scale is None
+-            else torch.empty_like(x, dtype=torch.float8_e4m3fn)
+-        )
+-        x_fp4 = None
+-        if fp4_scale is not None:
+-            x_fp4 = (
+-                torch.empty(rows, cols // 2, dtype=torch.uint8, device=x.device),
+-                torch.empty(
+-                    (rows + 127) // 128 * 128,
+-                    cols // 16,
+-                    dtype=torch.uint8,
+-                    device=x.device,
+-                ),
+-            )
+-        add_rmsnorm(
++        return gemma_add_rmsnorm(
+             x,
+             residual,
+             self.weight.data,
+             self.variance_epsilon,
+-            x2=None,
+-            out=x,
+-            out_fp8=x_fp8,
+             fp8_scale=fp8_scale,
+-            out_fp4=x_fp4,
+             fp4_scale=fp4_scale,
+-            gemma=True,
++            fp4_copy_supported=self._nvfp4_copy_supported,
+         )
+-        return x, x_fp8, x_fp4, residual
+ 
+     def forward_with_allreduce_fusion(
+         self,
+diff --git c/python/tokenspeed/runtime/models/qwen3_5.py w/python/tokenspeed/runtime/models/qwen3_5.py
+index e98e280..b145d29 100644
+--- c/python/tokenspeed/runtime/models/qwen3_5.py
++++ w/python/tokenspeed/runtime/models/qwen3_5.py
+@@ -1041,7 +1041,9 @@ class Qwen3_5ForCausalLM(nn.Module):
+         # signaling; at decode the join alone idles the GPU for about 15 us
+         # per MoE layer, longer than the shared expert takes, so it runs
+         # inline there.
+-        alt_stream = None if current_platform().is_amd else torch.cuda.Stream()
++        # StreamFork uses CUDA events; Ascend keeps the same work ordered on
++        # the model stream rather than constructing unavailable CUDA objects.
++        alt_stream = torch.cuda.Stream() if current_platform().is_nvidia else None
+ 
+         # Embedding layer
+         self.embed_tokens = VocabParallelEmbedding(
+diff --git c/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/mha.py w/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/mha.py
+index b8289d0..5ac36a2 100644
+--- c/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/mha.py
++++ w/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/mha.py
+@@ -61,6 +61,14 @@ def _check_options(
+         raise NotImplementedError("Ascend MHA does not return LSE")
+ 
+ 
++def _check_d256_eager() -> None:
++    # Per-request BSH launches depend on host lengths and cannot be replayed.
++    if torch.npu.is_current_stream_capturing():
++        raise NotImplementedError(
++            "Ascend D256 MHA prefill/extend supports eager execution only"
++        )
++
++
+ def mha_prefill(
+     q: torch.Tensor,
+     k: torch.Tensor,
+@@ -82,6 +90,31 @@ def mha_prefill(
+         sinks=sinks,
+         return_lse=return_lse,
+     )
++    if q.shape[-1] == 256:
++        _check_d256_eager()
++        output = torch.empty_like(q)
++        # FIA's TND layout rejects D256. Keep each packed request independent
++        # and flatten only its heads for the native BSH layout.
++        for start, end in zip(cu_seqlens_cpu[:-1], cu_seqlens_cpu[1:]):
++            if start == end:
++                continue
++            length = end - start
++            result, _ = torch_npu.npu_fused_infer_attention_score(
++                q[start:end].reshape(1, length, q.shape[1] * q.shape[2]).contiguous(),
++                k[start:end].reshape(1, length, k.shape[1] * k.shape[2]).contiguous(),
++                v[start:end].reshape(1, length, v.shape[1] * v.shape[2]).contiguous(),
++                # S=1 selects FIA's decode tiler, which does not accept the
++                # compressed causal mask. A single query sees all its keys.
++                atten_mask=_causal_mask(q.device) if length > 1 else None,
++                num_heads=q.shape[1],
++                num_key_value_heads=k.shape[1],
++                scale=_scale(q, softmax_scale),
++                input_layout="BSH",
++                sparse_mode=2 if length > 1 else 0,
++            )
++            output[start:end].copy_(result.reshape_as(q[start:end]))
++        return output
++
+     output, _ = torch_npu.npu_fused_infer_attention_score(
+         q,
+         k,
+@@ -130,6 +163,53 @@ def mha_extend_with_kvcache(
+     if q_scale is not None or k_scale is not None or v_scale is not None:
+         raise NotImplementedError("Ascend MHA does not support scaled FP8 cache")
+ 
++    if q.shape[-1] == 256:
++        _check_d256_eager()
++        # Only launch metadata crosses to the host; cache pages stay on NPU.
++        query_offsets = cu_seqlens_q.to("cpu").tolist()
++        cache_lengths = cache_seqlens.to("cpu").tolist()
++        output = torch.empty_like(q)
++        keys = k_cache.flatten(2)
++        values = v_cache.flatten(2)
++        for batch, (start, end) in enumerate(
++            zip(query_offsets[:-1], query_offsets[1:])
++        ):
++            if start == end:
++                continue
++            request_keys, request_values = keys, values
++            block_options = {
++                "block_table": page_table[batch : batch + 1],
++                "block_size": k_cache.shape[1],
++            }
++            if end - start > 1 and k_cache.shape[1] % 128:
++                # FIA GQA prefill requires 128-aligned physical pages. Gather
++                # smaller pages on device, preserving their logical order.
++                length = cache_lengths[batch]
++                pages = (length + k_cache.shape[1] - 1) // k_cache.shape[1]
++                indices = page_table[batch, :pages].long()
++                request_keys = keys.index_select(0, indices).flatten(0, 1)[:length].unsqueeze(0)
++                request_values = values.index_select(0, indices).flatten(0, 1)[:length].unsqueeze(0)
++                block_options = {}
++            result, _ = torch_npu.npu_fused_infer_attention_score(
++                q[start:end]
++                .reshape(1, end - start, q.shape[1] * q.shape[2])
++                .contiguous(),
++                request_keys,
++                request_values,
++                atten_mask=(
++                    _causal_mask(q.device) if is_causal and end - start > 1 else None
++                ),
++                actual_seq_lengths_kv=[cache_lengths[batch]],
++                num_heads=q.shape[1],
++                num_key_value_heads=k_cache.shape[2],
++                scale=_scale(q, softmax_scale),
++                input_layout="BSH",
++                sparse_mode=3 if is_causal and end - start > 1 else 0,
++                **block_options,
++            )
++            output[start:end].copy_(result.reshape_as(q[start:end]))
++        return output
++
+     output, _ = torch_npu.npu_fused_infer_attention_score(
+         q,
+         k_cache.flatten(2),
+diff --git c/tokenspeed-kernel/python/tokenspeed_kernel/ops/attention/gdn/__init__.py w/tokenspeed-kernel/python/tokenspeed_kernel/ops/attention/gdn/__init__.py
+index e9c2163..b6e5a60 100644
+--- c/tokenspeed-kernel/python/tokenspeed_kernel/ops/attention/gdn/__init__.py
++++ w/tokenspeed-kernel/python/tokenspeed_kernel/ops/attention/gdn/__init__.py
+@@ -1009,6 +1009,9 @@ def gdn_replay_commit_supported(
+ 
+ # Backend registration (side-effect imports)
+ # isort: off
++if current_platform().is_npu:
++    import tokenspeed_kernel.ops.attention.gdn.ascend  # noqa: E402,F401
++
+ import tokenspeed_kernel.ops.attention.gdn.flashinfer  # noqa: E402,F401
+ import tokenspeed_kernel.ops.attention.gdn.gluon  # noqa: E402,F401
+ import tokenspeed_kernel.ops.attention.gdn.triton  # noqa: E402,F401
+diff --git c/tokenspeed-kernel/python/tokenspeed_kernel/ops/conv/__init__.py w/tokenspeed-kernel/python/tokenspeed_kernel/ops/conv/__init__.py
+index 731f9f0..6d8e7f7 100644
+--- c/tokenspeed-kernel/python/tokenspeed_kernel/ops/conv/__init__.py
++++ w/tokenspeed-kernel/python/tokenspeed_kernel/ops/conv/__init__.py
+@@ -63,7 +63,7 @@ from tokenspeed_kernel.ops.conv.triton import (
+     dflash2_grouped_conv,
+     select_prefill_config,
+ )
+-from tokenspeed_kernel.platform import pdl_enabled
++from tokenspeed_kernel.platform import current_platform, pdl_enabled
+ from tokenspeed_kernel.selection import select_kernel
+ from tokenspeed_kernel.signature import dense_tensor_format, format_signature
+ 
+@@ -351,3 +351,8 @@ def causal_conv1d_update(
+         validate_data=validate_data,
+         parent_indices=parent_indices,
+     )
++
++
++# Ascend leaves are optional and register only on their own platform.
++if current_platform().is_npu:
++    import tokenspeed_kernel.ops.conv.ascend  # noqa: E402,F401
+diff --git c/tokenspeed-kernel/python/tokenspeed_kernel/ops/layernorm/__init__.py w/tokenspeed-kernel/python/tokenspeed_kernel/ops/layernorm/__init__.py
+index f3c2bd9..d08ae99 100644
+--- c/tokenspeed-kernel/python/tokenspeed_kernel/ops/layernorm/__init__.py
++++ w/tokenspeed-kernel/python/tokenspeed_kernel/ops/layernorm/__init__.py
+@@ -114,6 +114,155 @@ def rmsnorm(
+     return _rmsnorm(x, weight, eps, out=out)
+ 
+ 
++def gemma_rmsnorm(
++    x: torch.Tensor,
++    weight: torch.Tensor,
++    eps: float,
++    residual: torch.Tensor | None = None,
++) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
++    """Apply RMSNorm with the Gemma multiplier ``1 + weight``.
++
++    Args:
++        x: Activation rows shaped ``[tokens, width]``.
++        weight: Same-device checkpoint offsets shaped ``[width]``.
++        eps: Epsilon added to the mean square before reciprocal square root.
++        residual: Optional same-shape, same-dtype residual stream.
++
++    Returns:
++        Normalized rows in x's dtype, or ``(rows, updated_residual)``.
++        NVIDIA and Ascend overwrite x and residual when residual is given;
++        AMD preserves its out-of-place behavior. Without residual, x is
++        unchanged. Empty rows return the original tensors.
++    """
++    if x.shape[0] == 0:
++        return x if residual is None else (x, residual)
++    if _platform.is_amd:
++        orig_dtype = x.dtype
++        if residual is not None:
++            x = x + residual
++            residual = x
++        x = x.float()
++        variance = x.pow(2).mean(dim=-1, keepdim=True)
++        x = x * torch.rsqrt(variance + eps)
++        x = x * (1.0 + weight.float())
++        x = x.to(orig_dtype)
++        return x if residual is None else (x, residual)
++    if _platform.is_npu:
++        if x.device.type != "npu":
++            raise ValueError("Ascend Gemma RMSNorm requires NPU inputs")
++        if weight.device != x.device:
++            raise ValueError("weight and x must be on the same device")
++        if weight.dtype not in (torch.float16, torch.bfloat16, torch.float32):
++            raise ValueError("weight must be FP16, BF16 or FP32")
++        if residual is not None:
++            if residual.shape != x.shape or residual.dtype != x.dtype:
++                raise ValueError("residual must have the same shape and dtype as x")
++            if residual.device != x.device:
++                raise ValueError("residual and x must be on the same device")
++        # The add rounds to the activation dtype before RMS statistics, as on AMD.
++        values = x if residual is None else x + residual
++        out = gated_rmsnorm(
++            values,
++            1.0 + weight.float(),
++            None,
++            eps=eps,
++            group_size=None,
++            norm_before_gate=True,
++            sigmoid_gate=False,
++            fp8_scale=None,
++            weights_independent=False,
++        )
++        if residual is None:
++            return out
++        residual.copy_(values)
++        x.copy_(out)
++        return x, residual
++    from tokenspeed_kernel.ops.layernorm.flashinfer import (
++        gemma_fused_add_rmsnorm,
++        gemma_rmsnorm as flashinfer_gemma_rmsnorm,
++    )
++
++    if residual is not None:
++        gemma_fused_add_rmsnorm(x, residual, weight, eps)
++        return x, residual
++    return flashinfer_gemma_rmsnorm(x, weight, eps)
++
++
++def gemma_add_rmsnorm(
++    x: torch.Tensor,
++    residual: torch.Tensor,
++    weight: torch.Tensor,
++    eps: float,
++    *,
++    fp8_scale: torch.Tensor | None,
++    fp4_scale: torch.Tensor | None,
++    fp4_copy_supported: bool,
++) -> tuple[
++    torch.Tensor,
++    torch.Tensor | None,
++    tuple[torch.Tensor, torch.Tensor] | None,
++    torch.Tensor,
++]:
++    """Add a residual and apply Gemma RMSNorm, optionally copying quantized rows.
++
++    Args:
++        x, residual, weight, eps: As in :func:`gemma_rmsnorm`.
++        fp8_scale: Optional static FP8 scale for a second output.
++        fp4_scale: Optional global NVFP4 scale for a second output.
++        fp4_copy_supported: Whether the caller's NVFP4 recipe and width support
++            an exact quantized copy (see :func:`nvfp4_copy_supported`).
++
++    Returns:
++        ``(rows, fp8_copy, fp4_copy, updated_residual)``. AMD retains its
++        no-copy behavior. NVIDIA omits NVFP4 for unsupported recipes or non-BF16
++        rows. Ascend supports only unquantized output and rejects either scale
++        before modifying inputs, even when an NVFP4 copy would be omitted.
++        Ascend and NVIDIA overwrite x and residual; AMD is out of place.
++    """
++    if _platform.is_npu:
++        if fp8_scale is not None or fp4_scale is not None:
++            raise NotImplementedError(
++                "Ascend Gemma RMSNorm does not support FP8 or FP4 output"
++            )
++        x, residual = gemma_rmsnorm(x, weight, eps, residual=residual)
++        return x, None, None, residual
++    if _platform.is_amd:
++        x, residual = gemma_rmsnorm(x, weight, eps, residual=residual)
++        return x, None, None, residual
++    # NVFP4 linear's prequantized path returns BF16 regardless of model dtype.
++    if not (fp4_copy_supported and x.dtype == torch.bfloat16):
++        fp4_scale = None
++    rows, cols = x.shape
++    x_fp8 = (
++        None if fp8_scale is None else torch.empty_like(x, dtype=torch.float8_e4m3fn)
++    )
++    x_fp4 = None
++    if fp4_scale is not None:
++        x_fp4 = (
++            torch.empty(rows, cols // 2, dtype=torch.uint8, device=x.device),
++            torch.empty(
++                (rows + 127) // 128 * 128,
++                cols // 16,
++                dtype=torch.uint8,
++                device=x.device,
++            ),
++        )
++    add_rmsnorm(
++        x,
++        residual,
++        weight,
++        eps,
++        x2=None,
++        out=x,
++        out_fp8=x_fp8,
++        fp8_scale=fp8_scale,
++        out_fp4=x_fp4,
++        fp4_scale=fp4_scale,
++        gemma=True,
++    )
++    return x, x_fp8, x_fp4, residual
++
++
+ def qk_rmsnorm(
+     q: torch.Tensor,
+     k: torch.Tensor,
+@@ -291,6 +440,8 @@ def gated_rmsnorm(
+ __all__ = [
+     "add_rmsnorm",
+     "affine_rmsnorm",
++    "gemma_add_rmsnorm",
++    "gemma_rmsnorm",
+     "gated_residual_combine_norm",
+     "gated_rmsnorm",
+     "grouped_gemma_rmsnorm",
+diff --git c/tokenspeed-kernel/python/tokenspeed_kernel/ops/layernorm/ascend.py w/tokenspeed-kernel/python/tokenspeed_kernel/ops/layernorm/ascend.py
+index e3b6ffc..be646c4 100644
+--- c/tokenspeed-kernel/python/tokenspeed_kernel/ops/layernorm/ascend.py
++++ w/tokenspeed-kernel/python/tokenspeed_kernel/ops/layernorm/ascend.py
+@@ -21,10 +21,14 @@
+ """Ascend layernorm kernels."""
+ 
+ import torch
++from tokenspeed_kernel.platform import CapabilityRequirement
++from tokenspeed_kernel.registry import Priority, register_kernel
++from tokenspeed_kernel.signature import format_signatures
++from tokenspeed_kernel_npu.ops.gated_rmsnorm import launch_gated_rmsnorm
+ from tokenspeed_kernel_npu.ops.layernorm import qk_rmsnorm as _npu_qk_rmsnorm
+ from tokenspeed_kernel_npu.ops.layernorm import rmsnorm
+ 
+-__all__ = ["qk_rmsnorm", "rmsnorm"]
++__all__ = ["ascend_gated_rmsnorm", "qk_rmsnorm", "rmsnorm"]
+ 
+ 
+ def qk_rmsnorm(
+@@ -41,3 +45,47 @@ def qk_rmsnorm(
+         q_weight = (q_weight.float() + weight_offset).to(q_weight.dtype)
+         k_weight = (k_weight.float() + weight_offset).to(k_weight.dtype)
+     return _npu_qk_rmsnorm(q, k, q_weight, k_weight, eps)
++
++
++@register_kernel(
++    "layernorm",
++    "gated_rmsnorm",
++    name="ascend_gated_rmsnorm",
++    solution="ascend",
++    capability=CapabilityRequirement(vendors=frozenset({"ascend"})),
++    signatures=format_signatures(
++        "x", "dense", {torch.float16, torch.bfloat16, torch.float32}
++    ),
++    # Prefer the device-local baseline to the CUDA-launching portable leaf on NPU.
++    priority=Priority.PORTABLE + 1,
++    traits={"fp8_out": frozenset({False})},
++)
++def ascend_gated_rmsnorm(
++    x: torch.Tensor,
++    weight: torch.Tensor,
++    z: torch.Tensor | None,
++    eps: float,
++    group_size: int,
++    norm_before_gate: bool,
++    sigmoid_gate: bool,
++    fp8_scale: torch.Tensor | None,
++    weights_independent: bool,
++) -> torch.Tensor:
++    """NPU-only eager FP32 gated RMSNorm; see the family facade's arguments.
++
++    Returns a fresh tensor shaped like x in x's dtype. FP8 output is unsupported;
++    CPU behavior tests call the NPU-package helper directly, not this leaf.
++    """
++    if x.device.type != "npu":
++        raise ValueError("Ascend gated RMSNorm requires NPU inputs")
++    return launch_gated_rmsnorm(
++        x,
++        weight,
++        z,
++        eps,
++        group_size,
++        norm_before_gate,
++        sigmoid_gate,
++        fp8_scale,
++        weights_independent,
++    )
+diff --git 1/docs/mha-d256.md 2/docs/mha-d256.md
+new file mode 100644
+index 0000000..0634af8
+--- /dev/null
++++ 2/docs/mha-d256.md
+@@ -0,0 +1,72 @@
++# Ascend D256 MHA prefill and extend
++
++On the course PyTorch/torch_npu 2.9 and CANN 9 stack, native fused-infer
++attention rejects head dimension 256 in `TND` layout but accepts it in `BSH`.
++The Ascend MHA implementation adapts only this head dimension; it does not
++change model weights, KV storage, the attention prologue, or registry selection.
++Other head dimensions retain their existing packed `TND` calls. Decode already
++uses `BSH` and is unchanged.
++
++## Layout and attention semantics
++
++- **Uncached causal prefill:** use the supplied host `cu_seqlens_cpu` to slice
++  each packed request independently. Flatten its heads into
++  `[1, query_length, query_heads * 256]` and corresponding K/V tensors, call
++  native attention with `sparse_mode=2`, then restore packed output order.
++  Query and KV boundaries must match, as required by the prefill API.
++- **Paged extend:** copy only query offsets and cache lengths to the host for
++  per-request launches. Pass the existing NPU K/V pages, one page-table row,
++  and that request's visible cache length to native `BSH` attention. Page IDs
++  need not be sequential. With `is_causal=True`, `sparse_mode=3` aligns queries
++  to the **bottom right**: query row `i` sees keys through
++  `cache_length - query_length + i`. With `is_causal=False`, there is no mask
++  and `sparse_mode=0` exposes the entire visible cache.
++- Empty query spans are skipped, including all-empty batches. Results retain
++  the query's shape, dtype, device, and packed request order. Attention does
++  not write the cache; the prologue remains its owner.
++
++For a single query the adapter omits the mask and uses sparse mode 0:
++the sole last query sees all visible keys, and FIA's decode tiler rejects the
++compressed mask. Multi-query GQA with 64-token pages gathers the visible pages
++on NPU into dense BSH before attention; native paged prefill requires page sizes
++that are multiples of 128. The page table still defines logical order and no
++cache data is copied to CPU.
++
++Otherwise the compressed causal mask is the existing 2048-by-2048 triangular boolean
++mask. GQA head counts and an explicitly supplied `softmax_scale` (including
++zero) are forwarded; omission keeps `1 / sqrt(head_dim)`. Existing errors for
++sliding windows, logit caps, attention sinks, LSE, and scaled FP8 caches remain
++in force, including for empty inputs. Native operator errors propagate; there
++is no retry or activation/attention computation on CPU.
++
++## Execution limits
++
++D256 prefill and extend are **eager only**. Extend synchronizes metadata to the
++host, and both paths issue one native call per nonempty request. They explicitly
++raise `NotImplementedError` during NPU graph capture before copying metadata or
++launching attention; captured host decisions would not refresh on replay.
++This adapter prioritizes correctness over packed-batch throughput. Decode's
++existing graph-capturable BSH implementation and sequence-length updates are
++not modified.
++
++## Verification
++
++`tokenspeed-kernel-npu/test/test_mha_d256.py` compares real NPU execution with
++an independent CPU FP64 GQA oracle, using CPU-generated inputs rounded to BF16
++or FP16 before transfer. It covers 8 query / 2 KV heads, packed variable lengths,
++empty spans and batches, shuffled multi-page caches at page sizes 64 and 128,
++cached causal suffixes, noncausal attention, request/future/padding isolation,
++custom scales, native and public-registry entry points, capture rejection,
++unsupported options, and existing D64 TND / D256 BSH decode behavior, including
++graph-updated decode lengths.
++
++On a configured Ascend host, from the repository root:
++
++```bash
++PYTHONPATH="${PWD}/tokenspeed-kernel/python:${PWD}/tokenspeed-kernel-npu/python:${PYTHONPATH:-}" \
++    python -m pytest -q tokenspeed-kernel-npu/test/test_mha_d256.py \
++    tokenspeed-kernel-npu/test/test_mha.py
++```
++
++Only an absent `torch_npu` module skips the new suite; import failures in its
++installed dependencies and an installed stack without a visible NPU fail.
+diff --git 1/tokenspeed-kernel-npu/docs/causal-conv.md 2/tokenspeed-kernel-npu/docs/causal-conv.md
+new file mode 100644
+index 0000000..6afed08
+--- /dev/null
++++ 2/tokenspeed-kernel-npu/docs/causal-conv.md
+@@ -0,0 +1,138 @@
++<!--
++Copyright (c) 2026 LightSeek Foundation
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software and associated documentation files (the "Software"), to deal
++in the Software without restriction, including without limitation the rights
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the Software is
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in
++all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++SOFTWARE.
++-->
++
++# Eager Ascend causal convolution
++
++`tokenspeed_kernel.ops.conv` conditionally imports `conv.ascend` on NPU.
++Its two registered leaves, `ascend_causal_conv1d_prefill` and
++`ascend_causal_conv1d_update`, preserve the existing public convolution ABI.
++Registration requires vendor `ascend`, dense FP16/BF16/FP32 input, width
++2/3/4/5, and channel-major or width-major state. Update advertises **tree=False
++only**. Priority is `PORTABLE + 1`: this device-local correctness implementation
++wins over the ungated portable Triton leaves, without claiming optimized status.
++CPU callers cannot enter these registry adapters. The independent
++`tokenspeed_kernel_npu.ops.conv` helpers also accept CPU tensors for tests;
++they do not implement automatic accelerator-to-CPU fallback.
++
++## Math and state ABI
++
++For each channel, the pool stores the last `W-1` **raw input values**, oldest
++first. Tap `weight[:, W-1]` multiplies the current token. Products, sums, bias
++and optional SiLU are evaluated in FP32 on the input device, then output is
++cast to the input dtype. `None`/`False` disables activation;
++`"silu"`/`"swish"`/`True` enables it. There is no residual term. Weight and bias
++may use any supported floating dtype on the input device; state must use the
++input dtype. No activation, state, weight or bias is copied to the host.
++
++State shapes are exactly `[slots,C,W-1]` (channel-major) or `[slots,W-1,C]`
++(width-major), including noncontiguous channel-sliced/stepped views. Layout is
++inferred by shape exactly as the public wrapper does: **if `C == W-1`, the
++ambiguous square shape is interpreted as width-major**, irrespective of strides.
++Strided input, taps, bias, routing indices and state are supported; mutable
++views must be nonoverlapping, and must not overlap other arguments. Broadcast
++strides on mutable tensors are rejected; arbitrary overlapping `as_strided`
++views are outside the contract.
++
++This consumes caller-owned state slots; it introduces no backend-private
++request state. The scheduler/LCM cache retains ownership of checkpoints and
++live blocks, as described in `docs/design/cache-concepts.md`.
++
++## Supported calls and mutation
++
++| Contract | Prefill | Greedy update |
++| --- | --- | --- |
++| Input/output | Packed `[C,T]`; separate output, input unchanged | `[B,C]` or `[B,C,1]`; **overwrites and returns the same `x` object** |
++| Routing | `cache_indices: [B]`, or implicit `arange(B)` | `conv_state_indices: [B]`, or implicit `arange(B)` |
++| Output state | Same slots as prefill input; runtime prepares those live slots before the call | `output_state_indices: [B,1]`, or source slots in place |
++| History/reset | `has_initial_state: bool[B]`; True consumes nonzero history, False/omitted uses zeros | Always consumes the indexed source window; reset/zero it before calling if needed |
++| Negative source | Skip sequence, return zeros for its token range, do not touch state | Skip request, leave its `x` row unchanged, do not write any destination |
++| Negative destination | Not a separate argument | Compute output normally for a live source, suppress state write |
++| Empty work | Zero-length sequences leave state unchanged, including a reset flag; empty batches supported | `[B,C,0]` and zero batch are no-ops |
++
++All negative routing indices are holes, never Python wraparound indices.
++`pad_slot_id` must be a negative integer (including custom sentinels); `None`
++and nonnegative sentinels are rejected. Metadata indices are int32/int64 and
++may reside on CPU or the input device. Every nonnegative index is bounds-checked
++before any mutation, even on padded/empty rows. Multiple active requests may
++read the same source, but must not write the same destination. Empty or
++negative-source requests do not count as writers.
++
++**All active source windows are cloned before the first write.** Thus crossed
++maps such as `sources=[1,0], destinations=[[0],[1]]`, shared immutable prefix
++sources with distinct destinations, and in-place updates remain isolated.
++Raw update inputs are also snapshotted before `x` is overwritten.
++
++Prefill requires the original `prefill_metadata`. The adapter forwards every
++field to the independent implementation. Boundaries must be monotone from 0
++to at most `T`; unassigned trailing token capacity produces zeros. Each
++`(batch, chunk_offset)` implied by `block_m` must occur exactly once. Inactive capacity-program entries have batch index -1. Optional
++`cu_seqlens_cpu` must match device boundaries. All schedule fields are checked;
++none is silently dropped. Schedule tensors must be on the input device.
++After validation, sequence-wise math is independent of the Triton chunk size.
++`validate_data=True` and `False` both run full validation.
++
++## Explicitly unsupported
++
++- Tree parents, `num_accepted_tokens`, `intermediate_conv_window`, and
++  `cache_seqlens` (ring cursors), even if supplied as empty/zero tensors.
++- Multi-token `[B,C,L]` update with `L > 1`, speculative MTP/chain verify,
++  per-token speculative destinations, extended/ring state storage, and
++  missing state pools. Ordinary prefill can be chunked at any token boundary.
++- Other activations, widths/dtypes outside the stated domain, malformed or
++  incomplete schedules, out-of-bounds slots and duplicate active destinations.
++- Graph capture/replay, autograd, and concurrent calls mutating the same pool.
++
++Unsupported options passed directly to either Ascend update leaf/helper fail
++before mutation. **Registry `tree=True` requests exclude the Ascend leaf but
++may still select an existing Triton leaf**; this change does not disable other
++providers or alter runtime policy. An Ascend deployment must select plain eager
++greedy execution with speculation disabled. Runtime graph selection,
++checkpoint preparation, other convolution families (Inkling ring/DFlash2), and
++GDN/SSM operators remain separate integration responsibilities.
++
++## Synchronization and verification
++
++Python `.tolist()` reads only routing flags, indices, sequence boundaries and
++program maps. On NPU this intentionally synchronizes metadata at each call
++(and therefore each layer). Device-local explicit tap multiplies avoid vendor
++convolution-library requirements, but allocate FP32 temporaries and issue
++several eager operations per request. This is bounded correctness coverage,
++not a serving-performance implementation or a graph-compatible path.
++
++With PyTorch/pytest and this package importable:
++
++```bash
++PYTHONPATH=tokenspeed-kernel-npu/python python -m pytest tokenspeed-kernel-npu/test/test_causal_conv.py -k cpu
++PYTHONPATH=tokenspeed-kernel-npu/python:tokenspeed-kernel/python python -m pytest tokenspeed-kernel-npu/test/test_causal_conv.py -k npu
++```
++
++The parameterized fixture uses actual CPU/NPU devices; NPU cases skip only if
++`torch_npu` or hardware is absent. Direct tests compare against an independent
++CPU float64 grouped `F.conv1d` oracle, exercise full/chunk/one-step parity,
++nonzero history/reset, empty sequences, both state layouts, crossed and shared
++sources, independent destinations, negative padding, strided-view guards,
++activation/bias combinations and nonmutating validation failures. An NPU-only
++test calls the actual public registry entry points with upstream metadata.
++Public integration still requires the repository's normal Triton/import and
++NPU dependencies: this bounded change does not remove existing convolution
++package imports. Without local PyTorch, only syntax validation is possible;
++numerical and real-NPU execution must be run in the integration environment.
+diff --git 1/tokenspeed-kernel-npu/docs/gated-rmsnorm.md 2/tokenspeed-kernel-npu/docs/gated-rmsnorm.md
+new file mode 100644
+index 0000000..994f075
+--- /dev/null
++++ 2/tokenspeed-kernel-npu/docs/gated-rmsnorm.md
+@@ -0,0 +1,72 @@
++# Ascend gated RMSNorm
++
++The existing `tokenspeed_kernel.ops.layernorm.gated_rmsnorm` facade selects
++`ascend_gated_rmsnorm` on Ascend. The leaf is registered for vendor `ascend`
++only, with solution `ascend`, FP16/BF16/FP32 input signatures and
++`fp8_out=False`. Its portable-band priority is one above the generic Triton
++leaf, whose launcher uses CUDA. No runtime/model vendor branch is needed.
++
++This is an explicit **device-local eager PyTorch FP32 baseline**, not a fused
++or optimized NPU kernel. `launch_gated_rmsnorm` in the NPU package performs
++all tensor arithmetic on the inputs' device, with no CPU transfer, host reads
++of tensor values, JIT compilation or fallback. Direct CPU execution of this
++same helper exists for correctness tests; the registry leaf rejects CPU input,
++including when selected by a forced override.
++
++## Contract
++
++- `x` has shape `[..., width]` with positive width. A positive `group_size`
++  must divide width; `None` means the whole last dimension. All leading
++  dimensions, including empty ones, are preserved. Each row/group has its own
++  mean-square statistic.
++- `weight` is a vector of length width (per-feature weight) or group_size
++  (one vector broadcast to every group). `z` has exactly x's shape, or is
++  `None` for plain grouped RMSNorm. Strided rows, inner-strided inputs,
++  transposed leading axes and strided weights are supported.
++- `x`, `weight`, and `z` independently support FP16, BF16 or FP32 and must be
++  on the same device. Gate, reduction, reciprocal square root, affine and
++  gate products all compute in FP32. Only the final output rounds to x's
++  dtype. The fresh output has x's shape/device; no input is modified.
++- `sigmoid_gate=True` uses `sigmoid(z)`; otherwise the gate is
++  `z * sigmoid(z)` (SiLU). `norm_before_gate=True` computes
++  `weight * x / sqrt(mean(x²) + eps) * gate(z)`. Otherwise the statistic and
++  normalized numerator both use `x * gate(z)`. With `z=None`, the gate flags
++  have no numerical effect. The affine weight is outside the statistic in
++  both orders.
++- Every behavior argument is explicit. `weights_independent` is the existing
++  producer-scheduling hint, not a numerical option: both values preserve
++  eager stream ordering without PDL or early weight loads. `fp8_scale` must
++  be `None`; non-None raises `NotImplementedError` even on a forced leaf call.
++  Normal selection with `solution="ascend"` excludes FP8-output requests.
++  Invalid shapes/groups, unsupported tensor dtypes, and mismatched devices
++  raise `ValueError` rather than silently changing semantics.
++
++The family facade resolves `group_size=None` to width before dispatch. The
++helper also accepts `None` directly. Unsupported FP8 output is excluded from
++this leaf; the existing family's generic registrations are otherwise unchanged.
++No bitwise cross-vendor, fused-kernel, graph-capture, or performance guarantee
++is claimed. Floating-point reduction and sigmoid implementations can differ
++slightly from Triton while preserving its FP32 operation order and final cast.
++
++## Verification
++
++`test/test_gated_rmsnorm.py` uses an independent scalar Python float64 oracle
++with `math.fsum` and `math.exp`, not this implementation or the Triton/PyTorch
++family reference. The CPU/NPU matrix covers both gate orders/activations,
++whole-width/grouped/shared weights, no gate, FP16/BF16/FP32 and mixed dtypes,
++empty/vector/multidimensional shapes, strided views, large/tiny values,
++non-mutation and rejection behavior. Real NPU-only tests exercise the family
++facade, default registry preference, vendor/dtype/FP8 filtering, and forced-leaf
++rejections. There are no device mocks.
++
++From the repository root with the existing environment active:
++
++```bash
++PYTHONPATH="$PWD/tokenspeed-kernel/python:$PWD/tokenspeed-kernel-npu/python:${PYTHONPATH:-}" \
++  python -m pytest -q tokenspeed-kernel-npu/test/test_gated_rmsnorm.py -k cpu
++```
++
++On the configured Ascend stack, source its CANN environment and run the same
++command without `-k cpu` to include direct NPU and public-dispatch tests. These
++checks do not replace Qwen3.5 end-to-end validation or establish graph capture
++and latency characteristics.
+diff --git 1/tokenspeed-kernel-npu/docs/gdn.md 2/tokenspeed-kernel-npu/docs/gdn.md
+new file mode 100644
+index 0000000..5c01313
+--- /dev/null
++++ 2/tokenspeed-kernel-npu/docs/gdn.md
+@@ -0,0 +1,141 @@
++<!--
++Copyright (c) 2026 LightSeek Foundation
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software and associated documentation files (the "Software"), to deal
++in the Software without restriction, including without limitation the rights
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the Software is
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in
++all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++SOFTWARE.
++-->
++
++# Ascend GDN: eager correctness implementation
++
++`tokenspeed_kernel.ops.attention.gdn` registers
++`ascend_gdn_chunk_prefill` and `ascend_gdn_decode_step` with solution `ascend`.
++The shared package only adapts the registry and structured prefill result;
++all arithmetic lives in `tokenspeed_kernel_npu.ops.gdn`. This is a slow,
++single-device, inference-only implementation intended to establish the ABI,
++not a fused performance kernel or an end-to-end runtime enablement.
++
++## Arithmetic and layouts
++
++Q/K have `H` heads and values have `HV` heads, with `HV >= H` and `HV % H == 0`.
++Value head `hv` uses Q/K head `hv // (HV // H)`. Q/K/V share FP16, BF16 or FP32
++dtype; all recurrent states, products, gates and reductions are FP32. For
++K-last state `S[HV,V,K]`, each token computes:
++
++```text
++S_decay = exp(g) * S
++residual = beta * (v - sum_K(S_decay * k))
++S_next = S_decay + residual[..., V, None] * k[..., None, K]
++out = sum_K(S_next * (q * scale))
++```
++
++The default scale (`scale=None`) is `K**-0.5`; explicit scales, including zero,
++are preserved. L2 normalization uses `x / sqrt(sum(x*x) + 1e-6)`, matching
++`gdn/_triton/l2norm.py` and the fused decode recurrence in `gdn/triton.py`,
++**not** `torch.nn.functional.normalize`'s clamp convention. Like upstream
++chunk prefill, prefill rounds normalized Q/K to their input dtype before the
++FP32 recurrence. Decode keeps normalized Q/K in FP32, like upstream fused
++decode. Thus low-precision chunk-vs-step results need not be bitwise equal.
++Outputs always have `q.dtype`; final states always remain FP32. There is no
++BF16-state substitution to call `npu_recurrent_gated_delta_rule`.
++
++## Prefill and checkpoints
++
++Packed prefill takes `[1,T,H,K]` Q/K and `[1,T,HV,V]` values, or their
++unbatched `[T,...]` forms. Log forget and beta gates have matching `[1,T,HV]`
++or `[T,HV]` shapes. `cu_seqlens[N+1]` must be monotone and cover exactly `T`;
++empty sequences retain their initial state. Nonzero initial states are read
++without mutation in the shared K-last `[N,HV,V,K]` ABI. The result is a real
++`GdnChunkPrefillResult` with output, optional final state, `h=None`,
++`h_cu_starts=None`, and `h_layout=NONE`. `output_final_state=False` returns
++`final_state=None` but does not suppress requested checkpoint writes.
++
++`GdnStateCheckpoints` is implemented, so `state_checkpoints=True` is advertised.
++Intervals must be positive multiples of 64, as in the shared contract. After
++each whole interval of a sequence's **own** tokens, the scan copies its actual
++FP32 K-last state to the caller's buffer. `cu_starts` must be int32 on the
++input device and exactly match cumulative per-sequence interval counts; the
++buffer shape must be `[sum(length_i // interval),HV,V,K]`. It cannot alias
++the initial state. Checkpoint positions are relative to the supplied sequence
++start, not an inferred global token count. Allocation, publication and copying
++into LCM state blocks remain runtime responsibilities; no backend-private
++persistent request state is introduced.
++
++Backend-native `output_h` is **unsupported** (`output_h=False` trait only).
++Normal selection rejects it; a forced override raises explicitly. No placeholder
++checkpoints or invented backend layout are returned.
++
++## Decode, destinations and padding
++
++Decode is strictly `T=1`: Q/K `[B,1,H,K]`, V `[B,1,HV,V]` and `a,b` `[B,1,HV]`.
++Decay parameters `A_log,dt_bias[HV]` are converted to FP32 on device. Gates are
++`g = -exp(A_log) * softplus(a + dt_bias, beta=1, threshold=20)` and
++`beta = sigmoid(b)`. Arbitrary input and state strides are supported.
++
++The FP32 pool is `[pool,HV,V,K]`. `initial_state_indices[B]` selects sources;
++`output_state_indices[B]` selects destinations in that same pool, or `None`
++means write to source rows. All sources are snapshotted before any writes,
++so shared input checkpoints and crossing source/destination maps are safe.
++Active destinations must be unique; ambiguous repeated writes are rejected.
++Non-destination rows are unchanged, including shared source rows when separate
++destinations are used. Both index vectors accept int32 or int64.
++
++A negative read index is padding: output is zero and **no pool row is written**,
++even if its destination index is positive. A valid source with a negative
++destination computes its output but suppresses the write. Positive indices
++outside the pool are errors, not clamped. No sacrificial row zero is used.
++There is no separate output-pool argument in the public single-step API;
++distinct source/destination *rows* are supported. MTP, trees and replay APIs
++are not registered by this integration.
++
++## Device and execution limits
++
++All activation and state math stays on the original device, without CPU copies
++or a CPU math fallback. Only integer sequence offsets, checkpoint starts and
++pool indices use `.tolist()`, which **synchronizes NPU metadata to the host**.
++Python loops then enqueue per-token PyTorch arithmetic and copies on the current
++stream. This is intentionally eager and **not graph-capturable**; prefill is not
++in the shared capturable-kernel allowlist. No capture support is advertised.
++Performance on long prompts will be poor, and real-device numerical validation
++is required before deployment.
++
++Direct vendor launchers accept CPU tensors so the same implementation can be
++unit tested without an accelerator. This is explicit CPU execution in tests,
++not a runtime fallback: registry adapters require NPU tensors, and mismatched
++activation/state devices raise instead of transferring tensors.
++
++## Focused verification
++
++With PyTorch installed and the NPU package importable, from the repository root:
++
++```bash
++PYTHONPATH=tokenspeed-kernel-npu/python:$PYTHONPATH \
++  python -m pytest tokenspeed-kernel-npu/test/test_gdn.py -k cpu -q
++
++# On Ascend, with shared kernel dependencies installed as well:
++PYTHONPATH=tokenspeed-kernel-npu/python:tokenspeed-kernel/python:$PYTHONPATH \
++  python -m pytest tokenspeed-kernel-npu/test/test_gdn.py -k npu -q
++```
++
++Direct tests use an independent FP64, K-major, per-head recurrence, exercise
++chunk vs repeated step, nonzero initial states, variable/empty sequences,
++real checkpoint/resume boundaries, low-precision output and normalization,
++grouped heads, arbitrary strides, source nonmutation, crossing maps, negative
++padding and write suppression. Invalid ABI inputs are rejected before writes.
++The NPU-only public test additionally exercises registry selection, structured
++returns, trait queries and explicit `output_h` rejection. Test-only reference
++and result comparisons may transfer tensors to CPU; the implementation does not.
+diff --git 1/tokenspeed-kernel-npu/docs/gemma-rmsnorm.md 2/tokenspeed-kernel-npu/docs/gemma-rmsnorm.md
+new file mode 100644
+index 0000000..e549dc8
+--- /dev/null
++++ 2/tokenspeed-kernel-npu/docs/gemma-rmsnorm.md
+@@ -0,0 +1,65 @@
++# Gemma RMSNorm on Ascend
++
++`GemmaRMSNorm.forward` calls the vendor-neutral
++`tokenspeed_kernel.ops.layernorm.gemma_rmsnorm` facade. Its residual-plus-copy
++methods use `gemma_add_rmsnorm` at the same package boundary. There is no
++Gemma-specific platform branch in the runtime layer.
++
++## Arithmetic and buffers
++
++On Ascend, the facade calls the registered `gated_rmsnorm` operation with no
++gate, one group spanning the last dimension, and an effective weight of
++`1.0 + weight.float()`. The offset addition remains FP32: casting the effective
++weight back to BF16 before multiplication loses checkpoint information.
++The eager device-local implementation computes the mean square, reciprocal
++square root, and affine multiplication in FP32, then rounds once to the input
++dtype. FP16, BF16, and FP32 activations are supported. No activation or weight
++is transferred to CPU by this path.
++
++With a residual, the same-shape, same-dtype add first rounds to the activation
++dtype, as in the existing AMD Gemma implementation. RMS statistics use that
++rounded sum. The normalized result overwrites `x`; the rounded sum overwrites
++`residual`. The facade returns these original tensor objects, matching the
++NVIDIA residual path's in-place contract. Without a residual, the input is
++unchanged and the output is fresh. Empty rows return the original objects.
++The two residual streams must use separate storage.
++
++The facade reads the live checkpoint weight each call, including after a
++weight-loader or state-dict reload. It does not use the runtime layer's cached
++`gemma_weight`, which is intended for existing collective-fusion paths.
++Multi-rank collective-fusion numerics and per-head attention Q/K normalization
++are outside this change; in particular this does not alter the Ascend Q/K
++weight-offset exception in `docs/design/attention-prologue.md`.
++
++NVIDIA retains FlashInfer for ordinary Gemma forward and the existing Triton
++residual-plus-quantized-copy kernel. AMD retains its out-of-place FP32 Torch
++arithmetic and existing no-quantized-copy behavior.
++
++## Quantized copies
++
++Both `add_norm_with_fp8(..., None)` and `add_norm_with_fp4(..., None)` use the
++safe Ascend Gemma facade and return `None` for their quantized copy. Either
++non-None scale raises `NotImplementedError` before modifying inputs, including
++empty rows and unsupported NVFP4 widths. Ascend must not silently ignore a
++requested FP8 or FP4 copy or attempt to launch the CUDA/Triton copy kernel.
++NVIDIA's existing NVFP4 eligibility and AMD's existing copy omission remain
++unchanged.
++
++## Verification
++
++Run on the parent-provided Ascend environment with the runtime and kernel
++packages importable:
++
++```bash
++python -m pytest -q tokenspeed-kernel-npu/test/test_gemma_layer.py
++```
++
++The tests invoke the real runtime layer and public kernel facades. An
++independent CPU FP64 oracle models the input-dtype residual rounding and final
++output rounding. Coverage includes FP16/BF16/FP32, representative model widths,
++residual buffer identity and values, BF16 weight-offset precision, statistics
++after residual rounding, custom-loader and state-dict weight reloads, empty
++rows, and rejection of unsupported quantization without mutation. CPU transfers
++in these tests are exclusively for constructing the oracle and checking results.
++Without Ascend, execution tests skip; a collection or syntax check alone does
++not validate NPU numerics.
+diff --git 1/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/conv.py 2/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/conv.py
+new file mode 100644
+index 0000000..b7ba266
+--- /dev/null
++++ 2/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/conv.py
+@@ -0,0 +1,337 @@
++# Copyright (c) 2026 LightSeek Foundation
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++"""Device-local eager causal FIR convolution; see docs/causal-conv.md.
++
++Only routing/schedule metadata is synchronized to Python. CPU execution is for
++independent tests, not an NPU fallback. There is no tokenspeed-kernel dependency.
++"""
++
++from __future__ import annotations
++
++import torch
++import torch.nn.functional as F
++
++_FLOAT_DTYPES = (torch.float16, torch.bfloat16, torch.float32)
++
++
++def _vector(tensor: torch.Tensor, name: str, size: int) -> list[int]:
++    if tensor.shape != (size,) or tensor.dtype not in (torch.int32, torch.int64):
++        raise ValueError(f"{name} must be an int32/int64 vector of length {size}")
++    # Eager metadata synchronization only. Never copy activations to the host.
++    return tensor.tolist()
++
++
++def _options(activation: bool | str | None, pad_slot_id: int, validate_data: bool) -> bool:
++    if type(validate_data) is not bool:
++        raise ValueError("validate_data must be a bool; validation is always enabled")
++    if type(pad_slot_id) is not int or pad_slot_id >= 0:
++        raise ValueError("pad_slot_id must be a negative integer")
++    if activation is None or activation is False:
++        return False
++    if activation is True or activation in ("silu", "swish"):
++        return True
++    raise ValueError("activation must be None, False, True, 'silu' or 'swish'")
++
++
++def _geometry(
++    x: torch.Tensor,
++    weight: torch.Tensor,
++    bias: torch.Tensor | None,
++    state: torch.Tensor,
++    channels: int,
++) -> torch.Tensor:
++    if x.device.type not in ("cpu", "npu") or x.dtype not in _FLOAT_DTYPES:
++        raise ValueError("x must be float16, bfloat16 or float32 on CPU or NPU")
++    if weight.ndim != 2 or weight.shape[0] != channels or channels <= 0:
++        raise ValueError("weight must have shape [C,W] with C > 0")
++    width = weight.shape[1]
++    if width not in (2, 3, 4, 5):
++        raise ValueError("Ascend causal convolution supports widths 2, 3, 4 and 5")
++    if not isinstance(state, torch.Tensor):
++        raise ValueError("Ascend causal convolution requires a state pool")
++    for name, value in (("weight", weight), ("bias", bias), ("state", state)):
++        if value is not None and (
++            value.device != x.device or value.dtype not in _FLOAT_DTYPES
++        ):
++            raise ValueError(f"{name} must be floating point on the input device")
++    if bias is not None and bias.shape != (channels,):
++        raise ValueError("bias must have shape [C]")
++    if state.dtype != x.dtype or state.ndim != 3:
++        raise ValueError("state must be rank three with the input dtype")
++    # Match ops.conv._state_layout: width-major wins when C == W - 1.
++    if state.shape[1:] == (width - 1, channels):
++        view = state.transpose(1, 2)
++    elif state.shape[1:] == (channels, width - 1):
++        view = state
++    else:
++        raise ValueError(
++            "state must be [S,C,W-1] or [S,W-1,C]; "
++            "extended/ring states are unsupported"
++        )
++    _writable(view, "state")
++    return view
++
++
++def _writable(tensor: torch.Tensor, name: str) -> None:
++    if any(
++        size > 1 and stride <= 0
++        for size, stride in zip(tensor.shape, tensor.stride())
++    ):
++        raise ValueError(f"{name} must not have broadcast or negative strides")
++
++
++def _indices(
++    indices: torch.Tensor | None, name: str, batch: int, slots: int
++) -> list[int]:
++    values = list(range(batch)) if indices is None else _vector(indices, name, batch)
++    if any(index >= slots for index in values):
++        raise ValueError(f"{name} contains an out-of-range state index")
++    # All negative indices are padding, not Python's wraparound indexing.
++    return values
++
++
++def _unique_writes(indices: list[int]) -> None:
++    live = [index for index in indices if index >= 0]
++    if len(live) != len(set(live)):
++        raise ValueError("multiple active requests must not write the same state slot")
++
++
++def _convolve(
++    sequence: torch.Tensor,
++    history: torch.Tensor,
++    weight: torch.Tensor,
++    bias: torch.Tensor | None,
++    *,
++    silu: bool,
++) -> tuple[torch.Tensor, torch.Tensor]:
++    length = sequence.shape[1]
++    window = history.shape[1]
++    joined = torch.cat((history, sequence), dim=1)
++    values = joined.float()
++    taps = weight.float()
++    acc = torch.zeros(sequence.shape, dtype=torch.float32, device=sequence.device)
++    if bias is not None:
++        acc.add_(bias.float()[:, None])
++    # Tap W-1 multiplies the current token; history is oldest first.
++    for tap in range(weight.shape[1]):
++        acc.add_(values[:, tap : tap + length] * taps[:, tap : tap + 1])
++    if silu:
++        acc = F.silu(acc)
++    return acc.to(sequence.dtype), joined[:, -window:]
++
++
++def _schedule(
++    bounds: list[int],
++    batch_indices: torch.Tensor,
++    chunk_offsets: torch.Tensor,
++    block_m: int,
++    cu_seqlens_cpu: torch.Tensor | None,
++    device: torch.device,
++) -> None:
++    if type(block_m) is not int or block_m <= 0:
++        raise ValueError("block_m must be a positive integer")
++    if batch_indices.ndim != 1:
++        raise ValueError("batch_indices must be a vector")
++    size = batch_indices.numel()
++    batches = _vector(batch_indices, "batch_indices", size)
++    chunks = _vector(chunk_offsets, "chunk_offsets", size)
++    if batch_indices.device != device or chunk_offsets.device != device:
++        raise ValueError("convolution schedule must be on the input device")
++    if cu_seqlens_cpu is not None:
++        if cu_seqlens_cpu.device.type != "cpu":
++            raise ValueError("cu_seqlens_cpu must be on CPU")
++        if _vector(cu_seqlens_cpu, "cu_seqlens_cpu", len(bounds)) != bounds:
++            raise ValueError("host and device convolution boundaries disagree")
++    expected = {
++        (request, chunk)
++        for request, (start, end) in enumerate(zip(bounds, bounds[1:]))
++        for chunk in range((end - start + block_m - 1) // block_m)
++    }
++    actual = []
++    for request, chunk in zip(batches, chunks):
++        if request == -1:  # Inactive capacity-schedule programs.
++            continue
++        if (request, chunk) not in expected:
++            raise ValueError("convolution schedule contains an invalid request/chunk")
++        actual.append((request, chunk))
++    if len(actual) != len(expected) or set(actual) != expected:
++        raise ValueError("convolution schedule must cover each live chunk exactly once")
++
++
++@torch.no_grad()
++def launch_causal_conv1d_prefill(
++    x: torch.Tensor,
++    weight: torch.Tensor,
++    bias: torch.Tensor | None,
++    conv_states: torch.Tensor,
++    query_start_loc: torch.Tensor,
++    cache_indices: torch.Tensor | None = None,
++    has_initial_state: torch.Tensor | None = None,
++    activation: bool | str | None = "silu",
++    pad_slot_id: int = -1,
++    validate_data: bool = False,
++    *,
++    batch_indices: torch.Tensor,
++    chunk_offsets: torch.Tensor,
++    block_m: int,
++    cu_seqlens_cpu: torch.Tensor | None,
++) -> torch.Tensor:
++    """Convolve packed [C,T] sequences, returning a separate [C,T] tensor.
++
++    Args:
++        x, weight, bias: Packed input, [C,W] FIR taps and optional [C] bias.
++        conv_states: In/out [S,C,W-1] or [S,W-1,C] raw-input window pool.
++        query_start_loc: Int32/int64 [B+1] monotone boundaries from 0 to at most
++            T. Unassigned trailing token capacity produces zero output.
++        cache_indices: Optional [B] state slots; omitted means arange(B).
++        has_initial_state: Optional bool [B]; absent/False resets history to zero.
++        activation: None/False or silu/swish/True.
++        pad_slot_id: Negative padding sentinel; all negative slots are skipped.
++        validate_data: ABI compatibility; both values perform full validation.
++        batch_indices, chunk_offsets, block_m, cu_seqlens_cpu: Read-only upstream
++            prefill schedule fields, checked against query_start_loc, including
++            optional host boundaries. Inactive capacity programs have batch -1.
++
++    Returns:
++        Output in x.dtype/device, without changing x. Each nonempty, nonpadding
++        sequence writes its final raw window. Empty sequences leave state alone;
++        padded sequences produce zeros and never access state.
++    """
++    silu = _options(activation, pad_slot_id, validate_data)
++    if x.ndim != 2:
++        raise ValueError("prefill x must have shape [C,T]")
++    state = _geometry(x, weight, bias, conv_states, x.shape[0])
++    if query_start_loc.ndim != 1 or query_start_loc.numel() == 0:
++        raise ValueError("query_start_loc must have shape [B+1]")
++    bounds = _vector(query_start_loc, "query_start_loc", query_start_loc.numel())
++    if (
++        bounds[0] != 0
++        or bounds[-1] > x.shape[1]
++        or any(a > b for a, b in zip(bounds, bounds[1:]))
++    ):
++        raise ValueError("query_start_loc must be monotone from zero within T")
++    batch = len(bounds) - 1
++    slots = _indices(cache_indices, "cache_indices", batch, state.shape[0])
++    if has_initial_state is None:
++        initial = [False] * batch
++    else:
++        if (
++            has_initial_state.shape != (batch,)
++            or has_initial_state.dtype != torch.bool
++        ):
++            raise ValueError("has_initial_state must be a bool vector of length B")
++        initial = has_initial_state.tolist()
++    _schedule(bounds, batch_indices, chunk_offsets, block_m, cu_seqlens_cpu, x.device)
++    active = [i for i in range(batch) if slots[i] >= 0 and bounds[i] < bounds[i + 1]]
++    _unique_writes([slots[i] for i in active])
++    # Snapshot before any state write, including repeated/shared source storage.
++    histories = {
++        i: state[slots[i]].clone() if initial[i] else torch.zeros_like(state[slots[i]])
++        for i in active
++    }
++    out = torch.zeros_like(x)
++    for i in active:
++        start, end = bounds[i : i + 2]
++        values, final = _convolve(x[:, start:end], histories[i], weight, bias, silu=silu)
++        out[:, start:end].copy_(values)
++        state[slots[i]].copy_(final)
++    return out
++
++
++@torch.no_grad()
++def launch_causal_conv1d_update(
++    x: torch.Tensor,
++    conv_state: torch.Tensor,
++    weight: torch.Tensor,
++    bias: torch.Tensor | None = None,
++    activation: bool | str | None = None,
++    cache_seqlens: torch.Tensor | None = None,
++    conv_state_indices: torch.Tensor | None = None,
++    num_accepted_tokens: torch.Tensor | None = None,
++    intermediate_conv_window: torch.Tensor | None = None,
++    output_state_indices: torch.Tensor | None = None,
++    pad_slot_id: int = -1,
++    validate_data: bool = False,
++    *,
++    parent_indices: torch.Tensor | None,
++) -> torch.Tensor:
++    """Greedy one-token update, overwriting and returning x (the upstream ABI).
++
++    Args:
++        x: [B,C] or [B,C,1]; [B,C,0] is an empty no-op.
++        conv_state, weight, bias, activation: Same pool/taps/options as prefill.
++        cache_seqlens, num_accepted_tokens, intermediate_conv_window,
++            parent_indices: Must be None; ring/speculative/tree paths are rejected.
++        conv_state_indices: Optional int32/int64 [B] source slots (else arange).
++        output_state_indices: Optional int32/int64 [B,1] destinations. If absent,
++            update source slots in place. Negative destinations suppress writes;
++            negative sources skip both output computation and state writes.
++        pad_slot_id, validate_data: As in prefill; validation is always enabled.
++
++    Returns:
++        x, mutated in place with the convolved/activated output. Padded rows are
++        unchanged. Raw input, not the activated result, enters the state pool.
++        All source windows are snapshotted before writes, including crossing maps.
++    """
++    for name, option in (
++        ("cache_seqlens", cache_seqlens),
++        ("num_accepted_tokens", num_accepted_tokens),
++        ("intermediate_conv_window", intermediate_conv_window),
++        ("parent_indices", parent_indices),
++    ):
++        if option is not None:
++            raise ValueError(f"Ascend greedy causal convolution does not support {name}")
++    silu = _options(activation, pad_slot_id, validate_data)
++    if x.ndim not in (2, 3):
++        raise ValueError("update x must have shape [B,C] or [B,C,1]")
++    if x.ndim == 3 and x.shape[2] not in (0, 1):
++        raise ValueError(
++            "Ascend update supports one greedy token, "
++            "not multi-token/speculative updates"
++        )
++    state = _geometry(x, weight, bias, conv_state, x.shape[1])
++    _writable(x, "x")
++    batch = x.shape[0]
++    sources = _indices(conv_state_indices, "conv_state_indices", batch, state.shape[0])
++    if output_state_indices is None:
++        destinations = sources
++    else:
++        if output_state_indices.shape != (batch, 1):
++            raise ValueError("output_state_indices must have shape [B,1]")
++        destinations = _indices(
++            output_state_indices[:, 0], "output_state_indices", batch, state.shape[0]
++        )
++    if x.ndim == 3 and x.shape[2] == 0:
++        return x
++    active = [i for i, source in enumerate(sources) if source >= 0]
++    _unique_writes([destinations[i] for i in active])
++    # A destination may be another request's source. Gather *all* sources first.
++    histories = {i: state[sources[i]].clone() for i in active}
++    raw = x.unsqueeze(-1).clone() if x.ndim == 2 else x.clone()
++    for i in active:
++        values, final = _convolve(raw[i], histories[i], weight, bias, silu=silu)
++        if x.ndim == 2:
++            x[i].copy_(values[:, 0])
++        else:
++            x[i].copy_(values)
++        if destinations[i] >= 0:
++            state[destinations[i]].copy_(final)
++    return x
+diff --git 1/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/gated_rmsnorm.py 2/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/gated_rmsnorm.py
+new file mode 100644
+index 0000000..99fda5d
+--- /dev/null
++++ 2/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/gated_rmsnorm.py
+@@ -0,0 +1,112 @@
++# Copyright (c) 2026 LightSeek Foundation
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++"""Device-local eager FP32 gated RMSNorm baseline for Ascend."""
++
++from __future__ import annotations
++
++import torch
++
++_FLOAT_DTYPES = {torch.float16, torch.bfloat16, torch.float32}
++
++
++def launch_gated_rmsnorm(
++    x: torch.Tensor,
++    weight: torch.Tensor,
++    z: torch.Tensor | None,
++    eps: float,
++    group_size: int | None,
++    norm_before_gate: bool,
++    sigmoid_gate: bool,
++    fp8_scale: torch.Tensor | None,
++    weights_independent: bool,
++) -> torch.Tensor:
++    """Apply grouped, optionally gated RMSNorm without moving data off device.
++
++    Args:
++        x: FP16, BF16 or FP32 tensor shaped ``[..., width]`` with positive width.
++        weight: Same-device FP16/BF16/FP32 vector of length width, or group_size
++            for a weight shared by all groups. Its dtype may differ from x's.
++        z: Same-device FP16/BF16/FP32 gate shaped like x, or None for no gate.
++        eps: Epsilon added to the FP32 mean square of each group.
++        group_size: Positive divisor of width; None normalizes the whole width.
++        norm_before_gate: True computes norm(x) * gate(z); False computes
++            norm(x * gate(z)). The norm includes its affine weight.
++        sigmoid_gate: True uses sigmoid(z); False uses z * sigmoid(z) (SiLU).
++        fp8_scale: Must be None; FP8 output is not implemented.
++        weights_independent: Producer scheduling hint, accepted for both values.
++            Eager stream ordering loads weights after preceding producers; no
++            PDL launch or early weight load is performed.
++
++    Returns:
++        A fresh tensor shaped like x, rounded once to x's dtype after FP32
++        arithmetic. Inputs are never modified. Strided inputs and empty leading
++        dimensions are supported. Direct CPU calls use the same arithmetic for
++        correctness tests; the registry leaf only accepts NPU inputs.
++    """
++    if fp8_scale is not None:
++        raise NotImplementedError("Ascend gated RMSNorm does not support FP8 output")
++    if x.ndim == 0 or x.shape[-1] == 0:
++        raise ValueError("x must have a positive last dimension")
++    if x.dtype not in _FLOAT_DTYPES:
++        raise ValueError("x must be FP16, BF16 or FP32")
++    width = x.shape[-1]
++    group = width if group_size is None else group_size
++    if isinstance(group, bool) or not isinstance(group, int) or group <= 0:
++        raise ValueError("group_size must be a positive integer or None")
++    if width % group:
++        raise ValueError("group_size must divide the last dimension of x")
++    if weight.shape not in ((width,), (group,)):
++        raise ValueError("weight must have shape [width] or [group_size]")
++    if weight.dtype not in _FLOAT_DTYPES:
++        raise ValueError("weight must be FP16, BF16 or FP32")
++    if weight.device != x.device:
++        raise ValueError("weight and x must be on the same device")
++    if z is not None:
++        if z.shape != x.shape:
++            raise ValueError("z must have the same shape as x")
++        if z.dtype not in _FLOAT_DTYPES:
++            raise ValueError("z must be FP16, BF16 or FP32")
++        if z.device != x.device:
++            raise ValueError("z and x must be on the same device")
++
++    if x.numel() == 0:
++        return torch.empty_like(x)
++
++    group_shape = (*x.shape[:-1], width // group, group)
++    values = x.float().reshape(group_shape)
++    gate = None
++    if z is not None:
++        gate_values = z.float().reshape(group_shape)
++        gate = torch.sigmoid(gate_values)
++        if not sigmoid_gate:
++            gate = gate_values * gate
++        if not norm_before_gate:
++            values = values * gate
++
++    inv_rms = torch.rsqrt(values.square().mean(dim=-1, keepdim=True) + eps)
++    # [1, group] broadcasts shared weights; [groups, group] uses per-feature ones.
++    out = values * inv_rms * weight.float().reshape(-1, group)
++    if gate is not None and norm_before_gate:
++        out = out * gate
++    return out.reshape(x.shape).to(x.dtype)
++
++
++__all__ = ["launch_gated_rmsnorm"]
+diff --git 1/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/gdn.py 2/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/gdn.py
+new file mode 100644
+index 0000000..276cc16
+--- /dev/null
++++ 2/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/gdn.py
+@@ -0,0 +1,330 @@
++# Copyright (c) 2026 LightSeek Foundation
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++"""Eager GDN scans using device-local FP32 PyTorch arithmetic.
++
++Only integer routing metadata is synchronized to Python. No activation or state
++is moved off device. CPU inputs are accepted for direct unit testing, not as an
++accelerator fallback. Registry adapters require NPU inputs. See docs/gdn.md.
++"""
++
++from __future__ import annotations
++
++import torch
++import torch.nn.functional as F
++
++
++_FLOAT_DTYPES = (torch.float16, torch.bfloat16, torch.float32)
++
++
++def _same_device(device: torch.device, **tensors: torch.Tensor) -> None:
++    for name, tensor in tensors.items():
++        if tensor.device != device:
++            raise ValueError(f"{name} must be on {device}, got {tensor.device}")
++        if not tensor.is_floating_point():
++            raise ValueError(f"{name} must be floating point")
++
++
++def _metadata(tensor: torch.Tensor, name: str, size: int) -> list[int]:
++    if tensor.shape != (size,) or tensor.dtype not in (torch.int32, torch.int64):
++        raise ValueError(f"{name} must be an int32/int64 vector of length {size}")
++    # Intentional eager synchronization of metadata only, never activations.
++    return tensor.tolist()
++
++
++def _geometry(
++    q: torch.Tensor, k: torch.Tensor, v: torch.Tensor
++) -> tuple[int, int, int]:
++    if q.ndim != 4 or k.shape != q.shape or v.ndim != 4:
++        raise ValueError(
++            "q/k must have equal [B,T,H,K] shapes; v must be [B,T,HV,V]"
++        )
++    if v.shape[:2] != q.shape[:2]:
++        raise ValueError("q/k/v must have matching batch and token dimensions")
++    h, dim = q.shape[-2:]
++    hv, vdim = v.shape[-2:]
++    if min(h, hv, dim, vdim) <= 0 or hv < h or hv % h:
++        raise ValueError(
++            "GDN requires positive head dimensions and HV a multiple of H"
++        )
++    if q.dtype not in _FLOAT_DTYPES or k.dtype != q.dtype or v.dtype != q.dtype:
++        raise ValueError("q/k/v must share float16, bfloat16 or float32 dtype")
++    _same_device(q.device, k=k, v=v)
++    return hv, vdim, dim
++
++
++def _state(
++    state: torch.Tensor, shape: tuple[int, ...], device: torch.device
++) -> None:
++    if (
++        state.shape != shape
++        or state.dtype != torch.float32
++        or state.device != device
++    ):
++        raise ValueError(f"state must be float32 K-last {shape} on {device}")
++
++
++def _qk(
++    q: torch.Tensor,
++    k: torch.Tensor,
++    hv: int,
++    *,
++    normalize: bool,
++    round_normalized: bool,
++) -> tuple[torch.Tensor, torch.Tensor]:
++    qf, kf = q.float(), k.float()
++    if normalize:
++        # Upstream l2norm and fused decode both add 1e-6 *inside* sqrt.
++        qf = qf * torch.rsqrt(qf.square().sum(-1, keepdim=True) + 1e-6)
++        kf = kf * torch.rsqrt(kf.square().sum(-1, keepdim=True) + 1e-6)
++        if round_normalized:
++            # Chunk prefill materializes l2norm in the input dtype; decode does not.
++            qf, kf = qf.to(q.dtype).float(), kf.to(k.dtype).float()
++    group = hv // q.shape[-2]
++    return qf.repeat_interleave(group, dim=-2), kf.repeat_interleave(group, dim=-2)
++
++
++def _step(
++    state: torch.Tensor,
++    q: torch.Tensor,
++    k: torch.Tensor,
++    v: torch.Tensor,
++    g: torch.Tensor,
++    beta: torch.Tensor,
++    scale: float,
++) -> tuple[torch.Tensor, torch.Tensor]:
++    decayed = state * g.float().exp()[..., None, None]
++    residual = (
++        v.float() - (decayed * k[..., None, :]).sum(-1)
++    ) * beta.float()[..., None]
++    updated = decayed + residual[..., :, None] * k[..., None, :]
++    out = (updated * (q * scale)[..., None, :]).sum(-1)
++    return out, updated
++
++
++@torch.no_grad()
++def launch_gdn_chunk_prefill(
++    q: torch.Tensor,
++    k: torch.Tensor,
++    v: torch.Tensor,
++    g: torch.Tensor,
++    beta: torch.Tensor,
++    *,
++    scale: float | None,
++    initial_state: torch.Tensor,
++    cu_seqlens: torch.Tensor,
++    qk_l2norm: bool,
++    output_final_state: bool,
++    checkpoint_every_n_tokens: int | None,
++    checkpoint_states: torch.Tensor | None,
++    checkpoint_cu_starts: torch.Tensor | None,
++) -> tuple[torch.Tensor, torch.Tensor | None]:
++    """Scan packed variable-length sequences, without mutating initial_state.
++
++    Args:
++        q, k: [1,T,H,K], or unbatched [T,H,K], same floating dtype as v.
++        v: [1,T,HV,V] (or [T,HV,V]); HV is an integer multiple of H.
++        g, beta: Log forget and update gates [1,T,HV] (or [T,HV]).
++        scale: Query scale; None means K**-0.5.
++        initial_state: FP32 K-last [N,HV,V,K], including nonzero prefixes.
++        cu_seqlens: Integer [N+1] packed token offsets, including empty sequences.
++        qk_l2norm: Normalize with epsilon 1e-6, rounding to input dtype.
++        output_final_state: Whether to return FP32 [N,HV,V,K] final states.
++        checkpoint_every_n_tokens: Positive multiple of 64, or None (disabled).
++        checkpoint_states: Caller-owned FP32 [total,HV,V,K] checkpoint destination.
++        checkpoint_cu_starts: Int32 [N+1] cumulative checkpoint counts on device.
++            All three checkpoint arguments must be supplied together or be None.
++
++    Returns:
++        (out in q.dtype and v.shape, optional final state). Checkpoints contain
++        the state after each whole interval of each sequence's own tokens.
++        All tensor math stays on the input device; metadata uses .tolist().
++    """
++    unbatched = q.ndim == 3
++    if unbatched:
++        q, k, v = q.unsqueeze(0), k.unsqueeze(0), v.unsqueeze(0)
++        g, beta = g.unsqueeze(0), beta.unsqueeze(0)
++    hv, vdim, dim = _geometry(q, k, v)
++    if q.shape[0] != 1:
++        raise ValueError("prefill requires packed batch dimension 1")
++    tokens = q.shape[1]
++    if g.shape != (1, tokens, hv) or beta.shape != g.shape:
++        raise ValueError("prefill g/beta must have shape [1,T,HV]")
++    _same_device(q.device, g=g, beta=beta)
++    if cu_seqlens.ndim != 1 or cu_seqlens.numel() < 1:
++        raise ValueError("cu_seqlens must have N+1 entries")
++    n = cu_seqlens.numel() - 1
++    bounds = _metadata(cu_seqlens, "cu_seqlens", n + 1)
++    if (
++        bounds[0] != 0
++        or bounds[-1] != tokens
++        or any(a > b for a, b in zip(bounds, bounds[1:]))
++    ):
++        raise ValueError("cu_seqlens must be monotone and cover exactly T tokens")
++    _state(initial_state, (n, hv, vdim, dim), q.device)
++
++    starts = None
++    checkpoint_args = (
++        checkpoint_every_n_tokens,
++        checkpoint_states,
++        checkpoint_cu_starts,
++    )
++    if any(arg is not None for arg in checkpoint_args):
++        if any(arg is None for arg in checkpoint_args):
++            raise ValueError("all checkpoint arguments must be supplied together")
++        if checkpoint_every_n_tokens <= 0 or checkpoint_every_n_tokens % 64:
++            raise ValueError("checkpoint interval must be a positive multiple of 64")
++        if (
++            checkpoint_cu_starts.device != q.device
++            or checkpoint_cu_starts.dtype != torch.int32
++        ):
++            raise ValueError("checkpoint_cu_starts must be int32 on the input device")
++        starts = _metadata(checkpoint_cu_starts, "checkpoint_cu_starts", n + 1)
++        expected = [0]
++        for begin, end in zip(bounds, bounds[1:]):
++            expected.append(
++                expected[-1] + (end - begin) // checkpoint_every_n_tokens
++            )
++        if starts != expected:
++            raise ValueError(
++                "checkpoint_cu_starts must match per-sequence interval counts"
++            )
++        _state(checkpoint_states, (starts[-1], hv, vdim, dim), q.device)
++        # Caller-owned destinations must not alias the immutable input state.
++        if (
++            checkpoint_states.numel()
++            and checkpoint_states.untyped_storage().data_ptr()
++            == initial_state.untyped_storage().data_ptr()
++        ):
++            raise ValueError("checkpoint_states must not alias initial_state")
++
++    qf, kf = _qk(q[0], k[0], hv, normalize=qk_l2norm, round_normalized=True)
++    out = torch.empty(v.shape, dtype=q.dtype, device=q.device)
++    final = torch.empty_like(initial_state) if output_final_state else None
++    scale = dim**-0.5 if scale is None else scale
++    for seq, (begin, end) in enumerate(zip(bounds, bounds[1:])):
++        state = initial_state[seq].clone()
++        for token in range(begin, end):
++            value, state = _step(
++                state,
++                qf[token],
++                kf[token],
++                v[0, token],
++                g[0, token],
++                beta[0, token],
++                scale,
++            )
++            out[0, token].copy_(value)
++            consumed = token - begin + 1
++            if starts is not None and consumed % checkpoint_every_n_tokens == 0:
++                checkpoint_row = (
++                    starts[seq] + consumed // checkpoint_every_n_tokens - 1
++                )
++                checkpoint_states[checkpoint_row].copy_(state)
++        if final is not None:
++            final[seq].copy_(state)
++    return (out[0] if unbatched else out), final
++
++
++@torch.no_grad()
++def launch_gdn_decode_step(
++    q: torch.Tensor,
++    k: torch.Tensor,
++    v: torch.Tensor,
++    *,
++    A_log: torch.Tensor,
++    a: torch.Tensor,
++    dt_bias: torch.Tensor,
++    b: torch.Tensor,
++    initial_state: torch.Tensor,
++    initial_state_indices: torch.Tensor,
++    scale: float | None,
++    output_state_indices: torch.Tensor | None,
++    use_qk_l2norm: bool,
++) -> torch.Tensor:
++    """Compute T=1 decode and write only valid destination rows of the FP32 pool.
++
++    Args:
++        q, k: [B,1,H,K], same floating dtype as v; arbitrary strides supported.
++        v: [B,1,HV,V], HV an integer multiple of H.
++        A_log, dt_bias: Floating [HV] decay parameters, converted on device to FP32.
++        a, b: Floating [B,1,HV] decay and beta logits.
++        initial_state: FP32 K-last [pool,HV,V,K], updated at destination rows.
++        initial_state_indices: Integer [B] read rows; negative means padding.
++        scale: Query scale, None means K**-0.5.
++        output_state_indices: Integer [B] destinations; None writes to read rows.
++            A negative destination suppresses the write. Padding reads never write.
++            Active destinations must be unique; shared input rows are allowed.
++        use_qk_l2norm: Normalize Q/K in FP32 with epsilon 1e-6.
++
++    Returns:
++        [B,1,HV,V] in q.dtype. Padding reads produce zero output. All sources
++        are snapshotted before any writes, including crossing read/write maps.
++        Only routing metadata is synchronized to Python; no CPU math fallback.
++    """
++    hv, vdim, dim = _geometry(q, k, v)
++    batch, tokens = q.shape[:2]
++    if tokens != 1:
++        raise ValueError("GDN decode_step supports T=1 only (no speculative MTP)")
++    if a.shape != (batch, 1, hv) or b.shape != a.shape:
++        raise ValueError("decode a/b must have shape [B,1,HV]")
++    if A_log.shape != (hv,) or dt_bias.shape != (hv,):
++        raise ValueError("A_log/dt_bias must have shape [HV]")
++    _same_device(q.device, A_log=A_log, a=a, dt_bias=dt_bias, b=b)
++    if initial_state.ndim != 4:
++        raise ValueError("initial_state must be a K-last pool [pool,HV,V,K]")
++    pool = initial_state.shape[0]
++    _state(initial_state, (pool, hv, vdim, dim), q.device)
++    reads = _metadata(initial_state_indices, "initial_state_indices", batch)
++    writes = (
++        reads
++        if output_state_indices is None
++        else _metadata(output_state_indices, "output_state_indices", batch)
++    )
++    if any(idx >= pool for idx in reads + writes):
++        raise ValueError("state index is outside the pool")
++    destinations = [
++        dst for src, dst in zip(reads, writes) if src >= 0 and dst >= 0
++    ]
++    if len(destinations) != len(set(destinations)):
++        raise ValueError("active output_state_indices must be unique")
++
++    # Snapshot all requests first: a destination may be another request's source.
++    states = [initial_state[src].clone() if src >= 0 else None for src in reads]
++    qf, kf = _qk(
++        q[:, 0], k[:, 0], hv,
++        normalize=use_qk_l2norm, round_normalized=False,
++    )
++    gates = -A_log.float().exp() * F.softplus(
++        a[:, 0].float() + dt_bias.float(), beta=1.0, threshold=20.0
++    )
++    betas = b[:, 0].float().sigmoid()
++    out = torch.zeros(v.shape, dtype=q.dtype, device=q.device)
++    scale = dim**-0.5 if scale is None else scale
++    for row, state in enumerate(states):
++        if state is None:
++            continue
++        value, updated = _step(
++            state, qf[row], kf[row], v[row, 0], gates[row], betas[row], scale
++        )
++        out[row, 0].copy_(value)
++        if writes[row] >= 0:
++            initial_state[writes[row]].copy_(updated)
++    return out
+diff --git 1/tokenspeed-kernel-npu/test/test_causal_conv.py 2/tokenspeed-kernel-npu/test/test_causal_conv.py
+new file mode 100644
+index 0000000..6e7fb7b
+--- /dev/null
++++ 2/tokenspeed-kernel-npu/test/test_causal_conv.py
+@@ -0,0 +1,535 @@
++# Copyright (c) 2026 LightSeek Foundation
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++"""Independent numerical CPU/NPU tests of the actual eager implementation.
++
++Run -k cpu without torch_npu; -k npu exercises a real Ascend device, including
++public registry dispatch. No mocks or tokenspeed-kernel imports in CPU tests.
++"""
++
++import pytest
++import torch
++import torch.nn.functional as F
++from tokenspeed_kernel_npu.ops.conv import (
++    launch_causal_conv1d_prefill,
++    launch_causal_conv1d_update,
++)
++
++
++@pytest.fixture(params=["cpu", "npu"])
++def device(request):
++    if request.param == "npu":
++        pytest.importorskip("torch_npu")
++        if not torch.npu.is_available():
++            pytest.skip("Ascend NPU required")
++    return request.param
++
++
++def _random(shape, dtype, *, seed):
++    return (torch.randn(shape, generator=torch.Generator().manual_seed(seed)) * 0.4).to(dtype)
++
++
++def _strided(tensor):
++    storage = torch.full(
++        (*tensor.shape[:-1], tensor.shape[-1] * 2),
++        -91, dtype=tensor.dtype, device=tensor.device,
++    )
++    view = storage[..., ::2]
++    view.copy_(tensor)
++    return view, storage
++
++
++def _state(pool, device, *, width_major, strided):
++    result = pool.transpose(1, 2) if width_major else pool
++    result = result.to(device).clone()
++    if strided:
++        return _strided(result)
++    return result, None
++
++
++def _canonical(state, *, width_major):
++    return state.transpose(1, 2) if width_major else state
++
++
++def _schedule(bounds, device, *, inactive=0):
++    batches, chunks = [], []
++    for seq, (begin, end) in enumerate(zip(bounds, bounds[1:])):
++        for chunk in range((end - begin + 7) // 8):
++            batches.append(seq)
++            chunks.append(chunk)
++    batches.extend([-1] * inactive)
++    chunks.extend([0] * inactive)
++    return dict(
++        batch_indices=torch.tensor(batches, dtype=torch.int32, device=device),
++        chunk_offsets=torch.tensor(chunks, dtype=torch.int32, device=device),
++        block_m=8,
++        cu_seqlens_cpu=torch.tensor(bounds, dtype=torch.int64),
++    )
++
++
++def _prefill(x, weight, bias, state, bounds, *, indices=None, initial=None, activation):
++    return launch_causal_conv1d_prefill(
++        x, weight, bias, state,
++        torch.tensor(bounds, dtype=torch.int32, device=x.device),
++        cache_indices=indices,
++        has_initial_state=initial,
++        activation=activation,
++        validate_data=True,
++        **_schedule(bounds, x.device, inactive=2),
++    )
++
++
++def _reference(sequence, history, weight, bias, activation):
++    """Independent CPU float64 grouped convolution (implementation uses taps)."""
++    joined = torch.cat((history.double(), sequence.double()), dim=1)
++    if sequence.shape[1] == 0:
++        return sequence.clone(), history.clone()
++    result = F.conv1d(
++        joined[None], weight.double()[:, None],
++        bias=None if bias is None else bias.double(), groups=sequence.shape[0],
++    )[0]
++    if activation is True or activation in ("silu", "swish"):
++        result = result * torch.sigmoid(result)
++    return result.to(sequence.dtype), joined[:, -history.shape[1]:].to(history.dtype)
++
++
++def _close(actual, expected):
++    if actual.dtype == torch.bfloat16:
++        rtol, atol = 8e-3, 5e-4
++    elif actual.dtype == torch.float16:
++        rtol, atol = 1e-3, 5e-5
++    else:
++        rtol, atol = 2e-5, 2e-7
++    torch.testing.assert_close(actual.cpu(), expected.cpu(), rtol=rtol, atol=atol)
++
++
++@pytest.mark.parametrize("dtype", [torch.float32, torch.float16, torch.bfloat16])
++@pytest.mark.parametrize("width", [2, 3, 4, 5])
++@pytest.mark.parametrize("width_major", [False, True])
++@pytest.mark.parametrize("activation", [None, "silu", "swish", True, False])
++def test_prefill_history_reset_padding_and_strides(device, dtype, width, width_major, activation):
++    channels, bounds = 6, [0, 1, 1, 3, 14]
++    # Two unassigned tail tokens model eager storage-capacity padding.
++    x_cpu = _random((channels, 16), dtype, seed=13)
++    weight_cpu = _random((channels, width), dtype, seed=17)
++    bias_cpu = _random((channels,), dtype, seed=19)
++    pool = _random((5, channels, width - 1), dtype, seed=23)
++    x, x_storage = _strided(x_cpu.to(device))
++    weight, _ = _strided(weight_cpu.to(device))
++    bias, _ = _strided(bias_cpu.to(device))
++    state, state_storage = _state(pool, device, width_major=width_major, strided=True)
++    expected = torch.zeros_like(x_cpu)
++    expected_pool = pool.clone()
++    slots, flags = [3, 0, -7, 1], [True, False, True, False]
++    for i, (begin, end) in enumerate(zip(bounds, bounds[1:])):
++        if slots[i] < 0 or begin == end:
++            continue
++        history = pool[slots[i]] if flags[i] else torch.zeros_like(pool[slots[i]])
++        expected[:, begin:end], expected_pool[slots[i]] = _reference(
++            x_cpu[:, begin:end], history, weight_cpu, bias_cpu, activation,
++        )
++    out = _prefill(
++        x, weight, bias, state, bounds,
++        indices=torch.tensor(slots, dtype=torch.int32, device=device),
++        initial=torch.tensor(flags, dtype=torch.bool, device=device), activation=activation,
++    )
++    assert out.dtype == dtype and out.device == x.device
++    _close(out, expected)
++    torch.testing.assert_close(x.cpu(), x_cpu, rtol=0, atol=0)
++    torch.testing.assert_close(
++        _canonical(state, width_major=width_major).cpu(), expected_pool, rtol=0, atol=0,
++    )
++    # Guard channels outside strided views must never be overwritten.
++    assert torch.all(x_storage[..., 1::2] == -91).item()
++    assert torch.all(state_storage[..., 1::2] == -91).item()
++    out.zero_()
++    torch.testing.assert_close(x.cpu(), x_cpu, rtol=0, atol=0)
++
++
++@pytest.mark.parametrize("dtype", [torch.float32, torch.float16, torch.bfloat16])
++@pytest.mark.parametrize("width_major", [False, True])
++@pytest.mark.parametrize("bias_enabled", [False, True])
++def test_full_chunk_and_one_step_parity(device, dtype, width_major, bias_enabled):
++    channels, width, batch, length = 6, 4, 3, 11
++    data = _random((batch, channels, length), dtype, seed=31)
++    weight_cpu = _random((channels, width), dtype, seed=37)
++    bias_cpu = _random((channels,), dtype, seed=41) if bias_enabled else None
++    pool = _random((5, channels, width - 1), dtype, seed=43)
++    slots, flags = [2, 0, 4], [True, False, True]
++    indices = torch.tensor(slots, dtype=torch.int64, device=device)
++    initial = torch.tensor(flags, dtype=torch.bool, device=device)
++    weight, bias = weight_cpu.to(device), None if bias_cpu is None else bias_cpu.to(device)
++    full_state, _ = _state(pool, device, width_major=width_major, strided=False)
++    packed = torch.cat(list(data), dim=1).to(device)
++    full = _prefill(
++        packed, weight, bias, full_state, [0, 11, 22, 33],
++        indices=indices, initial=initial, activation="silu",
++    )
++    references = []
++    expected_pool = pool.clone()
++    for i, slot in enumerate(slots):
++        history = pool[slot] if flags[i] else torch.zeros_like(pool[slot])
++        values, expected_pool[slot] = _reference(data[i], history, weight_cpu, bias_cpu, "silu")
++        references.append(values)
++    _close(full, torch.cat(references, dim=1))
++    torch.testing.assert_close(
++        _canonical(full_state, width_major=width_major).cpu(), expected_pool,
++        rtol=0, atol=0,
++    )
++
++    chunk_state, _ = _state(pool, device, width_major=width_major, strided=True)
++    pieces = [[] for _ in range(batch)]
++    start = 0
++    for chunk_length in (1, 2, 0, 3, 5):
++        chunk = torch.cat(list(data[:, :, start:start + chunk_length]), dim=1).to(device)
++        out = _prefill(
++            chunk, weight, bias, chunk_state,
++            [i * chunk_length for i in range(batch + 1)],
++            indices=indices,
++            initial=initial if start == 0 else torch.ones_like(initial), activation="silu",
++        )
++        for i in range(batch):
++            pieces[i].append(out[:, i * chunk_length:(i + 1) * chunk_length])
++        start += chunk_length
++    chunked = torch.cat([torch.cat(seq, dim=1) for seq in pieces], dim=1)
++    _close(chunked, full)
++    torch.testing.assert_close(chunk_state, full_state, rtol=0, atol=0)
++
++    decode_pool = pool.clone()
++    decode_pool[slots[1]].zero_()  # Greedy update always consumes its source window.
++    decode_state, _ = _state(decode_pool, device, width_major=width_major, strided=True)
++    outputs = []
++    for token in range(length):
++        x, _ = _strided(data[:, :, token].to(device))
++        out = launch_causal_conv1d_update(
++            x, decode_state, weight, bias, "silu",
++            conv_state_indices=indices, parent_indices=None, validate_data=True,
++        )
++        assert out is x
++        outputs.append(out.clone())
++    decoded = torch.stack(outputs, dim=-1)
++    _close(torch.cat(list(decoded), dim=1), full)
++    torch.testing.assert_close(decode_state, full_state, rtol=0, atol=0)
++
++
++@pytest.mark.parametrize("width_major", [False, True])
++@pytest.mark.parametrize("rank_three", [False, True])
++@pytest.mark.parametrize("dtype", [torch.float32, torch.float16, torch.bfloat16])
++@pytest.mark.parametrize("width", [2, 3, 4, 5])
++def test_update_crossing_maps_shared_sources_padding_and_strides(
++    device, width_major, rank_three, dtype, width,
++):
++    channels = 6
++    raw = _random((6, channels, 1), dtype, seed=47)
++    pool = _random((6, channels, width - 1), dtype, seed=53)
++    weight_cpu = _random((channels, width), dtype, seed=59)
++    bias_cpu = _random((channels,), dtype, seed=61)
++    sources, destinations = [1, 0, 1, -1, -7, 2], [0, 1, 3, 4, -1, -9]
++    expected = raw.clone()
++    final_pool = pool.clone()
++    for i, source in enumerate(sources):
++        if source < 0:
++            continue
++        expected[i], final = _reference(raw[i], pool[source], weight_cpu, bias_cpu, "swish")
++        if destinations[i] >= 0:
++            final_pool[destinations[i]] = final
++    x, x_storage = _strided((raw if rank_three else raw[:, :, 0]).to(device))
++    state, guard = _state(pool, device, width_major=width_major, strided=True)
++    weight, _ = _strided(weight_cpu.to(device))
++    bias, _ = _strided(bias_cpu.to(device))
++    source_indices, _ = _strided(torch.tensor(sources, dtype=torch.int32, device=device))
++    output_indices, _ = _strided(
++        torch.tensor(destinations, dtype=torch.int32, device=device)[:, None]
++    )
++    result = launch_causal_conv1d_update(
++        x, state, weight, bias, "swish", conv_state_indices=source_indices,
++        output_state_indices=output_indices, parent_indices=None,
++    )
++    assert result is x
++    _close(result, expected if rank_three else expected[:, :, 0])
++    torch.testing.assert_close(
++        _canonical(state, width_major=width_major).cpu(), final_pool, rtol=0, atol=0,
++    )
++    assert torch.all(guard[..., 1::2] == -91).item()
++    assert torch.all(x_storage[..., 1::2] == -91).item()
++
++
++@pytest.mark.parametrize("activation", [None, False, True, "silu", "swish"])
++def test_default_indices_and_initial_reset(device, activation):
++    data = _random((2, 6), torch.float32, seed=67)
++    pool = _random((2, 6, 3), torch.float32, seed=71)
++    weight = _random((6, 4), torch.float32, seed=73)
++    state = pool.to(device).clone()
++    # Absent has_initial_state means reset, even with nonzero cached data.
++    output = _prefill(
++        data.T.to(device), weight.to(device), None, state, [0, 1, 2],
++        activation=activation,
++    )
++    expected = []
++    for i in range(2):
++        value, final = _reference(
++            data[i, :, None], torch.zeros_like(pool[i]), weight, None, activation,
++        )
++        expected.append(value)
++        torch.testing.assert_close(state[i].cpu(), final, rtol=0, atol=0)
++    _close(output, torch.cat(expected, dim=1))
++    decode = pool.to(device).clone()
++    x = data.to(device).clone()
++    result = launch_causal_conv1d_update(
++        x, decode, weight.to(device), activation=activation, parent_indices=None,
++    )
++    for i in range(2):
++        value, final = _reference(data[i, :, None], pool[i], weight, None, activation)
++        _close(result[i], value[:, 0])
++        torch.testing.assert_close(decode[i].cpu(), final, rtol=0, atol=0)
++
++
++@pytest.mark.parametrize("sentinel", [-1, -9])
++def test_padding_only_skips_even_positive_destinations(device, sentinel):
++    state = _random((1, 6, 3), torch.float32, seed=103).to(device)
++    before = state.clone()
++    weight = torch.ones(6, 4, device=device)
++    indices = torch.tensor([sentinel, -31], dtype=torch.int32, device=device)
++    packed = torch.ones(6, 3, device=device)
++    out = launch_causal_conv1d_prefill(
++        packed, weight, None, state,
++        torch.tensor([0, 1, 3], dtype=torch.int32, device=device),
++        cache_indices=indices, pad_slot_id=sentinel,
++        **_schedule([0, 1, 3], device),
++    )
++    torch.testing.assert_close(out, torch.zeros_like(out), rtol=0, atol=0)
++    x = torch.ones(2, 6, device=device)
++    result = launch_causal_conv1d_update(
++        x, state, weight, conv_state_indices=indices,
++        output_state_indices=torch.tensor([[0], [-7]], device=device),
++        pad_slot_id=sentinel, parent_indices=None,
++    )
++    assert result is x
++    torch.testing.assert_close(x, torch.ones_like(x), rtol=0, atol=0)
++    torch.testing.assert_close(state, before, rtol=0, atol=0)
++
++
++def test_missing_pool_is_rejected(device):
++    x = torch.ones(1, 6, device=device)
++    weight = torch.ones(6, 4, device=device)
++    with pytest.raises(ValueError, match="requires a state pool"):
++        launch_causal_conv1d_update(x, None, weight, parent_indices=None)
++    torch.testing.assert_close(x, torch.ones_like(x), rtol=0, atol=0)
++
++
++def test_ambiguous_square_state_uses_width_major(device):
++    # Both shapes coincide at C == W-1; match the public wrapper's interpretation.
++    state = torch.arange(9, dtype=torch.float32).reshape(1, 3, 3).to(device)
++    original = state.cpu().clone()
++    weight = torch.arange(12, dtype=torch.float32).reshape(3, 4).to(device)
++    x = torch.ones(1, 3, device=device)
++    expected, final = _reference(x.cpu().T, original[0].T, weight.cpu(), None, None)
++    launch_causal_conv1d_update(x, state, weight, parent_indices=None)
++    _close(x, expected.T)
++    torch.testing.assert_close(state[0].cpu(), final.T, rtol=0, atol=0)
++
++
++@pytest.mark.parametrize("batch,length", [(2, 0), (0, 1)])
++def test_empty_sequences_and_batches(device, batch, length):
++    state = _random((2, 6, 3), torch.float32, seed=79).to(device)
++    before = state.clone()
++    weight = torch.ones(6, 4, device=device)
++    x = torch.empty(batch, 6, length, device=device)
++    assert launch_causal_conv1d_update(x, state, weight, parent_indices=None) is x
++    packed = torch.empty(6, 0, device=device)
++    out = _prefill(packed, weight, None, state, [0] * (batch + 1), activation=None)
++    assert out.shape == packed.shape
++    torch.testing.assert_close(state, before, rtol=0, atol=0)
++
++
++@pytest.mark.parametrize("option", [
++    "cache_seqlens", "num_accepted_tokens", "intermediate_conv_window", "parent_indices",
++])
++def test_reject_unsupported_options_without_mutation(device, option):
++    x = torch.ones(2, 6, device=device)
++    state = torch.ones(2, 6, 3, device=device)
++    before_x, before_state = x.clone(), state.clone()
++    kwargs = {"parent_indices": None, option: torch.zeros(2, dtype=torch.int32, device=device)}
++    with pytest.raises(ValueError, match=option):
++        launch_causal_conv1d_update(x, state, torch.ones(6, 4, device=device), **kwargs)
++    torch.testing.assert_close(x, before_x, rtol=0, atol=0)
++    torch.testing.assert_close(state, before_state, rtol=0, atol=0)
++
++
++@pytest.mark.parametrize("case,match", [
++    ("multiple_tokens", "one greedy token"),
++    ("extended_state", "extended/ring"),
++    ("activation", "activation"),
++    ("source_oob", "out-of-range"),
++    ("destination_oob", "out-of-range"),
++    ("destination_shape", "shape"),
++    ("duplicate_destination", "same state slot"),
++    ("duplicate_in_place", "same state slot"),
++    ("float_indices", "int32/int64"),
++    ("bias_shape", "bias"),
++    ("weight_shape", "weight"),
++    ("width", "widths"),
++    ("state_dtype", "input dtype"),
++    ("input_dtype", "float16"),
++    ("padding_sentinel", "negative integer"),
++    ("broadcast_state", "broadcast"),
++    ("broadcast_input", "broadcast"),
++    ("validate_flag", "validate_data"),
++])
++def test_update_validation_is_nonmutating(device, case, match):
++    x = torch.ones(2, 6, device=device)
++    state = torch.ones(4, 6, 3, device=device)
++    weight = torch.ones(6, 4, device=device)
++    kwargs = dict(parent_indices=None)
++    if case == "multiple_tokens":
++        x = torch.ones(2, 6, 2, device=device)
++    elif case == "extended_state":
++        state = torch.ones(4, 6, 7, device=device)
++    elif case == "activation":
++        kwargs["activation"] = "relu"
++    elif case == "source_oob":
++        kwargs["conv_state_indices"] = torch.tensor([0, 4], device=device)
++    elif case == "destination_oob":
++        kwargs["output_state_indices"] = torch.tensor([[1], [4]], device=device)
++    elif case == "destination_shape":
++        kwargs["output_state_indices"] = torch.tensor([0, 1], device=device)
++    elif case == "duplicate_destination":
++        kwargs["output_state_indices"] = torch.tensor([[2], [2]], device=device)
++    elif case == "duplicate_in_place":
++        kwargs["conv_state_indices"] = torch.tensor([1, 1], device=device)
++    elif case == "float_indices":
++        kwargs["conv_state_indices"] = torch.zeros(2, device=device)
++    elif case == "bias_shape":
++        kwargs["bias"] = torch.zeros(5, device=device)
++    elif case == "weight_shape":
++        weight = torch.ones(5, 4, device=device)
++    elif case == "width":
++        weight = torch.ones(6, 1, device=device)
++    elif case == "state_dtype":
++        state = state.half()
++    elif case == "input_dtype":
++        x = x.to(torch.int32)
++    elif case == "padding_sentinel":
++        kwargs["pad_slot_id"] = 0
++    elif case == "broadcast_state":
++        state = state[:1].expand(4, -1, -1)
++    elif case == "broadcast_input":
++        x = x[:1].expand(2, -1)
++    elif case == "validate_flag":
++        kwargs["validate_data"] = 1
++    before_x, before_state = x.clone(), state.clone()
++    with pytest.raises(ValueError, match=match):
++        launch_causal_conv1d_update(x, state, weight, **kwargs)
++    torch.testing.assert_close(x, before_x, rtol=0, atol=0)
++    torch.testing.assert_close(state, before_state, rtol=0, atol=0)
++
++
++@pytest.mark.parametrize("case,match", [
++    ("bounds", "monotone"),
++    ("extent", "monotone"),
++    ("flags", "bool vector"),
++    ("cache", "out-of-range"),
++    ("duplicate", "same state slot"),
++    ("missing_chunk", "cover"),
++    ("duplicate_chunk", "cover"),
++    ("bad_chunk", "invalid request/chunk"),
++    ("host_bounds", "disagree"),
++    ("block_m", "positive integer"),
++])
++def test_prefill_validation_is_nonmutating(device, case, match):
++    x = torch.ones(6, 3, device=device)
++    state = torch.ones(4, 6, 3, device=device)
++    weight = torch.ones(6, 4, device=device)
++    bounds = [0, 1, 3]
++    kwargs = _schedule(bounds, device)
++    kwargs.update(activation=None)
++    if case == "bounds":
++        bounds = [0, 4, 3]
++    elif case == "extent":
++        bounds = [0, 1, 4]
++    elif case == "flags":
++        kwargs["has_initial_state"] = torch.ones(2, dtype=torch.int32, device=device)
++    elif case == "cache":
++        kwargs["cache_indices"] = torch.tensor([0, 4], device=device)
++    elif case == "duplicate":
++        kwargs["cache_indices"] = torch.tensor([1, 1], device=device)
++    elif case == "missing_chunk":
++        kwargs["batch_indices"] = kwargs["batch_indices"][:1]
++        kwargs["chunk_offsets"] = kwargs["chunk_offsets"][:1]
++    elif case == "duplicate_chunk":
++        kwargs["batch_indices"] = torch.tensor([0, 0], dtype=torch.int32, device=device)
++    elif case == "bad_chunk":
++        kwargs["chunk_offsets"] = torch.tensor([0, 9], dtype=torch.int32, device=device)
++    elif case == "host_bounds":
++        kwargs["cu_seqlens_cpu"] = torch.tensor([0, 2, 3])
++    elif case == "block_m":
++        kwargs["block_m"] = 0
++    before_x, before_state = x.clone(), state.clone()
++    with pytest.raises(ValueError, match=match):
++        launch_causal_conv1d_prefill(
++            x, weight, None, state,
++            torch.tensor(bounds, dtype=torch.int32, device=device), **kwargs,
++        )
++    torch.testing.assert_close(x, before_x, rtol=0, atol=0)
++    torch.testing.assert_close(state, before_state, rtol=0, atol=0)
++
++
++def test_npu_public_registry_prefill_and_decode():
++    pytest.importorskip("torch_npu")
++    if not torch.npu.is_available():
++        pytest.skip("Ascend NPU required")
++    from tokenspeed_kernel.ops.attention.gdn.triton import build_causal_conv1d_prefill_metadata
++    from tokenspeed_kernel.ops.conv import causal_conv1d_fn, causal_conv1d_update
++
++    raw = _random((6, 3), torch.float32, seed=83)
++    weight = _random((6, 4), torch.float32, seed=89)
++    pool = _random((4, 6, 3), torch.float32, seed=97)
++    states = pool.npu()
++    bounds = torch.tensor([0, 1, 3], dtype=torch.int32, device="npu")
++    metadata = build_causal_conv1d_prefill_metadata(bounds, torch.tensor([1, 2]), 8)
++    result = causal_conv1d_fn(
++        raw.npu(), weight.npu(), None, states, bounds,
++        cache_indices=torch.tensor([1, 3], dtype=torch.int32, device="npu"),
++        has_initial_state=torch.tensor([True, False], device="npu"),
++        activation=None, prefill_metadata=metadata,
++    )
++    first, pool[1] = _reference(raw[:, :1], pool[1], weight, None, None)
++    second, pool[3] = _reference(raw[:, 1:], torch.zeros_like(pool[3]), weight, None, None)
++    _close(result, torch.cat((first, second), dim=1))
++    torch.testing.assert_close(states.cpu(), pool, rtol=0, atol=0)
++    # Crossed read/write maps exercise snapshot isolation through public dispatch.
++    x_cpu = _random((2, 6), torch.float32, seed=101)
++    x = x_cpu.npu()
++    expected_pool = pool.clone()
++    expected = []
++    for i, (source, destination) in enumerate(((1, 3), (3, 1))):
++        value, expected_pool[destination] = _reference(
++            x_cpu[i, :, None], pool[source], weight, None, "silu",
++        )
++        expected.append(value[:, 0])
++    result = causal_conv1d_update(
++        x, states, weight.npu(), activation="silu",
++        conv_state_indices=torch.tensor([1, 3], dtype=torch.int32, device="npu"),
++        output_state_indices=torch.tensor([[3], [1]], dtype=torch.int32, device="npu"),
++        parent_indices=None,
++    )
++    assert result is x
++    _close(result, torch.stack(expected))
++    torch.testing.assert_close(states.cpu(), expected_pool, rtol=0, atol=0)
+diff --git 1/tokenspeed-kernel-npu/test/test_gated_rmsnorm.py 2/tokenspeed-kernel-npu/test/test_gated_rmsnorm.py
+new file mode 100644
+index 0000000..ab05c89
+--- /dev/null
++++ 2/tokenspeed-kernel-npu/test/test_gated_rmsnorm.py
+@@ -0,0 +1,308 @@
++# Copyright (c) 2026 LightSeek Foundation
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++"""Independent scalar oracle on CPU and NPU; real NPU public dispatch tests."""
++
++import math
++from dataclasses import replace
++
++import pytest
++import torch
++from tokenspeed_kernel_npu.ops.gated_rmsnorm import launch_gated_rmsnorm
++
++
++@pytest.fixture(params=["cpu", "npu"])
++def device(request):
++    if request.param == "npu":
++        pytest.importorskip("torch_npu")
++        if not torch.npu.is_available():
++            pytest.skip("Ascend NPU required")
++    return request.param
++
++
++def _reference(x, weight, z, *, eps, group_size, norm_before_gate, sigmoid_gate):
++    """Scalar Python float64 oracle, no implementation/reference-op reuse."""
++    width = x.shape[-1]
++    group = width if group_size is None else group_size
++    rows = x.reshape(-1, width).tolist()
++    gates = None if z is None else z.reshape(-1, width).tolist()
++    weights = weight.tolist()
++    result = []
++    for row_index, row in enumerate(rows):
++        output = []
++        for start in range(0, width, group):
++            values = row[start : start + group]
++            activation = [1.0] * group
++            if gates is not None:
++                gate_values = gates[row_index][start : start + group]
++                activation = [1.0 / (1.0 + math.exp(-v)) for v in gate_values]
++                if not sigmoid_gate:
++                    activation = [v * a for v, a in zip(gate_values, activation)]
++                if not norm_before_gate:
++                    values = [v * a for v, a in zip(values, activation)]
++            rms = math.sqrt(math.fsum(v * v for v in values) / group + eps)
++            for col, value in enumerate(values):
++                index = col if len(weights) == group else start + col
++                y = value / rms * weights[index]
++                if norm_before_gate:
++                    y *= activation[col]
++                output.append(y)
++        result.append(output)
++    return torch.tensor(result, dtype=x.dtype).reshape(x.shape)
++
++
++def _inputs(shape, dtype, *, shared, group_size):
++    gen = torch.Generator().manual_seed(169)
++    x = (torch.randn(shape, generator=gen) * 2).to(dtype)
++    z = (torch.randn(shape, generator=gen) * 3).to(dtype)
++    width = shape[-1]
++    group = width if group_size is None else group_size
++    weight = torch.randn(group if shared else width, generator=gen).to(dtype)
++    return x, weight, z
++
++
++def _assert_close(out, expected):
++    if out.dtype == torch.bfloat16:
++        rtol, atol = 8e-3, 2e-3
++    elif out.dtype == torch.float16:
++        rtol, atol = 1e-3, 3e-4
++    else:
++        rtol, atol = 3e-6, 2e-6
++    torch.testing.assert_close(out.cpu(), expected, rtol=rtol, atol=atol)
++
++
++@pytest.mark.parametrize("dtype", [torch.float16, torch.bfloat16, torch.float32])
++@pytest.mark.parametrize("group_size", [None, 3])
++@pytest.mark.parametrize("shared", [False, True])
++@pytest.mark.parametrize("norm_before_gate", [False, True])
++@pytest.mark.parametrize("sigmoid_gate", [False, True])
++def test_gated_values(device, dtype, group_size, shared, norm_before_gate, sigmoid_gate):
++    host = _inputs((2, 3, 12), dtype, shared=shared, group_size=group_size)
++    kwargs = dict(
++        eps=0.03125,
++        group_size=group_size,
++        norm_before_gate=norm_before_gate,
++        sigmoid_gate=sigmoid_gate,
++    )
++    expected = _reference(*host, **kwargs)
++    args = tuple(t.to(device) for t in host)
++    saved = tuple(t.clone() for t in args)
++    out = launch_gated_rmsnorm(
++        *args, **kwargs, fp8_scale=None, weights_independent=shared
++    )
++    assert out.device == args[0].device
++    assert out.dtype == dtype and out.shape == args[0].shape
++    _assert_close(out, expected)
++    for tensor, original in zip(args, saved):
++        torch.testing.assert_close(tensor, original, rtol=0, atol=0)
++
++
++@pytest.mark.parametrize("shape", [(12,), (0, 12), (2, 0, 12)])
++@pytest.mark.parametrize("group_size", [None, 1, 3])
++@pytest.mark.parametrize("dtype", [torch.float16, torch.bfloat16, torch.float32])
++def test_ungated_and_empty(device, shape, group_size, dtype):
++    x, weight, _ = _inputs(shape, dtype, shared=True, group_size=group_size)
++    kwargs = dict(
++        eps=1e-6, group_size=group_size, norm_before_gate=False, sigmoid_gate=False
++    )
++    expected = _reference(x, weight, None, **kwargs)
++    source = x.to(device)
++    saved = source.clone()
++    out = launch_gated_rmsnorm(
++        source, weight.to(device), None,
++        **kwargs, fp8_scale=None, weights_independent=False,
++    )
++    assert out.dtype == dtype and out.device == source.device
++    _assert_close(out, expected)
++    if source.numel():
++        # The returned buffer must not alias input, even for FP32 and a vector.
++        out.zero_()
++        torch.testing.assert_close(source, saved, rtol=0, atol=0)
++
++
++def _strided(tensor, *, projection):
++    width = tensor.shape[-1]
++    storage = torch.empty(
++        (*tensor.shape[:-1], 3 * width), dtype=tensor.dtype, device=tensor.device
++    )
++    view = storage[..., width : 2 * width] if projection else storage[..., ::3]
++    view.copy_(tensor)
++    return view
++
++
++@pytest.mark.parametrize("projection", [False, True])
++@pytest.mark.parametrize("norm_before_gate", [False, True])
++@pytest.mark.parametrize("dtype", [torch.float16, torch.bfloat16, torch.float32])
++def test_strides_and_mixed_dtypes(device, projection, norm_before_gate, dtype):
++    x, weight, z = _inputs((2, 3, 12), dtype, shared=True, group_size=3)
++    # Independently typed gate and weight are widened, never rounded to x's dtype.
++    weight, z = weight.float() + 0.00031, z.float() + 0.00027
++    args = (
++        _strided(x.to(device), projection=projection).transpose(0, 1),
++        _strided(weight.to(device), projection=False),
++        _strided(z.to(device), projection=projection).transpose(0, 1),
++    )
++    kwargs = dict(
++        eps=1e-6, group_size=3,
++        norm_before_gate=norm_before_gate, sigmoid_gate=False,
++    )
++    expected = _reference(*(t.cpu() for t in args), **kwargs)
++    for independent in (False, True):
++        out = launch_gated_rmsnorm(
++            *args, **kwargs, fp8_scale=None, weights_independent=independent
++        )
++        _assert_close(out, expected)
++        assert out.device == args[0].device and out.dtype == dtype
++
++
++@pytest.mark.parametrize("norm_before_gate", [False, True])
++@pytest.mark.parametrize("sigmoid_gate", [False, True])
++def test_fp32_arithmetic_and_epsilon(device, norm_before_gate, sigmoid_gate):
++    # Squaring in FP16 would overflow; tiny rows distinguish additive epsilon
++    # from clamping, and extreme gates exercise SiLU/sigmoid saturation.
++    x = torch.tensor([[600, 800, -700, 300], [1e-4, -2e-4, 0, 0]], dtype=torch.float16)
++    z = torch.tensor([[80, -80, 0, 2], [-1, 1, -80, 80]], dtype=torch.float16)
++    weight = torch.tensor([0.7, -1.3, 1.1, 0.3], dtype=torch.float32)
++    kwargs = dict(
++        eps=1e-6, group_size=2,
++        norm_before_gate=norm_before_gate, sigmoid_gate=sigmoid_gate,
++    )
++    expected = _reference(x, weight, z, **kwargs)
++    out = launch_gated_rmsnorm(
++        x.to(device), weight.to(device), z.to(device),
++        **kwargs, fp8_scale=None, weights_independent=True,
++    )
++    _assert_close(out, expected)
++
++
++@pytest.mark.parametrize(
++    "change,error,match",
++    [
++        ({"x": torch.tensor(1.0)}, ValueError, "positive last dimension"),
++        ({"x": torch.empty(2, 0)}, ValueError, "positive last dimension"),
++        ({"group_size": 0}, ValueError, "positive integer"),
++        ({"group_size": -1}, ValueError, "positive integer"),
++        ({"group_size": True}, ValueError, "positive integer"),
++        ({"group_size": 2.5}, ValueError, "positive integer"),
++        ({"group_size": 5}, ValueError, "divide"),
++        ({"weight": torch.ones(2, 6)}, ValueError, "weight must have shape"),
++        ({"weight": torch.ones(11)}, ValueError, "weight must have shape"),
++        ({"z": torch.ones(1, 12)}, ValueError, "same shape"),
++        ({"x": torch.ones(2, 12, dtype=torch.int32)}, ValueError, "x must be"),
++        ({"weight": torch.ones(12, dtype=torch.int32)}, ValueError, "weight must be"),
++        ({"z": torch.ones(2, 12, dtype=torch.int32)}, ValueError, "z must be"),
++        ({"fp8_scale": torch.tensor([0.1])}, NotImplementedError, "FP8 output"),
++    ],
++)
++def test_rejects_unsupported_inputs(device, change, error, match):
++    args = dict(
++        x=torch.ones(2, 12), weight=torch.ones(12), z=torch.ones(2, 12),
++        eps=1e-6, group_size=3, norm_before_gate=True, sigmoid_gate=False,
++        fp8_scale=None, weights_independent=True,
++    )
++    args.update(change)
++    args = {k: v.to(device) if isinstance(v, torch.Tensor) else v for k, v in args.items()}
++    with pytest.raises(error, match=match):
++        launch_gated_rmsnorm(**args)
++
++
++@pytest.mark.parametrize("name", ["weight", "z"])
++def test_rejects_different_devices_cpu(name):
++    args = dict(
++        x=torch.ones(2, 12), weight=torch.ones(12), z=torch.ones(2, 12),
++        eps=1e-6, group_size=3, norm_before_gate=True, sigmoid_gate=False,
++        fp8_scale=None, weights_independent=True,
++    )
++    args[name] = args[name].to("meta")
++    with pytest.raises(ValueError, match="same device"):
++        launch_gated_rmsnorm(**args)
++
++
++@pytest.mark.parametrize("dtype", [torch.float16, torch.bfloat16, torch.float32])
++@pytest.mark.parametrize("group_size,shared", [(None, False), (128, True)])
++@pytest.mark.parametrize("norm_before_gate", [False, True])
++@pytest.mark.parametrize("sigmoid_gate", [False, True])
++def test_public_dispatch_npu(dtype, group_size, shared, norm_before_gate, sigmoid_gate):
++    pytest.importorskip("torch_npu")
++    if not torch.npu.is_available():
++        pytest.skip("Ascend NPU required")
++    from tokenspeed_kernel.ops.layernorm import gated_rmsnorm
++    from tokenspeed_kernel.selection import select_kernel
++    from tokenspeed_kernel.signature import dense_tensor_format, format_signature
++
++    host = _inputs((2, 3, 512), dtype, shared=shared, group_size=group_size)
++    x, weight, z = host
++    kwargs = dict(
++        eps=1e-6, group_size=group_size,
++        norm_before_gate=norm_before_gate, sigmoid_gate=sigmoid_gate,
++    )
++    expected = _reference(*host, **kwargs)
++    selected = select_kernel(
++        "layernorm", "gated_rmsnorm",
++        format_signature(x=dense_tensor_format(dtype)),
++        traits={"group_size": 512 if group_size is None else group_size, "fp8_out": False},
++    )
++    assert selected.name == "ascend_gated_rmsnorm"
++    out = gated_rmsnorm(
++        x.npu(), weight.npu(), _strided(z.npu(), projection=True),
++        **kwargs, fp8_scale=None, weights_independent=False,
++    )
++    assert out.device.type == "npu" and out.dtype == dtype
++    _assert_close(out, expected)
++
++
++def test_registry_rejections_and_forced_leaf_npu():
++    pytest.importorskip("torch_npu")
++    if not torch.npu.is_available():
++        pytest.skip("Ascend NPU required")
++    from tokenspeed_kernel.ops.layernorm import gated_rmsnorm  # noqa: F401
++    from tokenspeed_kernel.platform import ArchVersion, current_platform
++    from tokenspeed_kernel.selection import NoKernelFoundError, select_kernel
++    from tokenspeed_kernel.signature import dense_tensor_format, format_signature
++
++    signature = format_signature(x=dense_tensor_format(torch.float32))
++    with pytest.raises(NoKernelFoundError):
++        select_kernel(
++            "layernorm", "gated_rmsnorm", signature,
++            solution="ascend", traits={"fp8_out": True},
++        )
++    with pytest.raises(NoKernelFoundError):
++        select_kernel(
++            "layernorm", "gated_rmsnorm",
++            format_signature(x=dense_tensor_format(torch.float64)),
++            solution="ascend",
++        )
++    for vendor, arch in (("nvidia", ArchVersion(9, 0)), ("amd", ArchVersion(9, 5))):
++        with pytest.raises(NoKernelFoundError):
++            select_kernel(
++                "layernorm", "gated_rmsnorm", signature,
++                platform=replace(current_platform(), vendor=vendor, arch_version=arch),
++                solution="ascend",
++            )
++    forced = select_kernel(
++        "layernorm", "gated_rmsnorm", signature, override="ascend_gated_rmsnorm"
++    )
++    with pytest.raises(ValueError, match="NPU inputs"):
++        forced(torch.ones(2, 12), torch.ones(12), None, 1e-6, 3, True, False, None, True)
++    with pytest.raises(NotImplementedError, match="FP8 output"):
++        forced(
++            torch.ones(2, 12, device="npu"), torch.ones(12, device="npu"), None,
++            1e-6, 3, True, False, torch.tensor([0.1], device="npu"), True,
++        )
+diff --git 1/tokenspeed-kernel-npu/test/test_gdn.py 2/tokenspeed-kernel-npu/test/test_gdn.py
+new file mode 100644
+index 0000000..4a2aaac
+--- /dev/null
++++ 2/tokenspeed-kernel-npu/test/test_gdn.py
+@@ -0,0 +1,520 @@
++# Copyright (c) 2026 LightSeek Foundation
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++"""Direct CPU/device tests and NPU-only public registry integration tests.
++
++Select direct CPU tests with -k cpu, real device tests with -k npu. No mocks,
++weights, network or accelerator-to-CPU fallback are used by the implementation.
++"""
++
++import pytest
++import torch
++from tokenspeed_kernel_npu.ops.gdn import (
++    launch_gdn_chunk_prefill,
++    launch_gdn_decode_step,
++)
++
++
++@pytest.fixture(params=["cpu", "npu"])
++def device(request):
++    if request.param == "npu":
++        pytest.importorskip("torch_npu")
++        if not torch.npu.is_available():
++            pytest.skip("Ascend NPU required")
++    return request.param
++
++
++def _reference(
++    q, k, v, g, beta, initial, bounds, *, scale, normalize, round_normalized
++):
++    """Independent float64 K-major recurrence, one value head at a time."""
++    out = torch.empty(v.shape, dtype=q.dtype)
++    finals, snapshots = [], []
++    hq, hv, dim = q.shape[-2], v.shape[-2], q.shape[-1]
++    scale = dim**-0.5 if scale is None else scale
++    for seq, (begin, end) in enumerate(zip(bounds, bounds[1:])):
++        heads = [initial[seq, head].double().T.clone() for head in range(hv)]
++        history = []
++        for token in range(begin, end):
++            for head in range(hv):
++                group = head // (hv // hq)
++                query, key = q[0, token, group].double(), k[0, token, group].double()
++                if normalize:
++                    query = query / (query.dot(query) + 1e-6).sqrt()
++                    key = key / (key.dot(key) + 1e-6).sqrt()
++                    if round_normalized:
++                        query, key = query.to(q.dtype).double(), key.to(k.dtype).double()
++                decayed = heads[head] * g[0, token, head].double().exp()
++                delta = beta[0, token, head].double() * (
++                    v[0, token, head].double() - key @ decayed
++                )
++                heads[head] = decayed + torch.outer(key, delta)
++                out[0, token, head] = (query * scale) @ heads[head]
++            history.append(torch.stack([state.T for state in heads]).float())
++        finals.append(torch.stack([state.T for state in heads]).float())
++        snapshots.append(history)
++    return out, torch.stack(finals), snapshots
++
++
++def _inputs(lengths, dtype):
++    gen = torch.Generator().manual_seed(71)
++    total = sum(lengths)
++    q = (torch.randn(1, total, 2, 5, generator=gen) * 0.2).to(dtype)
++    k = (torch.randn(1, total, 2, 5, generator=gen) * 0.2).to(dtype)
++    if total:
++        # Near-zero norms distinguish additive epsilon from clamp normalization.
++        q[:, 0] = 1e-4
++        k[:, 0] = 2e-4
++    v = torch.randn(1, total, 4, 3, generator=gen).to(dtype)
++    g = -torch.rand(1, total, 4, generator=gen) * 0.3
++    beta = torch.rand(1, total, 4, generator=gen)
++    state = torch.randn(len(lengths), 4, 3, 5, generator=gen) * 0.2
++    bounds = [0]
++    for length in lengths:
++        bounds.append(bounds[-1] + length)
++    return q, k, v, g, beta, state, bounds
++
++
++def _prefill(args, device, *, normalize, final, scale, checkpoints=None):
++    q, k, v, g, beta, state, bounds = args
++    return launch_gdn_chunk_prefill(
++        q.to(device), k.to(device), v.to(device), g.to(device), beta.to(device),
++        scale=scale,
++        initial_state=state.to(device),
++        cu_seqlens=torch.tensor(bounds, dtype=torch.int32, device=device),
++        qk_l2norm=normalize,
++        output_final_state=final,
++        checkpoint_every_n_tokens=None if checkpoints is None else checkpoints[0],
++        checkpoint_states=None if checkpoints is None else checkpoints[1],
++        checkpoint_cu_starts=None if checkpoints is None else checkpoints[2],
++    )
++
++
++def _assert_close(actual, expected):
++    # FP32 recurrence and output cast: low-precision results can differ by one ULP.
++    if actual.dtype == torch.bfloat16:
++        rtol, atol = 8e-3, 4e-3
++    elif actual.dtype == torch.float16:
++        rtol, atol = 1e-3, 5e-4
++    else:
++        rtol, atol = 2e-5, 2e-6
++    torch.testing.assert_close(actual.cpu(), expected, rtol=rtol, atol=atol)
++
++
++@pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16, torch.float16])
++@pytest.mark.parametrize("normalize", [False, True])
++@pytest.mark.parametrize("scale", [None, 0.37])
++@pytest.mark.parametrize("final", [False, True])
++def test_prefill_variable_batches(device, dtype, normalize, scale, final):
++    args = _inputs([3, 0, 5], dtype)
++    q, k, v, g, beta, state, bounds = args
++    expected, expected_state, _ = _reference(
++        q, k, v, g, beta, state, bounds,
++        scale=scale, normalize=normalize, round_normalized=True,
++    )
++    source = state.to(device)
++    saved = source.clone()
++    out, last = _prefill(
++        (*args[:5], source, bounds), device,
++        normalize=normalize, final=final, scale=scale,
++    )
++    assert out.dtype == dtype
++    _assert_close(out, expected)
++    torch.testing.assert_close(source, saved, rtol=0, atol=0)
++    if final:
++        assert last.dtype == torch.float32
++        _assert_close(last, expected_state)
++        # Empty sequences carry their input checkpoint unchanged.
++        torch.testing.assert_close(last[1], source[1], rtol=0, atol=0)
++    else:
++        assert last is None
++
++
++@pytest.mark.parametrize("interval", [64, 128])
++@pytest.mark.parametrize("final", [False, True])
++def test_prefill_real_checkpoints(device, interval, final):
++    args = _inputs([65, 0, 129], torch.float32)
++    q, k, v, g, beta, state, bounds = args
++    expected, last, history = _reference(
++        q, k, v, g, beta, state, bounds,
++        scale=None, normalize=True, round_normalized=True,
++    )
++    starts = [0, 65 // interval, 65 // interval, 65 // interval + 129 // interval]
++    checkpoints = torch.full((starts[-1], 4, 3, 5), float("nan"), device=device)
++    out, final_state = _prefill(
++        args, device, normalize=True, final=final, scale=None,
++        checkpoints=(
++            interval, checkpoints,
++            torch.tensor(starts, dtype=torch.int32, device=device),
++        ),
++    )
++    _assert_close(out, expected)
++    if final:
++        _assert_close(final_state, last)
++    else:
++        assert final_state is None
++    expected_checkpoints = torch.stack([
++        sequence[t - 1]
++        for sequence in history
++        for t in range(interval, len(sequence) + 1, interval)
++    ])
++    _assert_close(checkpoints, expected_checkpoints)
++    # A resumed suffix must continue from the actual checkpoint, not the final state.
++    if interval <= 65:
++        offset = interval
++        suffix = (
++            q[:, offset:65],
++            k[:, offset:65],
++            v[:, offset:65],
++            g[:, offset:65],
++            beta[:, offset:65],
++            checkpoints[:1],
++            [0, 65 - offset],
++        )
++        resumed, resumed_state = _prefill(
++            suffix, device, normalize=True, final=True, scale=None
++        )
++        _assert_close(resumed, out[:, offset:65].cpu())
++        _assert_close(resumed_state, last[:1])
++
++
++def _strided(tensor):
++    storage = torch.empty(
++        (*tensor.shape[:-1], tensor.shape[-1] * 2),
++        dtype=tensor.dtype, device=tensor.device,
++    )
++    result = storage[..., ::2]
++    result.copy_(tensor)
++    return result
++
++
++def _decode_args(device, dtype, *, strided):
++    gen = torch.Generator().manual_seed(47)
++    tensors = dict(
++        q=(torch.randn(5, 1, 2, 5, generator=gen) * 0.1).to(dtype),
++        k=(torch.randn(5, 1, 2, 5, generator=gen) * 0.1).to(dtype),
++        v=torch.randn(5, 1, 4, 3, generator=gen).to(dtype),
++        A_log=torch.randn(4, generator=gen).to(dtype),
++        a=torch.randn(5, 1, 4, generator=gen).to(dtype),
++        dt_bias=torch.randn(4, generator=gen).to(dtype),
++        b=torch.randn(5, 1, 4, generator=gen).to(dtype),
++        initial_state=torch.randn(9, 4, 3, 5, generator=gen),
++    )
++    # Cover the linear softplus branch and near-zero forget/update gates.
++    tensors["a"][0, 0] = torch.tensor([30, -50, 0, 20], dtype=dtype)
++    tensors["q"][1].zero_()
++    tensors["k"][1].zero_()
++    tensors["q"][4] = 1e-4
++    tensors["k"][4] = 2e-4
++    tensors = {name: value.to(device) for name, value in tensors.items()}
++    if strided:
++        tensors = {name: _strided(value) for name, value in tensors.items()}
++    return tensors
++
++
++@pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16, torch.float16])
++@pytest.mark.parametrize("normalize", [False, True])
++@pytest.mark.parametrize("strided", [False, True])
++@pytest.mark.parametrize("scale", [None, 0.0, 0.29])
++def test_decode_isolation_padding_and_destinations(
++    device, dtype, normalize, strided, scale
++):
++    args = _decode_args(device, dtype, strided=strided)
++    before = args["initial_state"].clone()
++    reads, writes = [2, 0, -1, 2, 4], [5, 6, 7, -1, 8]
++    host = {name: value.cpu() for name, value in args.items()}
++    expected_pool = before.cpu().clone()
++    expected_out = torch.zeros_like(host["v"])
++    for row, (src, dst) in enumerate(zip(reads, writes)):
++        if src < 0:
++            continue
++        gate = -host["A_log"].float().exp() * torch.nn.functional.softplus(
++            host["a"][row:row + 1].float() + host["dt_bias"].float()
++        )
++        expected, last, _ = _reference(
++            host["q"][row:row + 1],
++            host["k"][row:row + 1],
++            host["v"][row:row + 1],
++            gate,
++            host["b"][row:row + 1].float().sigmoid(),
++            host["initial_state"][src:src + 1],
++            [0, 1],
++            scale=scale, normalize=normalize, round_normalized=False,
++        )
++        expected_out[row:row + 1] = expected
++        if dst >= 0:
++            expected_pool[dst] = last[0]
++    out = launch_gdn_decode_step(
++        **args,
++        initial_state_indices=torch.tensor(reads, dtype=torch.int64, device=device),
++        output_state_indices=torch.tensor(writes, dtype=torch.int32, device=device),
++        scale=scale,
++        use_qk_l2norm=normalize,
++    )
++    assert out.dtype == dtype
++    _assert_close(out, expected_out)
++    _assert_close(args["initial_state"], expected_pool)
++    untouched = torch.tensor([0, 1, 2, 3, 4, 7], device=device)
++    torch.testing.assert_close(
++        args["initial_state"][untouched], before[untouched], rtol=0, atol=0
++    )
++    torch.testing.assert_close(out[2], torch.zeros_like(out[2]), rtol=0, atol=0)
++
++
++@pytest.mark.parametrize("normalize", [False, True])
++def test_chunk_matches_repeated_decode(device, normalize):
++    args = _decode_args(device, torch.float32, strided=True)
++    q, k, v = (args[name].transpose(0, 1) for name in ("q", "k", "v"))
++    a, b = args["a"].transpose(0, 1), args["b"].transpose(0, 1)
++    g = -args["A_log"].exp() * torch.nn.functional.softplus(a + args["dt_bias"])
++    beta = b.sigmoid()
++    pool = args["initial_state"]
++    before = pool.clone()
++    prefill_args = (q, k, v, g, beta, pool[:1], [0, 5])
++    chunk_out, chunk_state = _prefill(
++        prefill_args, device, normalize=normalize, final=True, scale=None
++    )
++    steps = []
++    for token in range(5):
++        steps.append(launch_gdn_decode_step(
++            q[:, token:token + 1], k[:, token:token + 1], v[:, token:token + 1],
++            A_log=args["A_log"],
++            a=a[:, token:token + 1],
++            dt_bias=args["dt_bias"],
++            b=b[:, token:token + 1],
++            initial_state=pool, initial_state_indices=torch.tensor([0], device=device),
++            output_state_indices=None, scale=None, use_qk_l2norm=normalize,
++        ))
++    _assert_close(torch.cat(steps, dim=1), chunk_out.cpu())
++    _assert_close(pool[:1], chunk_state.cpu())
++    torch.testing.assert_close(pool[1:], before[1:], rtol=0, atol=0)
++
++
++def test_decode_crossing_sources_are_snapshotted(device):
++    args = _decode_args(device, torch.float32, strided=False)
++    before = args["initial_state"].clone()
++    reads = torch.tensor([0, 1, -1, -1, -1], device=device)
++    # A separate destination map provides the expected outputs and states.
++    separate = before.clone()
++    expected = launch_gdn_decode_step(
++        **{**args, "initial_state": separate},
++        initial_state_indices=reads,
++        output_state_indices=torch.tensor([5, 6, -1, -1, -1], device=device),
++        scale=None, use_qk_l2norm=True,
++    )
++    out = launch_gdn_decode_step(
++        **args,
++        initial_state_indices=reads,
++        output_state_indices=torch.tensor([1, 0, -1, -1, -1], device=device),
++        scale=None, use_qk_l2norm=True,
++    )
++    torch.testing.assert_close(out, expected, rtol=0, atol=0)
++    torch.testing.assert_close(args["initial_state"][0], separate[6], rtol=0, atol=0)
++    torch.testing.assert_close(args["initial_state"][1], separate[5], rtol=0, atol=0)
++    torch.testing.assert_close(args["initial_state"][2:], before[2:], rtol=0, atol=0)
++
++
++def test_unbatched_and_empty_prefill(device):
++    args = _inputs([0, 0], torch.float32)
++    out, last = _prefill(args, device, normalize=True, final=True, scale=None)
++    assert out.shape == (1, 0, 4, 3)
++    torch.testing.assert_close(last.cpu(), args[5], rtol=0, atol=0)
++    q, k, v, g, beta, state, bounds = _inputs([4], torch.float32)
++    batched, batched_state = _prefill(
++        (q, k, v, g, beta, state, bounds), device,
++        normalize=True, final=True, scale=None,
++    )
++    unbatched, unbatched_state = _prefill(
++        (q[0], k[0], v[0], g[0], beta[0], state, bounds), device,
++        normalize=True, final=True, scale=None,
++    )
++    torch.testing.assert_close(unbatched, batched[0], rtol=0, atol=0)
++    torch.testing.assert_close(unbatched_state, batched_state, rtol=0, atol=0)
++
++
++def test_grouped_heads_match_explicit_expansion(device):
++    args = _inputs([2, 3], torch.float32)
++    out, state = _prefill(
++        args, device, normalize=True, final=True, scale=None
++    )
++    q, k, *rest = args
++    expanded = (
++        q.repeat_interleave(2, dim=-2),
++        k.repeat_interleave(2, dim=-2),
++        *rest,
++    )
++    explicit_out, explicit_state = _prefill(
++        expanded, device, normalize=True, final=True, scale=None
++    )
++    torch.testing.assert_close(out, explicit_out, rtol=0, atol=0)
++    torch.testing.assert_close(state, explicit_state, rtol=0, atol=0)
++
++
++def test_decode_all_padding_empty_pool(device):
++    args = _decode_args(device, torch.float32, strided=False)
++    args["initial_state"] = args["initial_state"][:0]
++    out = launch_gdn_decode_step(
++        **args,
++        initial_state_indices=torch.full((5,), -7, device=device),
++        output_state_indices=None, scale=None, use_qk_l2norm=True,
++    )
++    torch.testing.assert_close(out, torch.zeros_like(out), rtol=0, atol=0)
++
++
++@pytest.mark.parametrize(
++    "invalid",
++    [
++        "state_dtype", "grouping", "bounds", "checkpoint_counts",
++        "checkpoint_interval", "checkpoint_alias",
++    ],
++)
++def test_prefill_rejects_invalid_contracts(device, invalid):
++    q, k, v, g, beta, state, bounds = _inputs([65], torch.float32)
++    checkpoints = None
++    if invalid == "state_dtype":
++        state = state.bfloat16()
++    elif invalid == "grouping":
++        q, k = q[:, :, :1].expand(-1, -1, 3, -1), k[:, :, :1].expand(-1, -1, 3, -1)
++    elif invalid == "bounds":
++        bounds = [0, 64]
++    elif invalid == "checkpoint_counts":
++        checkpoints = (
++            64, torch.empty(1, 4, 3, 5, device=device),
++            torch.tensor([0, 0], dtype=torch.int32, device=device),
++        )
++    elif invalid == "checkpoint_interval":
++        checkpoints = (
++            63, torch.empty(1, 4, 3, 5, device=device),
++            torch.tensor([0, 1], dtype=torch.int32, device=device),
++        )
++    elif invalid == "checkpoint_alias":
++        state = state.to(device)
++        checkpoints = (64, state, torch.tensor([0, 1], dtype=torch.int32, device=device))
++    with pytest.raises(ValueError):
++        _prefill(
++            (q, k, v, g, beta, state, bounds), device,
++            normalize=True, final=True, scale=None, checkpoints=checkpoints,
++        )
++
++
++@pytest.mark.parametrize(
++    "invalid",
++    ["state_dtype", "index_range", "duplicate_destinations", "index_dtype", "mtp"],
++)
++def test_decode_rejects_invalid_contracts_without_writes(device, invalid):
++    args = _decode_args(device, torch.float32, strided=False)
++    reads = torch.tensor([0, 1, 2, 3, 4], device=device)
++    writes = None
++    if invalid == "state_dtype":
++        args["initial_state"] = args["initial_state"].bfloat16()
++    elif invalid == "index_range":
++        reads[0] = 9
++    elif invalid == "duplicate_destinations":
++        writes = torch.tensor([5, 5, 6, 7, 8], device=device)
++    elif invalid == "index_dtype":
++        reads = reads.float()
++    elif invalid == "mtp":
++        args.update({name: args[name].expand(-1, 2, -1, -1) for name in ("q", "k", "v")})
++    before = args["initial_state"].clone()
++    with pytest.raises(ValueError):
++        launch_gdn_decode_step(
++            **args, initial_state_indices=reads, output_state_indices=writes,
++            scale=None, use_qk_l2norm=True,
++        )
++    torch.testing.assert_close(args["initial_state"], before, rtol=0, atol=0)
++
++
++def test_public_registry_npu():
++    pytest.importorskip("torch_npu")
++    if not torch.npu.is_available():
++        pytest.skip("Ascend NPU required")
++    from tokenspeed_kernel.ops.attention.gdn import (
++        GdnCheckpointLayout,
++        GdnStateCheckpoints,
++        gdn_chunk_prefill,
++        gdn_chunk_prefill_capturable,
++        gdn_chunk_prefill_stores_state_checkpoints,
++        gdn_decode_step,
++    )
++    from tokenspeed_kernel.selection import NoKernelFoundError
++
++    args = _inputs([65, 1], torch.bfloat16)
++    q, k, v, g, beta, state, bounds = args
++    expected, expected_state, history = _reference(
++        q, k, v, g, beta, state, bounds,
++        scale=0.37, normalize=True, round_normalized=True,
++    )
++    checkpoints = torch.empty(1, 4, 3, 5, device="npu")
++    kwargs = dict(
++        scale=0.37,
++        initial_state=state.npu(),
++        cu_seqlens=torch.tensor(bounds, dtype=torch.int32, device="npu"),
++        qk_l2norm=True,
++        output_final_state=True,
++        output_h=False,
++        solution="ascend",
++    )
++    result = gdn_chunk_prefill(
++        q.npu(), k.npu(), v.npu(), g.npu(), beta.npu(), **kwargs,
++        state_checkpoints=GdnStateCheckpoints(
++            64, checkpoints,
++            torch.tensor([0, 1, 1], dtype=torch.int32, device="npu"),
++        ),
++    )
++    _assert_close(result.out, expected)
++    _assert_close(result.final_state, expected_state)
++    _assert_close(checkpoints, history[0][63].unsqueeze(0))
++    assert result.h is None and result.h_cu_starts is None
++    assert result.h_layout == GdnCheckpointLayout.NONE
++    geometry = dict(
++        head_dim=5, value_head_dim=3, num_q_heads=2,
++        num_v_heads=4, qk_l2norm=True,
++    )
++    assert not gdn_chunk_prefill_capturable(torch.bfloat16, **geometry)
++    assert gdn_chunk_prefill_stores_state_checkpoints(
++        torch.bfloat16, **geometry, interval_granularity=64
++    )
++    with pytest.raises(NoKernelFoundError):
++        gdn_chunk_prefill(
++            q.npu(), k.npu(), v.npu(), g.npu(), beta.npu(),
++            **{**kwargs, "output_h": True},
++        )
++    with pytest.raises(ValueError, match="output_h"):
++        gdn_chunk_prefill(
++            q.npu(), k.npu(), v.npu(), g.npu(), beta.npu(),
++            **{**kwargs, "output_h": True}, override="ascend_gdn_chunk_prefill",
++        )
++
++    decode = _decode_args("npu", torch.bfloat16, strided=True)
++    read = torch.tensor([0, 1, -1, 2, 3], device="npu")
++    write = torch.tensor([5, 6, -1, 7, 8], device="npu")
++    before = decode["initial_state"].clone()
++    expected_pool = before.clone()
++    expected_out = launch_gdn_decode_step(
++        **{**decode, "initial_state": expected_pool},
++        initial_state_indices=read, output_state_indices=write,
++        scale=None, use_qk_l2norm=False,
++    )
++    public_out = gdn_decode_step(
++        **decode, initial_state_indices=read, output_state_indices=write,
++        scale=None, use_qk_l2norm=False, solution="ascend",
++    )
++    torch.testing.assert_close(public_out, expected_out, rtol=0, atol=0)
++    torch.testing.assert_close(decode["initial_state"], expected_pool, rtol=0, atol=0)
+diff --git 1/tokenspeed-kernel-npu/test/test_gemma_layer.py 2/tokenspeed-kernel-npu/test/test_gemma_layer.py
+new file mode 100644
+index 0000000..2dd1977
+--- /dev/null
++++ 2/tokenspeed-kernel-npu/test/test_gemma_layer.py
+@@ -0,0 +1,237 @@
++# Copyright (c) 2026 LightSeek Foundation
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++"""Real Ascend Gemma layer and kernel facade, checked against a CPU FP64 oracle."""
++
++import pytest
++import torch
++
++
++@pytest.fixture
++def npu():
++    pytest.importorskip("torch_npu")
++    if not torch.npu.is_available():
++        pytest.skip("Ascend Gemma RMSNorm tests require an NPU")
++    return torch.device("npu", torch.npu.current_device())
++
++
++def _reference(x, weight, eps, residual=None):
++    # Only the oracle runs on CPU. Round the residual add before its statistics.
++    values = x.double()
++    if residual is not None:
++        values = (values + residual.double()).to(x.dtype).double()
++    out = values / (values.square().mean(dim=-1, keepdim=True) + eps).sqrt()
++    return (out * (1.0 + weight.double())).to(x.dtype), values.to(x.dtype)
++
++
++def _inputs(rows, width, dtype):
++    generator = torch.Generator().manual_seed(169)
++    x = (torch.randn(rows, width, generator=generator) * 2).to(dtype)
++    residual = torch.randn(rows, width, generator=generator).to(dtype)
++    weight = (torch.randn(width, generator=generator) * 0.4).to(dtype)
++    return x, residual, weight
++
++
++def _layer(weight, eps, device):
++    from tokenspeed.runtime.layers.layernorm import GemmaRMSNorm
++
++    layer = GemmaRMSNorm(weight.numel(), eps=eps).to(device=device, dtype=weight.dtype)
++    layer.weight.weight_loader(layer.weight, weight.to(device))
++    return layer
++
++
++def _assert_close(actual, expected):
++    if expected.dtype == torch.bfloat16:
++        rtol, atol = 8e-3, 2e-3
++    elif expected.dtype == torch.float16:
++        rtol, atol = 1e-3, 3e-4
++    else:
++        rtol, atol = 3e-6, 2e-6
++    torch.testing.assert_close(actual.cpu(), expected, rtol=rtol, atol=atol)
++
++
++@pytest.mark.parametrize("api", ["facade", "layer"])
++@pytest.mark.parametrize("dtype", [torch.float16, torch.bfloat16, torch.float32])
++@pytest.mark.parametrize("width", [128, 512, 4096])
++@pytest.mark.parametrize("with_residual", [False, True])
++def test_gemma_values(npu, api, dtype, width, with_residual):
++    from tokenspeed_kernel.ops.layernorm import gemma_rmsnorm
++
++    host_x, host_residual, weight = _inputs(7, width, dtype)
++    eps = 0.03125
++    expected, expected_residual = _reference(
++        host_x, weight, eps, host_residual if with_residual else None
++    )
++    x, residual = host_x.to(npu), host_residual.to(npu)
++    if api == "facade":
++        result = gemma_rmsnorm(
++            x, weight.to(npu), eps, residual=residual if with_residual else None
++        )
++    else:
++        result = _layer(weight, eps, npu)(x, residual if with_residual else None)
++    if with_residual:
++        out, residual_out = result
++        assert out is x and residual_out is residual
++        torch.testing.assert_close(residual.cpu(), expected_residual, rtol=0, atol=0)
++    else:
++        out = result
++        torch.testing.assert_close(x.cpu(), host_x, rtol=0, atol=0)
++    assert out.device == npu and out.dtype == dtype
++    _assert_close(out, expected)
++
++
++@pytest.mark.parametrize("activation_dtype", [torch.bfloat16, torch.float32])
++def test_weight_offset_is_not_rounded_to_bf16(npu, activation_dtype):
++    from tokenspeed_kernel.ops.layernorm import gemma_rmsnorm
++
++    # 1 + 2^-8 is halfway between BF16 values at 1. Rounding gamma to BF16
++    # would lose the offset before the multiply, including with FP32 activations.
++    x = torch.tensor([[1.0, 1.0, 1.0, 2.0] * 32], dtype=activation_dtype)
++    weight = torch.full((128,), 2**-8, dtype=torch.bfloat16)
++    expected, _ = _reference(x, weight, 0.03125)
++    rounded_gamma_result, _ = _reference(x, torch.zeros_like(weight), 0.03125)
++    assert not torch.equal(expected, rounded_gamma_result)
++    out = gemma_rmsnorm(x.to(npu), weight.to(npu), 0.03125)
++    if activation_dtype == torch.bfloat16:
++        torch.testing.assert_close(out.cpu(), expected, rtol=0, atol=0)
++    else:
++        _assert_close(out, expected)
++
++
++def test_residual_rounds_before_statistics(npu):
++    # The add is a BF16 tie and rounds back to 1. With eps=4, normalizing
++    # the unrounded 1 + 2^-8 would produce a different BF16 output.
++    x = torch.ones(2, 128, dtype=torch.bfloat16)
++    residual = torch.full_like(x, 2**-8)
++    weight = torch.zeros(128, dtype=x.dtype)
++    expected, expected_residual = _reference(x, weight, 4.0, residual)
++    unrounded = x.double() + residual.double()
++    unrounded = (
++        unrounded / (unrounded.square().mean(-1, keepdim=True) + 4).sqrt()
++    ).to(x.dtype)
++    assert not torch.equal(expected, unrounded)
++    device_x, device_residual = x.to(npu), residual.to(npu)
++    out, updated = _layer(weight, 4.0, npu)(device_x, device_residual)
++    assert out is device_x and updated is device_residual
++    torch.testing.assert_close(out.cpu(), expected, rtol=0, atol=0)
++    torch.testing.assert_close(updated.cpu(), expected_residual, rtol=0, atol=0)
++
++
++@pytest.mark.parametrize("reload", ["weight_loader", "state_dict"])
++@pytest.mark.parametrize(
++    "method", ["forward", "add_norm_with_fp8", "add_norm_with_fp4"]
++)
++def test_reloaded_weights_and_unquantized_add_norm(npu, reload, method):
++    x, residual, weight = _inputs(3, 512, torch.bfloat16)
++    eps = 1e-6
++    layer = _layer(weight, eps, npu)
++    for loaded in (weight, weight * -0.5 + 0.00390625):
++        if reload == "weight_loader":
++            layer.weight.weight_loader(layer.weight, loaded.to(npu))
++        else:
++            layer.load_state_dict({"weight": loaded.to(npu)})
++        expected, expected_residual = _reference(x, loaded, eps, residual)
++        device_x, device_residual = x.to(npu), residual.to(npu)
++        if method == "forward":
++            out, updated = layer(device_x, device_residual)
++        elif method == "add_norm_with_fp8":
++            out, quantized, updated = layer.add_norm_with_fp8(
++                device_x, device_residual, None
++            )
++            assert quantized is None
++        else:
++            out, quantized, updated = layer.add_norm_with_fp4(
++                device_x, device_residual, None
++            )
++            assert quantized is None
++        assert out is device_x and updated is device_residual
++        assert out.device == npu
++        _assert_close(out, expected)
++        torch.testing.assert_close(updated.cpu(), expected_residual, rtol=0, atol=0)
++        # Also exercise the no-residual path after each reload.
++        expected_plain, _ = _reference(x, loaded, eps)
++        _assert_close(layer(x.to(npu)), expected_plain)
++
++
++@pytest.mark.parametrize("rows", [0, 2])
++@pytest.mark.parametrize("scales", ["fp8", "fp4", "both"])
++def test_facade_rejects_quantization_before_mutating_inputs(npu, rows, scales):
++    from tokenspeed_kernel.ops.layernorm import gemma_add_rmsnorm
++
++    x, residual, weight = _inputs(rows, 128, torch.bfloat16)
++    device_x, device_residual = x.to(npu), residual.to(npu)
++    scale = torch.tensor([0.1], device=npu)
++    with pytest.raises(NotImplementedError, match="FP8 or FP4"):
++        gemma_add_rmsnorm(
++            device_x,
++            device_residual,
++            weight.to(npu),
++            1e-6,
++            fp8_scale=scale if scales in ("fp8", "both") else None,
++            fp4_scale=scale if scales in ("fp4", "both") else None,
++            fp4_copy_supported=False,
++        )
++    torch.testing.assert_close(device_x.cpu(), x, rtol=0, atol=0)
++    torch.testing.assert_close(device_residual.cpu(), residual, rtol=0, atol=0)
++
++
++@pytest.mark.parametrize("method", ["add_norm_with_fp8", "add_norm_with_fp4"])
++@pytest.mark.parametrize("rows", [0, 2])
++def test_layer_rejects_quantization(npu, method, rows):
++    x, residual, weight = _inputs(rows, 128, torch.bfloat16)
++    layer = _layer(weight, 1e-6, npu)
++    device_x, device_residual = x.to(npu), residual.to(npu)
++    scale = torch.tensor([0.1], device=npu)
++    with pytest.raises(NotImplementedError, match="FP8 or FP4"):
++        if method == "add_norm_with_fp8":
++            layer.add_norm_with_fp8(device_x, device_residual, scale)
++        else:
++            layer.add_norm_with_fp4(device_x, device_residual, scale)
++    torch.testing.assert_close(device_x.cpu(), x, rtol=0, atol=0)
++    torch.testing.assert_close(device_residual.cpu(), residual, rtol=0, atol=0)
++
++
++def test_empty_layer_preserves_identity(npu):
++    x = torch.empty(0, 128, dtype=torch.bfloat16, device=npu)
++    residual = torch.empty_like(x)
++    layer = _layer(torch.zeros(128, dtype=x.dtype), 1e-6, npu)
++    assert layer(x) is x
++    out, updated = layer(x, residual)
++    assert out is x and updated is residual
++    for method in (layer.add_norm_with_fp8, layer.add_norm_with_fp4):
++        out, quantized, updated = method(x, residual, None)
++        assert out is x and updated is residual and quantized is None
++
++
++@pytest.mark.parametrize("bad_residual", ["shape", "dtype", "device"])
++def test_residual_contract_is_not_silently_broadcast_or_cast(npu, bad_residual):
++    from tokenspeed_kernel.ops.layernorm import gemma_rmsnorm
++
++    x = torch.ones(2, 128, dtype=torch.bfloat16, device=npu)
++    weight = torch.zeros(128, dtype=x.dtype, device=npu)
++    if bad_residual == "shape":
++        residual = torch.ones(1, 128, dtype=x.dtype, device=npu)
++    elif bad_residual == "dtype":
++        residual = torch.ones_like(x, dtype=torch.float32)
++    else:
++        residual = torch.ones(2, 128, dtype=x.dtype)
++    with pytest.raises(ValueError, match="residual"):
++        gemma_rmsnorm(x, weight, 1e-6, residual=residual)
++    torch.testing.assert_close(x.cpu(), torch.ones_like(x.cpu()), rtol=0, atol=0)
+diff --git 1/tokenspeed-kernel-npu/test/test_mha_d256.py 2/tokenspeed-kernel-npu/test/test_mha_d256.py
+new file mode 100644
+index 0000000..8ec3bc4
+--- /dev/null
++++ 2/tokenspeed-kernel-npu/test/test_mha_d256.py
+@@ -0,0 +1,490 @@
++# Copyright (c) 2026 LightSeek Foundation
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++"""Real Ascend MHA against an independent CPU FP64 attention oracle."""
++
++import itertools
++import math
++
++import pytest
++import torch
++
++try:
++    import torch_npu  # noqa: F401
++except ModuleNotFoundError as exc:
++    if exc.name != "torch_npu":
++        raise
++    pytest.skip("torch_npu is not installed", allow_module_level=True)
++
++from tokenspeed_kernel_npu.ops import mha as native_mha
++
++
++@pytest.fixture(autouse=True)
++def require_npu():
++    # An installed but broken Ascend stack must fail, not silently skip.
++    assert torch.npu.is_available(), "These tests require a visible Ascend NPU"
++
++
++@pytest.fixture(params=["native", "registry"])
++def ops(request):
++    if request.param == "native":
++        return native_mha, {}
++    from tokenspeed_kernel.ops.attention import mha
++
++    return mha, {"solution": "torch_npu"}
++
++
++def _offsets(lengths):
++    return list(itertools.accumulate(lengths, initial=0))
++
++
++def _metadata(values):
++    return torch.tensor(values, dtype=torch.int32, device="npu")
++
++
++def _randn(shape, dtype, generator):
++    return torch.randn(shape, generator=generator).to(dtype)
++
++
++def _reference(q, k, v, *, causal, scale):
++    """CPU-only FP64 GQA, including bottom-right causal suffix alignment."""
++    assert q.device.type == k.device.type == v.device.type == "cpu"
++    if not q.shape[0]:
++        return q.double()
++    groups = q.shape[1] // k.shape[1]
++    keys = k.double().repeat_interleave(groups, dim=1)
++    values = v.double().repeat_interleave(groups, dim=1)
++    logits = q.double().transpose(0, 1) @ keys.permute(1, 2, 0) * scale
++    if causal:
++        last_visible = k.shape[0] - q.shape[0] + torch.arange(q.shape[0])
++        mask = torch.arange(k.shape[0])[None, :] > last_visible[:, None]
++        logits.masked_fill_(mask[None, :, :], -math.inf)
++    probabilities = torch.softmax(logits, dim=-1)
++    return (probabilities @ values.transpose(0, 1)).transpose(0, 1)
++
++
++def _assert_result(actual, expected, query):
++    assert actual.shape == query.shape
++    assert actual.dtype == query.dtype
++    assert actual.device == query.device
++    atol, rtol = (3e-3, 8e-3) if query.dtype == torch.bfloat16 else (4e-4, 1e-3)
++    torch.testing.assert_close(actual.cpu().double(), expected, atol=atol, rtol=rtol)
++
++
++def _paged_case(q_lengths, kv_lengths, *, dtype, head_dim, page_size):
++    generator = torch.Generator().manual_seed(256)
++    width = max(1, math.ceil(max(kv_lengths, default=0) / page_size))
++    pages = len(q_lengths) * width + 2
++    # Unique shuffled physical pages, with spare pages never referenced.
++    table = torch.randperm(pages - 2, generator=generator).reshape(-1, width)
++    q = _randn((sum(q_lengths), 8, head_dim), dtype, generator)
++    k = _randn((pages, page_size, 2, head_dim), dtype, generator)
++    v = _randn(k.shape, dtype, generator)
++    return q, k, v, table.to(torch.int32)
++
++
++def _paged_reference(q, k, v, table, q_lengths, kv_lengths, *, causal, scale):
++    pieces = []
++    offsets = _offsets(q_lengths)
++    for batch, (start, end) in enumerate(zip(offsets[:-1], offsets[1:])):
++        length = kv_lengths[batch]
++        keys = k[table[batch].long()].flatten(0, 1)[:length]
++        values = v[table[batch].long()].flatten(0, 1)[:length]
++        pieces.append(
++            _reference(q[start:end], keys, values, causal=causal, scale=scale)
++        )
++    return torch.cat(pieces) if pieces else q.double()
++
++
++def _extend(module, dispatch, q, k, v, table, q_lengths, kv_lengths, *, causal, scale):
++    return module.mha_extend_with_kvcache(
++        q=q,
++        cu_seqlens_q=_metadata(_offsets(q_lengths)),
++        cu_seqlens_kv=_metadata(_offsets(kv_lengths)),
++        k_cache=k,
++        v_cache=v,
++        page_table=table,
++        cache_seqlens=_metadata(kv_lengths),
++        max_seqlen_q=max(q_lengths, default=0),
++        max_seqlen_k=max(kv_lengths, default=0),
++        is_causal=causal,
++        softmax_scale=scale,
++        **dispatch,
++    )
++
++
++@pytest.mark.parametrize("dtype", [torch.bfloat16, torch.float16])
++@pytest.mark.parametrize("scale", [None, 0.125, 0.0])
++@pytest.mark.parametrize(
++    "lengths", [[], [0], [0, 0, 0], [0, 1, 5, 0, 3, 0], [3, 129, 7]]
++)
++def test_packed_prefill(ops, dtype, scale, lengths):
++    module, dispatch = ops
++    offsets = _offsets(lengths)
++    generator = torch.Generator().manual_seed(91)
++    host_q = _randn((sum(lengths), 8, 256), dtype, generator)
++    host_k = _randn((sum(lengths), 2, 256), dtype, generator)
++    host_v = _randn(host_k.shape, dtype, generator)
++    q, k, v = (tensor.to("npu") for tensor in (host_q, host_k, host_v))
++    saved = [tensor.clone() for tensor in (q, k, v)]
++    output = module.mha_prefill(
++        q,
++        k,
++        v,
++        _metadata(offsets),
++        offsets,
++        max(lengths, default=0),
++        softmax_scale=scale,
++        **dispatch,
++    )
++    pieces = [
++        _reference(
++            host_q[start:end],
++            host_k[start:end],
++            host_v[start:end],
++            causal=True,
++            scale=1 / 16 if scale is None else scale,
++        )
++        for start, end in zip(offsets[:-1], offsets[1:])
++    ]
++    _assert_result(output, torch.cat(pieces) if pieces else host_q.double(), q)
++    for tensor, original in zip((q, k, v), saved):
++        torch.testing.assert_close(tensor, original, atol=0, rtol=0)
++
++
++@pytest.mark.parametrize("dtype", [torch.bfloat16, torch.float16])
++@pytest.mark.parametrize("causal", [False, True])
++@pytest.mark.parametrize("page_size", [64, 128])
++@pytest.mark.parametrize("scale", [None, 0.125])
++def test_paged_extend(ops, dtype, causal, page_size, scale):
++    module, dispatch = ops
++    q_lengths, kv_lengths = [0, 3, 1, 7, 0], [0, 129, 63, 199, 0]
++    host = _paged_case(
++        q_lengths, kv_lengths, dtype=dtype, head_dim=256, page_size=page_size
++    )
++    q, k, v, table = (tensor.to("npu") for tensor in host)
++    saved = [tensor.clone() for tensor in (q, k, v, table)]
++    output = _extend(
++        module,
++        dispatch,
++        q,
++        k,
++        v,
++        table,
++        q_lengths,
++        kv_lengths,
++        causal=causal,
++        scale=scale,
++    )
++    expected = _paged_reference(
++        *host,
++        q_lengths,
++        kv_lengths,
++        causal=causal,
++        scale=1 / 16 if scale is None else scale,
++    )
++    _assert_result(output, expected, q)
++    for tensor, original in zip((q, k, v, table), saved):
++        torch.testing.assert_close(tensor, original, atol=0, rtol=0)
++
++
++@pytest.mark.parametrize("q_lengths,kv_lengths", [([], []), ([0, 0], [0, 129])])
++@pytest.mark.parametrize("dtype", [torch.bfloat16, torch.float16])
++@pytest.mark.parametrize("causal", [False, True])
++def test_empty_extend(ops, q_lengths, kv_lengths, dtype, causal):
++    module, dispatch = ops
++    host = _paged_case(q_lengths, kv_lengths, dtype=dtype, head_dim=256, page_size=128)
++    q, k, v, table = (tensor.to("npu") for tensor in host)
++    output = _extend(
++        module,
++        dispatch,
++        q,
++        k,
++        v,
++        table,
++        q_lengths,
++        kv_lengths,
++        causal=causal,
++        scale=None,
++    )
++    _assert_result(output, host[0].double(), q)
++
++
++@pytest.mark.parametrize("dtype", [torch.bfloat16, torch.float16])
++def test_prefill_request_and_future_isolation(ops, dtype):
++    module, dispatch = ops
++    generator = torch.Generator().manual_seed(32)
++    q = _randn((8, 8, 256), dtype, generator).to("npu")
++    k = _randn((8, 2, 256), dtype, generator).to("npu")
++    v = _randn(k.shape, dtype, generator).to("npu")
++    offsets = [0, 3, 8]
++    cumulative = _metadata(offsets)
++    before = module.mha_prefill(q, k, v, cumulative, offsets, 5, **dispatch)
++    # Neither a future token in request 0 nor request 1 can affect token 0.
++    k[2:].fill_(2)
++    v[2:].fill_(-3)
++    after = module.mha_prefill(q, k, v, cumulative, offsets, 5, **dispatch)
++    torch.testing.assert_close(after[:2], before[:2], atol=0, rtol=0)
++    assert not torch.equal(after[2:], before[2:])
++
++
++@pytest.mark.parametrize("causal", [False, True])
++@pytest.mark.parametrize("dtype", [torch.bfloat16, torch.float16])
++def test_extend_request_length_and_future_isolation(ops, causal, dtype):
++    module, dispatch = ops
++    q_lengths, kv_lengths = [3, 5], [130, 199]
++    host = _paged_case(q_lengths, kv_lengths, dtype=dtype, head_dim=256, page_size=128)
++    q, k, v, table = (tensor.to("npu") for tensor in host)
++    before = _extend(
++        module,
++        dispatch,
++        q,
++        k,
++        v,
++        table,
++        q_lengths,
++        kv_lengths,
++        causal=causal,
++        scale=None,
++    )
++    # Change another request, unused physical pages, and padding past length.
++    other_pages = host[3][1].long().to("npu")
++    k[other_pages] = 2
++    v[other_pages] = -3
++    k[-2:] = 2
++    v[-2:] = -3
++    last_page = int(host[3][0, 1])
++    k[last_page, 2:] = 2
++    v[last_page, 2:] = -3
++    after = _extend(
++        module,
++        dispatch,
++        q,
++        k,
++        v,
++        table,
++        q_lengths,
++        kv_lengths,
++        causal=causal,
++        scale=None,
++    )
++    torch.testing.assert_close(after[:3], before[:3], atol=0, rtol=0)
++    assert not torch.equal(after[3:], before[3:])
++    # The final cached token is future only for the first two suffix queries.
++    k[last_page, 1] = 2
++    v[last_page, 1] = -3
++    future = _extend(
++        module,
++        dispatch,
++        q,
++        k,
++        v,
++        table,
++        q_lengths,
++        kv_lengths,
++        causal=causal,
++        scale=None,
++    )
++    if causal:
++        torch.testing.assert_close(future[:2], after[:2], atol=0, rtol=0)
++    else:
++        assert not torch.equal(future[:2], after[:2])
++
++
++@pytest.mark.parametrize("head_dim", [64, 256])
++@pytest.mark.parametrize("dtype", [torch.bfloat16, torch.float16])
++def test_decode_regression(ops, head_dim, dtype):
++    module, dispatch = ops
++    q_lengths, kv_lengths = [1, 1], [129, 199]
++    host = _paged_case(
++        q_lengths, kv_lengths, dtype=dtype, head_dim=head_dim, page_size=128
++    )
++    q, k, v, table = (tensor.to("npu") for tensor in host)
++    output = module.mha_decode_with_kvcache(
++        q,
++        k,
++        v,
++        table,
++        _metadata(kv_lengths),
++        max(kv_lengths),
++        max_seqlen_q=1,
++        softmax_scale=0.125,
++        **dispatch,
++    )
++    expected = _paged_reference(
++        *host, q_lengths, kv_lengths, causal=False, scale=0.125
++    )
++    _assert_result(output, expected, q)
++
++
++@pytest.mark.parametrize("causal", [False, True])
++def test_other_head_dim_prefill_extend_regression(ops, causal):
++    module, dispatch = ops
++    lengths = [3, 5]
++    host = _paged_case(
++        lengths, lengths, dtype=torch.bfloat16, head_dim=64, page_size=128
++    )
++    q, k, v, table = (tensor.to("npu") for tensor in host)
++    output = _extend(
++        module,
++        dispatch,
++        q,
++        k,
++        v,
++        table,
++        lengths,
++        lengths,
++        causal=causal,
++        scale=0.125,
++    )
++    expected = _paged_reference(*host, lengths, lengths, causal=causal, scale=0.125)
++    _assert_result(output, expected, q)
++    keys = torch.cat([host[1][host[3][i, 0], :n] for i, n in enumerate(lengths)])
++    values = torch.cat([host[2][host[3][i, 0], :n] for i, n in enumerate(lengths)])
++    offsets = _offsets(lengths)
++    output = module.mha_prefill(
++        q,
++        keys.to("npu"),
++        values.to("npu"),
++        _metadata(offsets),
++        offsets,
++        5,
++        softmax_scale=0.125,
++        **dispatch,
++    )
++    expected = _paged_reference(*host, lengths, lengths, causal=True, scale=0.125)
++    _assert_result(output, expected, q)
++
++
++@pytest.mark.parametrize("operation,option,message",
++    [
++        (operation, option, message)
++        for operation in ("prefill", "extend")
++        for option, message in [
++            ({"window_left": 0}, "sliding windows"),
++            ({"logit_cap": 1.0}, "logit caps"),
++            ({"sinks": True}, "attention sinks"),
++            ({"return_lse": True}, "return LSE"),
++        ]
++    ]
++    + [
++        ("extend", {name: True}, "scaled FP8")
++        for name in ("q_scale", "k_scale", "v_scale")
++    ],
++)
++def test_unsupported_options(operation, option, message):
++    q = torch.zeros((0, 8, 256), dtype=torch.bfloat16, device="npu")
++    k = torch.zeros((1, 128, 2, 256), dtype=q.dtype, device=q.device)
++    options = {
++        name: (
++            torch.ones(8, device=q.device)
++            if value is True and name != "return_lse"
++            else value
++        )
++        for name, value in option.items()
++    }
++    with pytest.raises(NotImplementedError, match=message):
++        if operation == "prefill":
++            native_mha.mha_prefill(
++                q, k[0, :0], k[0, :0], _metadata([0, 0]), [0, 0], 0, **options
++            )
++        else:
++            native_mha.mha_extend_with_kvcache(
++                q,
++                _metadata([0, 0]),
++                _metadata([0, 0]),
++                k,
++                k,
++                _metadata([[0]]),
++                _metadata([0]),
++                0,
++                0,
++                **options,
++            )
++
++
++@pytest.mark.parametrize("operation", ["prefill", "extend"])
++def test_d256_capture_rejected(ops, operation):
++    module, dispatch = ops
++    lengths = [3]
++    host = _paged_case(
++        lengths, lengths, dtype=torch.bfloat16, head_dim=256, page_size=128
++    )
++    q, k, v, table = (tensor.to("npu") for tensor in host)
++    offsets = [0, 3]
++    cumulative = _metadata(offsets)
++    cache_lengths = _metadata(lengths)
++    keys, values = k[0, :3].contiguous(), v[0, :3].contiguous()
++    graph = torch.npu.NPUGraph()
++    torch.npu.synchronize()
++    with pytest.raises(NotImplementedError, match="eager execution only"):
++        with torch.npu.graph(
++            graph, stream=torch.npu.Stream(), auto_dispatch_capture=True
++        ):
++            if operation == "prefill":
++                module.mha_prefill(q, keys, values, cumulative, offsets, 3, **dispatch)
++            else:
++                module.mha_extend_with_kvcache(
++                    q,
++                    cumulative,
++                    cumulative,
++                    k,
++                    v,
++                    table,
++                    cache_lengths,
++                    3,
++                    3,
++                    is_causal=True,
++                    **dispatch,
++                )
++
++
++@pytest.mark.parametrize("dtype", [torch.bfloat16, torch.float16])
++def test_d256_decode_graph_updates_lengths(ops, dtype):
++    module, dispatch = ops
++    q_lengths, kv_lengths = [1, 1], [129, 199]
++    host = _paged_case(
++        q_lengths, kv_lengths, dtype=dtype, head_dim=256, page_size=128
++    )
++    q, k, v, table = (tensor.to("npu") for tensor in host)
++    capture_lengths = _metadata([1, 1])
++
++    def decode():
++        return module.mha_decode_with_kvcache(
++            q, k, v, table, capture_lengths, 256, max_seqlen_q=1, **dispatch
++        )
++
++    for _ in range(3):
++        decode()
++    torch.npu.synchronize()
++    graph = torch.npu.NPUGraph()
++    with torch.npu.graph(
++        graph, stream=torch.npu.Stream(), auto_dispatch_capture=True
++    ):
++        output = decode()
++    torch.npu.synchronize()
++    for lengths in ([129, 199], [17, 135]):
++        graph.update(cpu_update_input=[{"actual_seq_lengths_kv": lengths}])
++        graph.replay()
++        torch.npu.synchronize()
++        expected = _paged_reference(
++            *host, q_lengths, lengths, causal=False, scale=1 / 16
++        )
++        _assert_result(output, expected, q)
+diff --git 1/tokenspeed-kernel/python/tokenspeed_kernel/ops/attention/gdn/ascend.py 2/tokenspeed-kernel/python/tokenspeed_kernel/ops/attention/gdn/ascend.py
+new file mode 100644
+index 0000000..47dc9f6
+--- /dev/null
++++ 2/tokenspeed-kernel/python/tokenspeed_kernel/ops/attention/gdn/ascend.py
+@@ -0,0 +1,155 @@
++# Copyright (c) 2026 LightSeek Foundation
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++"""Registry adapters for correctness-first, eager Ascend GDN scans."""
++
++from __future__ import annotations
++
++import torch
++from tokenspeed_kernel.ops.attention.gdn import (
++    GdnChunkPrefillResult,
++    GdnStateCheckpoints,
++)
++from tokenspeed_kernel.platform import CapabilityRequirement
++from tokenspeed_kernel.registry import Priority, register_kernel
++from tokenspeed_kernel.signature import format_signatures
++from tokenspeed_kernel_npu.ops.gdn import (
++    launch_gdn_chunk_prefill,
++    launch_gdn_decode_step,
++)
++
++
++@register_kernel(
++    "attention",
++    "gdn_chunk_prefill",
++    name="ascend_gdn_chunk_prefill",
++    solution="ascend",
++    capability=CapabilityRequirement(vendors=frozenset({"ascend"})),
++    signatures=format_signatures(
++        ("q", "k", "v"), "dense", {torch.float16, torch.bfloat16, torch.float32}
++    ),
++    priority=Priority.PORTABLE,
++    traits={
++        "num_v_gte_num_q": frozenset({True}),
++        "output_h": frozenset({False}),
++        "qk_l2norm": frozenset({False, True}),
++        "state_checkpoints": frozenset({False, True}),
++    },
++)
++def ascend_gdn_chunk_prefill(
++    q: torch.Tensor,
++    k: torch.Tensor,
++    v: torch.Tensor,
++    g: torch.Tensor,
++    beta: torch.Tensor,
++    *,
++    scale: float | None,
++    initial_state: torch.Tensor,
++    cu_seqlens: torch.Tensor,
++    qk_l2norm: bool,
++    output_final_state: bool,
++    output_h: bool,
++    state_checkpoints: GdnStateCheckpoints | None,
++) -> GdnChunkPrefillResult:
++    """Return the shared structured result, with K-last FP32 final state.
++
++    Arguments follow gdn_chunk_prefill. Backend-native output_h is unsupported;
++    caller-owned GdnStateCheckpoints are stored during the recurrence instead.
++    All execution and metadata synchronization live in tokenspeed-kernel-npu.
++    """
++    if output_h:
++        raise ValueError("Ascend GDN does not support backend-native output_h")
++    if q.device.type != "npu":
++        raise ValueError("Ascend GDN requires NPU inputs")
++    out, final_state = launch_gdn_chunk_prefill(
++        q=q,
++        k=k,
++        v=v,
++        g=g,
++        beta=beta,
++        scale=scale,
++        initial_state=initial_state,
++        cu_seqlens=cu_seqlens,
++        qk_l2norm=qk_l2norm,
++        output_final_state=output_final_state,
++        checkpoint_every_n_tokens=(
++            None
++            if state_checkpoints is None
++            else state_checkpoints.every_n_tokens
++        ),
++        checkpoint_states=(
++            None if state_checkpoints is None else state_checkpoints.states
++        ),
++        checkpoint_cu_starts=(
++            None if state_checkpoints is None else state_checkpoints.cu_starts
++        ),
++    )
++    return GdnChunkPrefillResult(out=out, final_state=final_state)
++
++
++@register_kernel(
++    "attention",
++    "gdn_decode_step",
++    name="ascend_gdn_decode_step",
++    solution="ascend",
++    capability=CapabilityRequirement(vendors=frozenset({"ascend"})),
++    signatures=format_signatures(
++        ("q", "k", "v"), "dense", {torch.float16, torch.bfloat16, torch.float32}
++    ),
++    priority=Priority.PORTABLE,
++    traits={"strided_qkv": frozenset({False, True})},
++)
++def ascend_gdn_decode_step(
++    q: torch.Tensor,
++    k: torch.Tensor,
++    v: torch.Tensor,
++    *,
++    A_log: torch.Tensor,
++    a: torch.Tensor,
++    dt_bias: torch.Tensor,
++    b: torch.Tensor,
++    initial_state: torch.Tensor,
++    initial_state_indices: torch.Tensor,
++    scale: float | None,
++    output_state_indices: torch.Tensor | None,
++    use_qk_l2norm: bool,
++) -> torch.Tensor:
++    """Return [B,1,HV,V] in q.dtype, writing the requested FP32 pool rows.
++
++    Arguments follow gdn_decode_step, including separate read/write indices,
++    negative padding indices, custom scale, normalization and strided Q/K/V.
++    This eager implementation is not graph-capturable and has no MTP variant.
++    """
++    if q.device.type != "npu":
++        raise ValueError("Ascend GDN requires NPU inputs")
++    return launch_gdn_decode_step(
++        q=q,
++        k=k,
++        v=v,
++        A_log=A_log,
++        a=a,
++        dt_bias=dt_bias,
++        b=b,
++        initial_state=initial_state,
++        initial_state_indices=initial_state_indices,
++        scale=scale,
++        output_state_indices=output_state_indices,
++        use_qk_l2norm=use_qk_l2norm,
++    )
+diff --git 1/tokenspeed-kernel/python/tokenspeed_kernel/ops/conv/ascend.py 2/tokenspeed-kernel/python/tokenspeed_kernel/ops/conv/ascend.py
+new file mode 100644
+index 0000000..566f0d5
+--- /dev/null
++++ 2/tokenspeed-kernel/python/tokenspeed_kernel/ops/conv/ascend.py
+@@ -0,0 +1,145 @@
++# Copyright (c) 2026 LightSeek Foundation
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++"""Ascend-only registry leaves for eager causal-convolution prefill/decode."""
++
++from __future__ import annotations
++
++import torch
++from tokenspeed_kernel.ops.attention.gdn.triton import CausalConv1dPrefillMetadata
++from tokenspeed_kernel.platform import CapabilityRequirement
++from tokenspeed_kernel.registry import Priority, register_kernel
++from tokenspeed_kernel.signature import format_signatures
++from tokenspeed_kernel_npu.ops.conv import (
++    launch_causal_conv1d_prefill,
++    launch_causal_conv1d_update,
++)
++
++_CONV_DTYPES = {torch.float16, torch.bfloat16, torch.float32}
++_STATE_LAYOUTS = frozenset({"channel_major", "width_major"})
++_WIDTHS = frozenset({2, 3, 4, 5})
++
++
++@register_kernel(
++    "conv",
++    "causal_conv1d_prefill",
++    name="ascend_causal_conv1d_prefill",
++    solution="ascend",
++    capability=CapabilityRequirement(vendors=frozenset({"ascend"})),
++    signatures=format_signatures("x", "dense", _CONV_DTYPES),
++    # Beat the ungated Triton leaf without claiming an optimized implementation.
++    priority=Priority.PORTABLE + 1,
++    traits={"width": _WIDTHS, "state_layout": _STATE_LAYOUTS},
++)
++def ascend_causal_conv1d_prefill(
++    x: torch.Tensor,
++    weight: torch.Tensor,
++    bias: torch.Tensor | None,
++    conv_states: torch.Tensor,
++    query_start_loc: torch.Tensor,
++    cache_indices: torch.Tensor | None = None,
++    has_initial_state: torch.Tensor | None = None,
++    activation: str | None = "silu",
++    pad_slot_id: int = -1,
++    validate_data=False,
++    *,
++    prefill_metadata: CausalConv1dPrefillMetadata,
++) -> torch.Tensor:
++    """Return separate [C,T] output and update the indexed raw-input windows.
++
++    Arguments and mutation follow causal_conv1d_fn, including its required
++    per-forward metadata. The implementation validates every supplied schedule
++    field; CPU execution is available only through the direct NPU-package helper.
++    """
++    if x.device.type != "npu":
++        raise ValueError("Ascend causal convolution requires NPU inputs")
++    if prefill_metadata is None:
++        raise ValueError("prefill_metadata is required")
++    return launch_causal_conv1d_prefill(
++        x=x,
++        weight=weight,
++        bias=bias,
++        conv_states=conv_states,
++        query_start_loc=query_start_loc,
++        cache_indices=cache_indices,
++        has_initial_state=has_initial_state,
++        activation=activation,
++        pad_slot_id=pad_slot_id,
++        validate_data=validate_data,
++        batch_indices=prefill_metadata.batch_indices,
++        chunk_offsets=prefill_metadata.chunk_offsets,
++        block_m=prefill_metadata.block_m,
++        cu_seqlens_cpu=prefill_metadata.cu_seqlens_cpu,
++    )
++
++
++@register_kernel(
++    "conv",
++    "causal_conv1d_update",
++    name="ascend_causal_conv1d_update",
++    solution="ascend",
++    capability=CapabilityRequirement(vendors=frozenset({"ascend"})),
++    signatures=format_signatures("x", "dense", _CONV_DTYPES),
++    priority=Priority.PORTABLE + 1,
++    traits={
++        "width": _WIDTHS,
++        "state_layout": _STATE_LAYOUTS,
++        "tree": frozenset({False}),
++    },
++)
++def ascend_causal_conv1d_update(
++    x: torch.Tensor,
++    conv_state: torch.Tensor,
++    weight: torch.Tensor,
++    bias: torch.Tensor | None = None,
++    activation: bool | str | None = None,
++    cache_seqlens: torch.Tensor | None = None,
++    conv_state_indices: torch.Tensor | None = None,
++    num_accepted_tokens: torch.Tensor | None = None,
++    intermediate_conv_window: torch.Tensor | None = None,
++    output_state_indices: torch.Tensor | None = None,
++    pad_slot_id: int = -1,
++    validate_data=False,
++    *,
++    parent_indices: torch.Tensor | None,
++) -> torch.Tensor:
++    """Overwrite/return x for greedy decode with separate source/destination slots.
++
++    Arguments follow causal_conv1d_update. Ring, accepted-token, intermediate,
++    tree and multi-token update requests fail explicitly, never lose arguments.
++    See tokenspeed-kernel-npu/docs/causal-conv.md for exact supported contracts.
++    """
++    if x.device.type != "npu":
++        raise ValueError("Ascend causal convolution requires NPU inputs")
++    return launch_causal_conv1d_update(
++        x=x,
++        conv_state=conv_state,
++        weight=weight,
++        bias=bias,
++        activation=activation,
++        cache_seqlens=cache_seqlens,
++        conv_state_indices=conv_state_indices,
++        num_accepted_tokens=num_accepted_tokens,
++        intermediate_conv_window=intermediate_conv_window,
++        output_state_indices=output_state_indices,
++        pad_slot_id=pad_slot_id,
++        validate_data=validate_data,
++        parent_indices=parent_indices,
++    )

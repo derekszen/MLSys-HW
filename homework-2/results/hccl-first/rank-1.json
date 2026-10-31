@@ -1,0 +1,15 @@
+{
+  "backend": "hccl",
+  "device_name": "Ascend910_9362",
+  "error": "Traceback (most recent call last):\n  File \"/home/u2501213387/MLSys-HW/homework-2/scripts/hccl_smoke.py\", line 237, in worker\n    record[\"checks\"] = run_collectives(torch, dist, rank)\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/u2501213387/MLSys-HW/homework-2/scripts/hccl_smoke.py\", line 186, in run_collectives\n    dist.all_reduce(value, op=dist.ReduceOp.SUM)\n  File \"/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch/distributed/c10d_logger.py\", line 81, in wrapper\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py\", line 2935, in all_reduce\n    work = group.allreduce([tensor], opts)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: create_config:build/CMakeFiles/torch_npu.dir/compiler_depend.ts:130 HCCL function error: hcclCommInitRootInfoConfig(numRanks, &rootInfo, rank, config, &(comm->hcclComm_)), error code is 7\n[ERROR] 2026-10-24-00:50:08 (PID:2666879, Device:1, RankID:-1) ERR02200 DIST call hccl api failed.\n[PID: 2666879] 2026-10-24-00:50:08.797.930 Communication_Error_Bind_IP_Port(EI0020): Failed to enable listening for the NPU network adapter socket. Reason: The IP address 192.168.3.198 and port 16666 have already been bound.\n        Solution: Check whether the single-card multi-process scenario is used. If yes, configure the port number using the environment variable HCCL_NPU_SOCKET_PORT_RANGE.\n\n",
+  "logical_device": 1,
+  "passed": false,
+  "physical_device_requested": "1",
+  "pid": 2666879,
+  "rank": 1,
+  "run_id": "38b0379cc2b74a1d85467cc3fb42d5e5",
+  "torch_npu_version": "2.9.0",
+  "torch_version": "2.9.0+cpu",
+  "visible_devices": "0,1",
+  "world_size": 2
+}

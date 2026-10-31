@@ -1,0 +1,989 @@
+{
+  "config": {
+    "model": "/home/u2501213387/MLSys-HW/homework-1/models/Qwen3.5-0.8B",
+    "device": "npu",
+    "dtype": "bfloat16",
+    "language_model_only": true,
+    "trust_remote_code": false,
+    "max_model_len": 512,
+    "max_num_seqs": 2,
+    "max_total_tokens": 16384,
+    "chunked_prefill_size": 128,
+    "max_prefill_tokens": 128,
+    "gpu_memory_utilization": 0.12,
+    "mamba_ssm_dtype": "float32",
+    "sampling_backend": "greedy",
+    "enforce_eager": true,
+    "disable_prefill_graph": true,
+    "disable_pdl": true,
+    "disable_autotune": true,
+    "enable_output_logprobs": false,
+    "seed": 42,
+    "log_level": "info",
+    "port": 31887,
+    "enable_prefix_caching": false,
+    "disable_kvstore": true,
+    "stream_interval": 1
+  },
+  "physical_device": 1,
+  "method": "perf_counter at client; TTFT=start to first token; TPOT=(last-first)/(N-1); includes scheduling/IPC, not pure kernel time",
+  "concurrency": 1,
+  "repeats": 3,
+  "samples": [
+    {
+      "input_tokens": 32,
+      "output_tokens": 8,
+      "repeat": 0,
+      "ttft_ms": 244.5138101466,
+      "tpot_ms": 68.88611857513231,
+      "total_ms": 726.7332100309432,
+      "arrivals": [
+        {
+          "tokens": 1,
+          "seconds": 0.2445138101466
+        },
+        {
+          "tokens": 2,
+          "seconds": 0.31484503019601107
+        },
+        {
+          "tokens": 3,
+          "seconds": 0.38375741010531783
+        },
+        {
+          "tokens": 4,
+          "seconds": 0.4522723800037056
+        },
+        {
+          "tokens": 5,
+          "seconds": 0.5208058999851346
+        },
+        {
+          "tokens": 6,
+          "seconds": 0.5894324800465256
+        },
+        {
+          "tokens": 7,
+          "seconds": 0.6578086600638926
+        },
+        {
+          "tokens": 8,
+          "seconds": 0.7267166401725262
+        }
+      ],
+      "output_ids": [
+        9064,
+        11988,
+        33625,
+        13016,
+        1518,
+        28043,
+        4906,
+        13
+      ],
+      "cached_tokens": 0
+    },
+    {
+      "input_tokens": 32,
+      "output_tokens": 8,
+      "repeat": 1,
+      "ttft_ms": 245.9033199120313,
+      "tpot_ms": 67.72211716244263,
+      "total_ms": 719.9719198979437,
+      "arrivals": [
+        {
+          "tokens": 1,
+          "seconds": 0.2459033199120313
+        },
+        {
+          "tokens": 2,
+          "seconds": 0.3142331999260932
+        },
+        {
+          "tokens": 3,
+          "seconds": 0.3807955600786954
+        },
+        {
+          "tokens": 4,
+          "seconds": 0.44884468987584114
+        },
+        {
+          "tokens": 5,
+          "seconds": 0.5173593598883599
+        },
+        {
+          "tokens": 6,
+          "seconds": 0.58503751992248
+        },
+        {
+          "tokens": 7,
+          "seconds": 0.6527938100043684
+        },
+        {
+          "tokens": 8,
+          "seconds": 0.7199581400491297
+        }
+      ],
+      "output_ids": [
+        9064,
+        11988,
+        33625,
+        13016,
+        1518,
+        28043,
+        4906,
+        13
+      ],
+      "cached_tokens": 0
+    },
+    {
+      "input_tokens": 32,
+      "output_tokens": 8,
+      "repeat": 2,
+      "ttft_ms": 242.90955998003483,
+      "tpot_ms": 67.66790570691228,
+      "total_ms": 716.6022800374776,
+      "arrivals": [
+        {
+          "tokens": 1,
+          "seconds": 0.24290955998003483
+        },
+        {
+          "tokens": 2,
+          "seconds": 0.3115754898171872
+        },
+        {
+          "tokens": 3,
+          "seconds": 0.37884047999978065
+        },
+        {
+          "tokens": 4,
+          "seconds": 0.4459313899278641
+        },
+        {
+          "tokens": 5,
+          "seconds": 0.5131219299510121
+        },
+        {
+          "tokens": 6,
+          "seconds": 0.5801942399702966
+        },
+        {
+          "tokens": 7,
+          "seconds": 0.6476582000032067
+        },
+        {
+          "tokens": 8,
+          "seconds": 0.7165848999284208
+        }
+      ],
+      "output_ids": [
+        9064,
+        11988,
+        33625,
+        13016,
+        1518,
+        28043,
+        4906,
+        13
+      ],
+      "cached_tokens": 0
+    },
+    {
+      "input_tokens": 32,
+      "output_tokens": 16,
+      "repeat": 0,
+      "ttft_ms": 187.32964992523193,
+      "tpot_ms": 65.76499467094739,
+      "total_ms": 1173.815320013091,
+      "arrivals": [
+        {
+          "tokens": 1,
+          "seconds": 0.18732964992523193
+        },
+        {
+          "tokens": 2,
+          "seconds": 0.2552807000465691
+        },
+        {
+          "tokens": 3,
+          "seconds": 0.322554379934445
+        },
+        {
+          "tokens": 4,
+          "seconds": 0.3894894700497389
+        },
+        {
+          "tokens": 5,
+          "seconds": 0.456545959925279
+        },
+        {
+          "tokens": 6,
+          "seconds": 0.5231839099433273
+        },
+        {
+          "tokens": 7,
+          "seconds": 0.5882691899314523
+        },
+        {
+          "tokens": 8,
+          "seconds": 0.6534741900395602
+        },
+        {
+          "tokens": 9,
+          "seconds": 0.7186129300389439
+        },
+        {
+          "tokens": 10,
+          "seconds": 0.7837079800665379
+        },
+        {
+          "tokens": 11,
+          "seconds": 0.8489190400578082
+        },
+        {
+          "tokens": 12,
+          "seconds": 0.913827280048281
+        },
+        {
+          "tokens": 13,
+          "seconds": 0.9787324399221689
+        },
+        {
+          "tokens": 14,
+          "seconds": 1.043771409895271
+        },
+        {
+          "tokens": 15,
+          "seconds": 1.1086532999761403
+        },
+        {
+          "tokens": 16,
+          "seconds": 1.1738045699894428
+        }
+      ],
+      "output_ids": [
+        9064,
+        11988,
+        33625,
+        13016,
+        1518,
+        28043,
+        4906,
+        13,
+        12588,
+        6618,
+        5757,
+        15491,
+        34780,
+        3983,
+        440,
+        10727
+      ],
+      "cached_tokens": 0
+    },
+    {
+      "input_tokens": 32,
+      "output_tokens": 16,
+      "repeat": 1,
+      "ttft_ms": 237.39214008674026,
+      "tpot_ms": 67.01989333766203,
+      "total_ms": 1242.6999302115291,
+      "arrivals": [
+        {
+          "tokens": 1,
+          "seconds": 0.23739214008674026
+        },
+        {
+          "tokens": 2,
+          "seconds": 0.3042656402103603
+        },
+        {
+          "tokens": 3,
+          "seconds": 0.37244857009500265
+        },
+        {
+          "tokens": 4,
+          "seconds": 0.44050966016948223
+        },
+        {
+          "tokens": 5,
+          "seconds": 0.5085648901294917
+        },
+        {
+          "tokens": 6,
+          "seconds": 0.5762905802112073
+        },
+        {
+          "tokens": 7,
+          "seconds": 0.644129830179736
+        },
+        {
+          "tokens": 8,
+          "seconds": 0.7109180900733918
+        },
+        {
+          "tokens": 9,
+          "seconds": 0.7767091700807214
+        },
+        {
+          "tokens": 10,
+          "seconds": 0.8424663601908833
+        },
+        {
+          "tokens": 11,
+          "seconds": 0.9083681302145123
+        },
+        {
+          "tokens": 12,
+          "seconds": 0.9741430201102048
+        },
+        {
+          "tokens": 13,
+          "seconds": 1.0400191200897098
+        },
+        {
+          "tokens": 14,
+          "seconds": 1.107664740178734
+        },
+        {
+          "tokens": 15,
+          "seconds": 1.1751814300660044
+        },
+        {
+          "tokens": 16,
+          "seconds": 1.2426905401516706
+        }
+      ],
+      "output_ids": [
+        9064,
+        11988,
+        33625,
+        13016,
+        1518,
+        28043,
+        4906,
+        13,
+        12588,
+        6618,
+        5757,
+        15491,
+        34780,
+        3983,
+        440,
+        10727
+      ],
+      "cached_tokens": 0
+    },
+    {
+      "input_tokens": 32,
+      "output_tokens": 16,
+      "repeat": 2,
+      "ttft_ms": 241.15508003160357,
+      "tpot_ms": 67.86403600126505,
+      "total_ms": 1259.1253800783306,
+      "arrivals": [
+        {
+          "tokens": 1,
+          "seconds": 0.24115508003160357
+        },
+        {
+          "tokens": 2,
+          "seconds": 0.31211627018637955
+        },
+        {
+          "tokens": 3,
+          "seconds": 0.3916640200186521
+        },
+        {
+          "tokens": 4,
+          "seconds": 0.4578166902065277
+        },
+        {
+          "tokens": 5,
+          "seconds": 0.5241406201384962
+        },
+        {
+          "tokens": 6,
+          "seconds": 0.5904301500413567
+        },
+        {
+          "tokens": 7,
+          "seconds": 0.6567560001276433
+        },
+        {
+          "tokens": 8,
+          "seconds": 0.7231253101490438
+        },
+        {
+          "tokens": 9,
+          "seconds": 0.7895113402046263
+        },
+        {
+          "tokens": 10,
+          "seconds": 0.855861040065065
+        },
+        {
+          "tokens": 11,
+          "seconds": 0.9223400100599974
+        },
+        {
+          "tokens": 12,
+          "seconds": 0.9901735000312328
+        },
+        {
+          "tokens": 13,
+          "seconds": 1.0572685301303864
+        },
+        {
+          "tokens": 14,
+          "seconds": 1.124362840084359
+        },
+        {
+          "tokens": 15,
+          "seconds": 1.1916556200012565
+        },
+        {
+          "tokens": 16,
+          "seconds": 1.2591156200505793
+        }
+      ],
+      "output_ids": [
+        9064,
+        11988,
+        33625,
+        13016,
+        1518,
+        28043,
+        4906,
+        13,
+        12588,
+        6618,
+        5757,
+        15491,
+        34780,
+        3983,
+        440,
+        10727
+      ],
+      "cached_tokens": 0
+    },
+    {
+      "input_tokens": 256,
+      "output_tokens": 8,
+      "repeat": 0,
+      "ttft_ms": 968.349760165438,
+      "tpot_ms": 67.49661998557193,
+      "total_ms": 1440.8412601333112,
+      "arrivals": [
+        {
+          "tokens": 1,
+          "seconds": 0.9683497601654381
+        },
+        {
+          "tokens": 2,
+          "seconds": 1.0361055100802332
+        },
+        {
+          "tokens": 3,
+          "seconds": 1.1032517300918698
+        },
+        {
+          "tokens": 4,
+          "seconds": 1.1704312099609524
+        },
+        {
+          "tokens": 5,
+          "seconds": 1.237835300154984
+        },
+        {
+          "tokens": 6,
+          "seconds": 1.3049427601508796
+        },
+        {
+          "tokens": 7,
+          "seconds": 1.3722488300409168
+        },
+        {
+          "tokens": 8,
+          "seconds": 1.4408261000644416
+        }
+      ],
+      "output_ids": [
+        1518,
+        28043,
+        4906,
+        13,
+        12588,
+        6618,
+        5757,
+        15491
+      ],
+      "cached_tokens": 0
+    },
+    {
+      "input_tokens": 256,
+      "output_tokens": 8,
+      "repeat": 1,
+      "ttft_ms": 1009.3422699719667,
+      "tpot_ms": 62.42909714845674,
+      "total_ms": 1446.3615401182324,
+      "arrivals": [
+        {
+          "tokens": 1,
+          "seconds": 1.0093422699719667
+        },
+        {
+          "tokens": 2,
+          "seconds": 1.071623899973929
+        },
+        {
+          "tokens": 3,
+          "seconds": 1.1340001900680363
+        },
+        {
+          "tokens": 4,
+          "seconds": 1.1960785500705242
+        },
+        {
+          "tokens": 5,
+          "seconds": 1.2583193499594927
+        },
+        {
+          "tokens": 6,
+          "seconds": 1.3207815899513662
+        },
+        {
+          "tokens": 7,
+          "seconds": 1.3832991800736636
+        },
+        {
+          "tokens": 8,
+          "seconds": 1.446345950011164
+        }
+      ],
+      "output_ids": [
+        1518,
+        28043,
+        4906,
+        13,
+        12588,
+        6618,
+        5757,
+        15491
+      ],
+      "cached_tokens": 0
+    },
+    {
+      "input_tokens": 256,
+      "output_tokens": 8,
+      "repeat": 2,
+      "ttft_ms": 1063.6548199690878,
+      "tpot_ms": 68.9336471259594,
+      "total_ms": 1546.205349965021,
+      "arrivals": [
+        {
+          "tokens": 1,
+          "seconds": 1.0636548199690878
+        },
+        {
+          "tokens": 2,
+          "seconds": 1.1329712399747223
+        },
+        {
+          "tokens": 3,
+          "seconds": 1.201335659949109
+        },
+        {
+          "tokens": 4,
+          "seconds": 1.269886390073225
+        },
+        {
+          "tokens": 5,
+          "seconds": 1.3382498899009079
+        },
+        {
+          "tokens": 6,
+          "seconds": 1.4084615400061011
+        },
+        {
+          "tokens": 7,
+          "seconds": 1.4773974600248039
+        },
+        {
+          "tokens": 8,
+          "seconds": 1.5461903498508036
+        }
+      ],
+      "output_ids": [
+        1518,
+        28043,
+        4906,
+        13,
+        12588,
+        6618,
+        5757,
+        15491
+      ],
+      "cached_tokens": 0
+    },
+    {
+      "input_tokens": 256,
+      "output_tokens": 16,
+      "repeat": 0,
+      "ttft_ms": 962.8294298890978,
+      "tpot_ms": 63.91253533462683,
+      "total_ms": 1921.538949944079,
+      "arrivals": [
+        {
+          "tokens": 1,
+          "seconds": 0.9628294298890978
+        },
+        {
+          "tokens": 2,
+          "seconds": 1.029898829990998
+        },
+        {
+          "tokens": 3,
+          "seconds": 1.0959977901075035
+        },
+        {
+          "tokens": 4,
+          "seconds": 1.162374220089987
+        },
+        {
+          "tokens": 5,
+          "seconds": 1.2286327800247818
+        },
+        {
+          "tokens": 6,
+          "seconds": 1.2952263599727303
+        },
+        {
+          "tokens": 7,
+          "seconds": 1.3615158901084214
+        },
+        {
+          "tokens": 8,
+          "seconds": 1.428264840040356
+        },
+        {
+          "tokens": 9,
+          "seconds": 1.4895309200510383
+        },
+        {
+          "tokens": 10,
+          "seconds": 1.5507793000433594
+        },
+        {
+          "tokens": 11,
+          "seconds": 1.6124205600935966
+        },
+        {
+          "tokens": 12,
+          "seconds": 1.6742877999786288
+        },
+        {
+          "tokens": 13,
+          "seconds": 1.7361227399669588
+        },
+        {
+          "tokens": 14,
+          "seconds": 1.7977040400728583
+        },
+        {
+          "tokens": 15,
+          "seconds": 1.85948954988271
+        },
+        {
+          "tokens": 16,
+          "seconds": 1.9215174599085003
+        }
+      ],
+      "output_ids": [
+        1518,
+        28043,
+        4906,
+        13,
+        12588,
+        6618,
+        5757,
+        15491,
+        34780,
+        3983,
+        440,
+        10727,
+        11436,
+        13,
+        357,
+        14294
+      ],
+      "cached_tokens": 0
+    },
+    {
+      "input_tokens": 256,
+      "output_tokens": 16,
+      "repeat": 1,
+      "ttft_ms": 978.78571995534,
+      "tpot_ms": 66.91637133869033,
+      "total_ms": 1982.5573600828648,
+      "arrivals": [
+        {
+          "tokens": 1,
+          "seconds": 0.97878571995534
+        },
+        {
+          "tokens": 2,
+          "seconds": 1.040703359991312
+        },
+        {
+          "tokens": 3,
+          "seconds": 1.1072615198791027
+        },
+        {
+          "tokens": 4,
+          "seconds": 1.173911009915173
+        },
+        {
+          "tokens": 5,
+          "seconds": 1.2407371199224144
+        },
+        {
+          "tokens": 6,
+          "seconds": 1.3090742898639292
+        },
+        {
+          "tokens": 7,
+          "seconds": 1.3763735198881477
+        },
+        {
+          "tokens": 8,
+          "seconds": 1.4433646900579333
+        },
+        {
+          "tokens": 9,
+          "seconds": 1.509703469928354
+        },
+        {
+          "tokens": 10,
+          "seconds": 1.5763797699473798
+        },
+        {
+          "tokens": 11,
+          "seconds": 1.6433682199567556
+        },
+        {
+          "tokens": 12,
+          "seconds": 1.7111303398851305
+        },
+        {
+          "tokens": 13,
+          "seconds": 1.778386059915647
+        },
+        {
+          "tokens": 14,
+          "seconds": 1.8455840898677707
+        },
+        {
+          "tokens": 15,
+          "seconds": 1.9138038700912148
+        },
+        {
+          "tokens": 16,
+          "seconds": 1.9825312900356948
+        }
+      ],
+      "output_ids": [
+        1518,
+        28043,
+        4906,
+        13,
+        12588,
+        6618,
+        5757,
+        15491,
+        34780,
+        3983,
+        440,
+        10727,
+        11436,
+        13,
+        357,
+        14294
+      ],
+      "cached_tokens": 0
+    },
+    {
+      "input_tokens": 256,
+      "output_tokens": 16,
+      "repeat": 2,
+      "ttft_ms": 1030.777859967202,
+      "tpot_ms": 67.11129333513479,
+      "total_ms": 2037.4656801577657,
+      "arrivals": [
+        {
+          "tokens": 1,
+          "seconds": 1.030777859967202
+        },
+        {
+          "tokens": 2,
+          "seconds": 1.0967757699545473
+        },
+        {
+          "tokens": 3,
+          "seconds": 1.162662270013243
+        },
+        {
+          "tokens": 4,
+          "seconds": 1.2287155999802053
+        },
+        {
+          "tokens": 5,
+          "seconds": 1.295012790011242
+        },
+        {
+          "tokens": 6,
+          "seconds": 1.361278560012579
+        },
+        {
+          "tokens": 7,
+          "seconds": 1.427683040034026
+        },
+        {
+          "tokens": 8,
+          "seconds": 1.49411513004452
+        },
+        {
+          "tokens": 9,
+          "seconds": 1.5604899900499731
+        },
+        {
+          "tokens": 10,
+          "seconds": 1.6275971201248467
+        },
+        {
+          "tokens": 11,
+          "seconds": 1.6943942301440984
+        },
+        {
+          "tokens": 12,
+          "seconds": 1.7613341801334172
+        },
+        {
+          "tokens": 13,
+          "seconds": 1.829634980065748
+        },
+        {
+          "tokens": 14,
+          "seconds": 1.8987169100437313
+        },
+        {
+          "tokens": 15,
+          "seconds": 1.967509820125997
+        },
+        {
+          "tokens": 16,
+          "seconds": 2.0374472599942237
+        }
+      ],
+      "output_ids": [
+        1518,
+        28043,
+        4906,
+        13,
+        12588,
+        6618,
+        5757,
+        15491,
+        34780,
+        3983,
+        440,
+        10727,
+        11436,
+        13,
+        357,
+        14294
+      ],
+      "cached_tokens": 0
+    }
+  ],
+  "summary": [
+    {
+      "input_tokens": 32,
+      "output_tokens": 8,
+      "ttft_ms": {
+        "median": 244.5138101466,
+        "min": 242.90955998003483,
+        "max": 245.9033199120313
+      },
+      "tpot_ms": {
+        "median": 67.72211716244263,
+        "min": 67.66790570691228,
+        "max": 68.88611857513231
+      },
+      "total_ms": {
+        "median": 719.9719198979437,
+        "min": 716.6022800374776,
+        "max": 726.7332100309432
+      }
+    },
+    {
+      "input_tokens": 32,
+      "output_tokens": 16,
+      "ttft_ms": {
+        "median": 237.39214008674026,
+        "min": 187.32964992523193,
+        "max": 241.15508003160357
+      },
+      "tpot_ms": {
+        "median": 67.01989333766203,
+        "min": 65.76499467094739,
+        "max": 67.86403600126505
+      },
+      "total_ms": {
+        "median": 1242.6999302115291,
+        "min": 1173.815320013091,
+        "max": 1259.1253800783306
+      }
+    },
+    {
+      "input_tokens": 256,
+      "output_tokens": 8,
+      "ttft_ms": {
+        "median": 1009.3422699719667,
+        "min": 968.349760165438,
+        "max": 1063.6548199690878
+      },
+      "tpot_ms": {
+        "median": 67.49661998557193,
+        "min": 62.42909714845674,
+        "max": 68.9336471259594
+      },
+      "total_ms": {
+        "median": 1446.3615401182324,
+        "min": 1440.8412601333112,
+        "max": 1546.205349965021
+      }
+    },
+    {
+      "input_tokens": 256,
+      "output_tokens": 16,
+      "ttft_ms": {
+        "median": 978.78571995534,
+        "min": 962.8294298890978,
+        "max": 1030.777859967202
+      },
+      "tpot_ms": {
+        "median": 66.91637133869033,
+        "min": 63.91253533462683,
+        "max": 67.11129333513479
+      },
+      "total_ms": {
+        "median": 1982.5573600828648,
+        "min": 1921.538949944079,
+        "max": 2037.4656801577657
+      }
+    }
+  ],
+  "passed": true
+}

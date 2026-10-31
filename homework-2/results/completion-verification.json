@@ -1,0 +1,222 @@
+{
+  "status": "all_four_recorded_configurations_pass_strict_tp_comparison",
+  "models": {
+    "0.8B": {
+      "strict_tp_comparison": {
+        "passed": true,
+        "selected_logprob_atol": 0.15,
+        "scope": "greedy IDs and selected logprobs, not full logits; inspect rank/device logs separately",
+        "cases": [
+          {
+            "case": "smoke",
+            "repeat": 0,
+            "request": 0,
+            "greedy_exact": true,
+            "max_selected_logprob_error": 0.057662129402160645,
+            "passed": true
+          },
+          {
+            "case": "length_32",
+            "repeat": 0,
+            "request": 0,
+            "greedy_exact": true,
+            "max_selected_logprob_error": 0.011214792728424072,
+            "passed": true
+          },
+          {
+            "case": "length_256",
+            "repeat": 0,
+            "request": 0,
+            "greedy_exact": true,
+            "max_selected_logprob_error": 0.001854967325925827,
+            "passed": true
+          }
+        ]
+      },
+      "transformer_dtype": "bfloat16",
+      "lm_head_compute_dtype": null,
+      "memory_fraction": 0.12
+    },
+    "4B": {
+      "strict_tp_comparison": {
+        "passed": true,
+        "selected_logprob_atol": 0.15,
+        "scope": "greedy IDs and selected logprobs, not full logits; inspect rank/device logs separately",
+        "cases": [
+          {
+            "case": "smoke",
+            "repeat": 0,
+            "request": 0,
+            "greedy_exact": true,
+            "max_selected_logprob_error": 0.005949735641479492,
+            "passed": true
+          },
+          {
+            "case": "length_32",
+            "repeat": 0,
+            "request": 0,
+            "greedy_exact": true,
+            "max_selected_logprob_error": 0.002103090286254883,
+            "passed": true
+          },
+          {
+            "case": "length_256",
+            "repeat": 0,
+            "request": 0,
+            "greedy_exact": true,
+            "max_selected_logprob_error": 0.0005067288875579834,
+            "passed": true
+          }
+        ]
+      },
+      "transformer_dtype": "float16",
+      "lm_head_compute_dtype": "float32",
+      "memory_fraction": 0.25
+    },
+    "9B": {
+      "strict_tp_comparison": {
+        "passed": true,
+        "selected_logprob_atol": 0.15,
+        "scope": "greedy IDs and selected logprobs, not full logits; inspect rank/device logs separately",
+        "cases": [
+          {
+            "case": "smoke",
+            "repeat": 0,
+            "request": 0,
+            "greedy_exact": true,
+            "max_selected_logprob_error": 0.005827903747558594,
+            "passed": true
+          },
+          {
+            "case": "length_32",
+            "repeat": 0,
+            "request": 0,
+            "greedy_exact": true,
+            "max_selected_logprob_error": 0.00342366099357605,
+            "passed": true
+          },
+          {
+            "case": "length_256",
+            "repeat": 0,
+            "request": 0,
+            "greedy_exact": true,
+            "max_selected_logprob_error": 0.0015065690968185663,
+            "passed": true
+          }
+        ]
+      },
+      "transformer_dtype": "float16",
+      "lm_head_compute_dtype": null,
+      "memory_fraction": 0.45
+    },
+    "27B": {
+      "strict_tp_comparison": {
+        "passed": true,
+        "selected_logprob_atol": 0.15,
+        "scope": "greedy IDs and selected logprobs, not full logits; inspect rank/device logs separately",
+        "cases": [
+          {
+            "case": "smoke",
+            "repeat": 0,
+            "request": 0,
+            "greedy_exact": true,
+            "max_selected_logprob_error": 0.012968659400939941,
+            "passed": true
+          },
+          {
+            "case": "length_32",
+            "repeat": 0,
+            "request": 0,
+            "greedy_exact": true,
+            "max_selected_logprob_error": 0.0773688554763794,
+            "passed": true
+          },
+          {
+            "case": "length_256",
+            "repeat": 0,
+            "request": 0,
+            "greedy_exact": true,
+            "max_selected_logprob_error": 0.01813896745443344,
+            "passed": true
+          }
+        ]
+      },
+      "transformer_dtype": "bfloat16",
+      "lm_head_compute_dtype": null,
+      "memory_fraction": 0.9
+    }
+  },
+  "current_runtime_source_trees": {
+    "python": "9b0c75194a818ba1ce2a3efe081c56fbc2c4539bb30f23695506832f19ef6415",
+    "tokenspeed-kernel/python": "36489c6490fe5290df76f617b4e8a224129292b977d10a19abaffba921bcc23f",
+    "tokenspeed-kernel-npu/python": "7a02b8ec4b1c35d8cc756d96c31c665371d68bd0b123d9a785901df7a4cd46d1"
+  },
+  "four_b_confirmation_ids_and_selected_logprobs_exact": true,
+  "four_b_same_source_native_control_failed": true,
+  "four_b_control_only_configuration_difference": "lm_head_compute_dtype",
+  "hw2_patch_sha256": "76071724b56e1f7922dd3fd9a4c2c5b359f3422252ac10c74daa5e5d0f2350f6",
+  "hw1_frozen_patch_unchanged": true,
+  "scope": "Recorded inputs/configurations only; no arbitrary-prompt/topology invariance or full upstream-suite claim. Student review and submission separate.",
+  "inputs": [
+    {
+      "path": "homework-2/results/head-fix-regression/0.8B-native-tp1/result.json",
+      "sha256": "a61d268ab0fb845c3d9e82addcd57657827f34ecebb145875839b7206f32bc14"
+    },
+    {
+      "path": "homework-2/results/head-fix-regression/0.8B-native-tp2/result.json",
+      "sha256": "19579350f42270ccf4eb18a4e30fce616ecd3845d296a4943390b38bcc77a31d"
+    },
+    {
+      "path": "homework-2/results/4B-fp32-head-confirmation-tp1/result.json",
+      "sha256": "63e66980ee4f2a5806c1e5269c7a058df98a1da8b094b624041ac31ed0287c77"
+    },
+    {
+      "path": "homework-2/results/4B-fp32-head-confirmation-tp2/result.json",
+      "sha256": "1e0e90b3efa1e3dccd73fae9561deeb2a62d21355e58325a7ded968887afad6f"
+    },
+    {
+      "path": "homework-2/results/head-fix-regression/9B-native-tp1/result.json",
+      "sha256": "7b81cf3911d42a076079541fb34c1e0f95d948153217e49bb59c854cad551800"
+    },
+    {
+      "path": "homework-2/results/head-fix-regression/9B-native-tp2/result.json",
+      "sha256": "04ac5b0ef89a589621f877d69d4c360303209071fe27652f6619c518e995df26"
+    },
+    {
+      "path": "homework-2/results/head-fix-regression/27B-native-tp1/result.json",
+      "sha256": "5cbaddcf66148e929f3954becf6ed8925a413e754c448fd1452011b471e25d6c"
+    },
+    {
+      "path": "homework-2/results/head-fix-regression/27B-native-tp2/result.json",
+      "sha256": "c9bdf9ebce30f9c1dbf41c21b25a47666205adb19f7fb1d78e040c91dcfe0b95"
+    },
+    {
+      "path": "homework-2/results/head-fix-regression/4B-native-tp1/result.json",
+      "sha256": "86b365e2ea2836ae570f2560567f38c674d18d68b40029e958862ffb8091cd16"
+    },
+    {
+      "path": "homework-2/results/head-fix-regression/4B-native-tp2/result.json",
+      "sha256": "39e8acf8f4e8e24bab6005724f419ea195eea991378c31991892f0327e7f714e"
+    },
+    {
+      "path": "homework-2/results/4B-fp32-head-initial-tp1/result.json",
+      "sha256": "7347380576dd5e4b130da8860d805e75156811aeeb8b8131f843eff67104ccf7"
+    },
+    {
+      "path": "homework-2/results/4B-fp32-head-initial-tp2/result.json",
+      "sha256": "4b6b435e4be91797d2d44ece54fdd54e4c586a2376e475a82f90321737e5f745"
+    },
+    {
+      "path": "homework-2/results/head-fix-regression/4B-native-validation.json",
+      "sha256": "0faefd01c4b0fd23559c35c9f4ce23601c7be51cb9568df771a5c6e3d94b0fa7"
+    },
+    {
+      "path": "homework-2/patches/manifest.json",
+      "sha256": "1abdd3300317d51de72d3441fa0f8b0f7a77256ad78dda260a9b9864a5c7cbdc"
+    },
+    {
+      "path": "homework-2/patches/patch-verification.json",
+      "sha256": "944f3166cba38d5b56ec27cd96ecf10181ffe8287bc4ee5d4cf8e4a1675c88e7"
+    }
+  ]
+}

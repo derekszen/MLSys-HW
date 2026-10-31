@@ -1,0 +1,1 @@
+{"atol": 1e-05, "device_name": "Ascend910_9362", "logical_device": "npu:0", "max_abs_error": 0.0, "operation": "16x16 FP32 X @ X.T, X=arange(256).reshape(16,16)/256", "passed": true, "peak_allocated_bytes": 3072, "physical_device": "1", "rtol": 1e-05, "torch_npu_version": "2.9.0", "torch_version": "2.9.0+cpu"}

@@ -1,0 +1,48 @@
+{
+  "base_commit": "52bdb9763bb2da3d61336398072671885cc0a33e",
+  "comparison": "byte-exact contents and git modes; all tracked and nonignored new files",
+  "frozen_hw1_unchanged": true,
+  "hw1_sha256": "e68f2f26e49d30180280adbab0bb0ebaf433246e27457788e60277621613b8c6",
+  "hw2_bytes": 42916,
+  "hw2_sha256": "ea88a840112da0c173ed3fa491efa39853fab33708f583115cd5cb5681c77fcd",
+  "incremental_files": [
+    "docs/hccl-torch29.md",
+    "docs/npu-profile.md",
+    "python/tokenspeed/runtime/distributed/comm_backend/hccl.py",
+    "python/tokenspeed/runtime/engine/request_handler.py",
+    "test/runtime/test_hccl_torch29.py",
+    "test/runtime/test_npu_profile.py"
+  ],
+  "incremental_files_verified": {
+    "docs/hccl-torch29.md": {
+      "mode": "100644",
+      "sha256": "52de1df03b1d052a1cb45edf560bae8c9cbfa4af99f9747954fe98f591dfe9b6"
+    },
+    "docs/npu-profile.md": {
+      "mode": "100644",
+      "sha256": "df9793d09b899fa994c899b2e1f42f580f9c82cb6e3f97f045767ccdf12a2a7b"
+    },
+    "python/tokenspeed/runtime/distributed/comm_backend/hccl.py": {
+      "mode": "100644",
+      "sha256": "c15d81cefd2e6e148978b7e7e6386730ee05680d5de4319d8f06c7a8658b9d15"
+    },
+    "python/tokenspeed/runtime/engine/request_handler.py": {
+      "mode": "100644",
+      "sha256": "99b7571d5ab79867f1c2bd9a30cde88aaaf4439ec433a792579b6a2d58d402bd"
+    },
+    "test/runtime/test_hccl_torch29.py": {
+      "mode": "100644",
+      "sha256": "5bd49239ce67c8e2c0656bd6285082f30721295c784facc6944f9652893edc50"
+    },
+    "test/runtime/test_npu_profile.py": {
+      "mode": "100644",
+      "sha256": "974d60e837f9f4dd6848f7a52229d5a6caac6efdcbdfdb7d7a1a22840ab9fa83"
+    }
+  },
+  "passed": true,
+  "scope": "patch application/byte verification only, not hardware execution",
+  "source_files_unchanged": true,
+  "source_index_unchanged": true,
+  "verified_file_count": 2968,
+  "verified_tree_sha256": "3438d3fe1af9939b84e04033503a0c1e6077f7a84a92ce3a6b561cf389e78c2e"
+}

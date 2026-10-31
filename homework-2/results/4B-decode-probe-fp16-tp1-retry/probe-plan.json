@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "output_dir": "/home/u2501213387/MLSys-HW/homework-2/results/4B-decode-probe-fp16-tp1-retry",
+  "candidates": [
+    760,
+    20943,
+    1118,
+    2614
+  ],
+  "labels": [
+    "length_32-repeat0",
+    "length_32-repeat1"
+  ],
+  "capture_input_ids": [
+    20943,
+    6618,
+    5757,
+    15491,
+    34780,
+    3983,
+    440,
+    10727,
+    11436,
+    13,
+    357,
+    14294,
+    9064,
+    11988,
+    33625,
+    13016,
+    1518,
+    28043,
+    4906,
+    13,
+    12588,
+    6618,
+    5757,
+    15491,
+    34780,
+    3983,
+    440,
+    10727,
+    11436,
+    13,
+    357,
+    14294
+  ],
+  "baseline": "/home/u2501213387/MLSys-HW/homework-2/results/4B-fp16-cachefix-correctness-tp1-c1/result.json",
+  "baseline_sha256": "307cf0c6d169c86e65efc32ed8d87226f8c12ef7e130d2d9616c0c73527f85ca",
+  "manifest_sha256": "54cf8d7ef4431d619e8fb7b69bdb9234f03538efec8dd2f31dab394eb83c56e3",
+  "config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+  "cases_sha256": "5ffed43aa943d6951a337562beeec9680389408e1699f1537e3ce96a7a6b9e66"
+}

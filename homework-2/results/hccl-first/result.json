@@ -1,0 +1,18 @@
+{
+  "config": {
+    "devices": [
+      "0",
+      "1"
+    ],
+    "dist_timeout": 30,
+    "output_dir": "/home/u2501213387/MLSys-HW/homework-2/results/hccl-first",
+    "port": 49917,
+    "run_id": "38b0379cc2b74a1d85467cc3fb42d5e5",
+    "run_timeout": 120
+  },
+  "error": "Traceback (most recent call last):\n  File \"/home/u2501213387/MLSys-HW/homework-2/scripts/hccl_smoke.py\", line 315, in main\n    wait_for_children(context, deadline)\n  File \"/home/u2501213387/MLSys-HW/homework-2/scripts/hccl_smoke.py\", line 283, in wait_for_children\n    raise RuntimeError(\"a spawned rank exited unsuccessfully; inspect rank files/stderr\")\nRuntimeError: a spawned rank exited unsuccessfully; inspect rank files/stderr\n",
+  "passed": false,
+  "same_card_check": "requires external npu-smi topology verification; adjacency is insufficient",
+  "same_card_verified": false,
+  "world_size": 2
+}

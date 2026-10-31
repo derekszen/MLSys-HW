@@ -1,0 +1,115 @@
+{
+  "schema": 1,
+  "label": "length_32-repeat1",
+  "step_index": 2,
+  "rank": 1,
+  "pid": 4021326,
+  "plan_sha256": "596da834f4efea5151dcf856fad2f88f0bb0c7b6126b425e613a77a24277b46f",
+  "forward_mode": "DECODE",
+  "input_ids": [
+    11988
+  ],
+  "num_extends": 0,
+  "input_num_tokens": 1,
+  "native_logits_dtype": "torch.float16",
+  "hidden_dtype": "torch.float16",
+  "top10": [
+    {
+      "token": 33625,
+      "logit": 23.890625,
+      "logprob": -0.01317603886127472
+    },
+    {
+      "token": 364,
+      "logit": 18.140625,
+      "logprob": -5.763175964355469
+    },
+    {
+      "token": 279,
+      "logit": 17.84375,
+      "logprob": -6.060050964355469
+    },
+    {
+      "token": 34780,
+      "logit": 17.453125,
+      "logprob": -6.450675964355469
+    },
+    {
+      "token": 23311,
+      "logit": 16.390625,
+      "logprob": -7.513175964355469
+    },
+    {
+      "token": 13016,
+      "logit": 15.859375,
+      "logprob": -8.044425964355469
+    },
+    {
+      "token": 1076,
+      "logit": 15.734375,
+      "logprob": -8.169425964355469
+    },
+    {
+      "token": 271,
+      "logit": 15.703125,
+      "logprob": -8.200675964355469
+    },
+    {
+      "token": 13,
+      "logit": 15.6953125,
+      "logprob": -8.208488464355469
+    },
+    {
+      "token": 198,
+      "logit": 15.6953125,
+      "logprob": -8.208488464355469
+    }
+  ],
+  "max_tied_ids": [
+    33625
+  ],
+  "candidates": {
+    "760": {
+      "logit": 8.8828125,
+      "logprob": -15.020988464355469
+    },
+    "20943": {
+      "logit": 3.669921875,
+      "logprob": -20.23387908935547
+    },
+    "1118": {
+      "logit": 14.515625,
+      "logprob": -9.388175964355469
+    },
+    "2614": {
+      "logit": 7.58203125,
+      "logprob": -16.32176971435547
+    }
+  },
+  "candidate_dot_fp64": {},
+  "lm_head_shard": {
+    "start": 124160,
+    "end": 248320
+  },
+  "tensors": {
+    "logits": {
+      "path": "step02-logits.npy",
+      "sha256": "f74e83794b4674fcc61e1a664094be83bda1069967b6968b0a4b7759a3840a37",
+      "shape": [
+        1,
+        248320
+      ],
+      "storage_dtype": "float32"
+    },
+    "hidden": {
+      "path": "step02-hidden.npy",
+      "sha256": "5b66b5f93231f043d69490d8f413162cad94b5e4b5a821c54c554b0db3e174c8",
+      "shape": [
+        1,
+        2560
+      ],
+      "storage_dtype": "float32"
+    }
+  },
+  "observer": "unmodified native output; CPU copies and FP64 candidate dots only"
+}

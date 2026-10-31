@@ -1,0 +1,100 @@
+{
+  "passed": true,
+  "selected_logprob_atol": 0.15,
+  "scope": "Greedy IDs and selected-token logprobs only; not full logits or course approval. Strict TP1/TP2 verdicts are unchanged.",
+  "provenance": {
+    "resolved_model_path": "/home/u2501213387/MLSys-HW/homework-2/models/Qwen3.5-4B",
+    "dtype": "bfloat16",
+    "cases_sha256": "5ffed43aa943d6951a337562beeec9680389408e1699f1537e3ce96a7a6b9e66",
+    "run_inputs": "Run stores lengths, not full input IDs; its cases_sha256 matches the exact canonical file bytes. Reference input IDs match directly, in order.",
+    "selected_logprobs": "Reference values are positionally associated with reference output_ids by its schema; run logprob entry IDs are checked against run output_ids.",
+    "reference_manifest_fingerprint_available": false,
+    "limit": "Reference schema lacks model manifest/config fingerprints. Matching resolved model paths and BF16 labels does not establish identical checkpoint bytes or full provenance."
+  },
+  "summary": {
+    "request_count": 3,
+    "exact_token_requests": 3,
+    "tokens_checked": 48,
+    "max_selected_logprob_error": 0.08677434921264648
+  },
+  "cases": [
+    {
+      "case": "smoke",
+      "repeat": 0,
+      "request": 0,
+      "output_tokens": 16,
+      "greedy_exact": true,
+      "max_selected_logprob_error": 0.08677434921264648,
+      "logprob_comparison": "same tokens and histories",
+      "passed": true
+    },
+    {
+      "case": "length_32",
+      "repeat": 0,
+      "request": 0,
+      "output_tokens": 16,
+      "greedy_exact": true,
+      "max_selected_logprob_error": 0.0331876277923584,
+      "logprob_comparison": "same tokens and histories",
+      "passed": true
+    },
+    {
+      "case": "length_256",
+      "repeat": 0,
+      "request": 0,
+      "output_tokens": 16,
+      "greedy_exact": true,
+      "max_selected_logprob_error": 0.0013967286795377731,
+      "logprob_comparison": "same tokens and histories",
+      "passed": true
+    }
+  ],
+  "tp1_diagnostics": [
+    {
+      "case": "length_32",
+      "repeat": 0,
+      "request": 0,
+      "step_index": 10,
+      "token_number": 11,
+      "tp1_token_id": 1118,
+      "tp2_token_id": 2614,
+      "reference_shares_preceding_history": true,
+      "reference_token_id": 2614,
+      "reference_top5": {
+        "ids": [
+          2614,
+          1118,
+          5392,
+          5614,
+          11672
+        ],
+        "logprobs": [
+          -3.516596555709839,
+          -3.579096555709839,
+          -3.891596555709839,
+          -3.954096555709839,
+          -4.141596794128418
+        ]
+      },
+      "reference_top1_minus_top2_logprob_margin": 0.0625
+    }
+  ],
+  "inputs": {
+    "reference": {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-transformers-reference.json",
+      "sha256": "dacc3eca273e5c4a0569722f74f8322e6120f146c070da9408a107ed04185307"
+    },
+    "run": {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-correctness-tp2-c1/result.json",
+      "sha256": "5628281d932beb3a7fce0368b63b02fdebc618c639d7524737a7bbaee6723bec"
+    },
+    "cases": {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/cases.json",
+      "sha256": "5ffed43aa943d6951a337562beeec9680389408e1699f1537e3ce96a7a6b9e66"
+    },
+    "tp1": {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/4B-correctness-tp1-c1/result.json",
+      "sha256": "1e13fffe31a78a682a3a2a7b39bf1746e35c3191de42e50745f92ef40bc37c98"
+    }
+  }
+}

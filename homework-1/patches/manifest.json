@@ -1,0 +1,23 @@
+{
+  "base_commit": "52bdb9763bb2da3d61336398072671885cc0a33e",
+  "patch": "ascend-qwen3.5.patch",
+  "sha256": "e68f2f26e49d30180280adbab0bb0ebaf433246e27457788e60277621613b8c6",
+  "new_files": [
+    "docs/mha-d256.md",
+    "tokenspeed-kernel-npu/docs/causal-conv.md",
+    "tokenspeed-kernel-npu/docs/gated-rmsnorm.md",
+    "tokenspeed-kernel-npu/docs/gdn.md",
+    "tokenspeed-kernel-npu/docs/gemma-rmsnorm.md",
+    "tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/conv.py",
+    "tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/gated_rmsnorm.py",
+    "tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/gdn.py",
+    "tokenspeed-kernel-npu/test/test_causal_conv.py",
+    "tokenspeed-kernel-npu/test/test_gated_rmsnorm.py",
+    "tokenspeed-kernel-npu/test/test_gdn.py",
+    "tokenspeed-kernel-npu/test/test_gemma_layer.py",
+    "tokenspeed-kernel-npu/test/test_mha_d256.py",
+    "tokenspeed-kernel/python/tokenspeed_kernel/ops/attention/gdn/ascend.py",
+    "tokenspeed-kernel/python/tokenspeed_kernel/ops/conv/ascend.py"
+  ],
+  "apply": "git -C tokenspeed apply --check ../patches/ascend-qwen3.5.patch && git -C tokenspeed apply ../patches/ascend-qwen3.5.patch"
+}

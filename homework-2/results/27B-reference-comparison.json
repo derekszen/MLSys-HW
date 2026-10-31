@@ -1,0 +1,66 @@
+{
+  "passed": false,
+  "selected_logprob_atol": 0.15,
+  "scope": "Greedy IDs and selected-token logprobs only; not full logits or course approval. Strict TP1/TP2 verdicts are unchanged.",
+  "provenance": {
+    "resolved_model_path": "/home/u2501213387/MLSys-HW/homework-2/models/Qwen3.5-27B",
+    "dtype": "bfloat16",
+    "cases_sha256": "5ffed43aa943d6951a337562beeec9680389408e1699f1537e3ce96a7a6b9e66",
+    "run_inputs": "Run stores lengths, not full input IDs; its cases_sha256 matches the exact canonical file bytes. Reference input IDs match directly, in order.",
+    "selected_logprobs": "Reference values are positionally associated with reference output_ids by its schema; run logprob entry IDs are checked against run output_ids.",
+    "reference_manifest_fingerprint_available": false,
+    "limit": "Reference schema lacks model manifest/config fingerprints. Matching resolved model paths and BF16 labels does not establish identical checkpoint bytes or full provenance."
+  },
+  "summary": {
+    "request_count": 3,
+    "exact_token_requests": 2,
+    "tokens_checked": 48,
+    "max_selected_logprob_error": null
+  },
+  "cases": [
+    {
+      "case": "smoke",
+      "repeat": 0,
+      "request": 0,
+      "output_tokens": 16,
+      "greedy_exact": true,
+      "max_selected_logprob_error": 0.037874042987823486,
+      "logprob_comparison": "same tokens and histories",
+      "passed": true
+    },
+    {
+      "case": "length_32",
+      "repeat": 0,
+      "request": 0,
+      "output_tokens": 16,
+      "greedy_exact": false,
+      "max_selected_logprob_error": null,
+      "logprob_comparison": "skipped: different tokens/histories",
+      "passed": false
+    },
+    {
+      "case": "length_256",
+      "repeat": 0,
+      "request": 0,
+      "output_tokens": 16,
+      "greedy_exact": true,
+      "max_selected_logprob_error": 0.019573017954826355,
+      "logprob_comparison": "same tokens and histories",
+      "passed": true
+    }
+  ],
+  "inputs": {
+    "reference": {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/27B-transformers-reference.json",
+      "sha256": "ee312127c3bc95f873fb83d05e1e12619cb4aac6d57402478942257458cd8c61"
+    },
+    "run": {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/results/27B-correctness-tp2-c1/result.json",
+      "sha256": "4dd7223ebaeb7d4592d4229e2cb2abc4b63cc788926ab282d222570101b13ea1"
+    },
+    "cases": {
+      "path": "/mnt/ssd2/Projects/MLSys-HW/homework-2/cases.json",
+      "sha256": "5ffed43aa943d6951a337562beeec9680389408e1699f1537e3ce96a7a6b9e66"
+    }
+  }
+}

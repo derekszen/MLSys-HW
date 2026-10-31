@@ -1,0 +1,18 @@
+[INFO] Start profiling....
+[INFO] Start export data in PROF_000001_20261024020300145_02709193MRRBAJFQ.
+Sat 24 Oct 2026 02:07:22 [INFO] [MSVP] [2714200] msprof_common.py: Start analyzing data in "/home/u2501213387/MLSys-HW/homework-2/results/msprof-c1/PROF_000001_20261024020300145_02709193MRRBAJFQ/host" ...
+Sat 24 Oct 2026 02:07:22 [INFO] [MSVP] [2714200] msprof_common.py: It may take few minutes, please be patient ...
+Sat 24 Oct 2026 02:07:29 [INFO] [MSVP] [2714200] msprof_common.py: Analysis data in "/home/u2501213387/MLSys-HW/homework-2/results/msprof-c1/PROF_000001_20261024020300145_02709193MRRBAJFQ/host" finished.
+Sat 24 Oct 2026 02:07:29 [WARNING] [MSVP] [2714200] msprof_common.py: There is no file in /home/u2501213387/MLSys-HW/homework-2/results/msprof-c1/PROF_000001_20261024020300145_02709193MRRBAJFQ/device_0/data. Collect data failed. More info could be found in the path of slog on your core.
+Sat 24 Oct 2026 02:07:29 [INFO] [MSVP] [2714200] msprof_export.py: All collected data will be exported, path is: /home/u2501213387/MLSys-HW/homework-2/results/msprof-c1/PROF_000001_20261024020300145_02709193MRRBAJFQ/device_0.
+Sat 24 Oct 2026 02:07:49 [INFO] [MSVP] [2715535] msprof_export.py: The data in "/home/u2501213387/MLSys-HW/homework-2/results/msprof-c1/PROF_000001_20261024020300145_02709193MRRBAJFQ/host" has been analyzed. Parsing phase will be skipped.
+Sat 24 Oct 2026 02:07:49 [WARNING] [MSVP] [2715535] msprof_common.py: There is no file in /home/u2501213387/MLSys-HW/homework-2/results/msprof-c1/PROF_000001_20261024020300145_02709193MRRBAJFQ/device_0/data. Collect data failed. More info could be found in the path of slog on your core.
+Sat 24 Oct 2026 02:07:49 [INFO] [MSVP] [2715535] msprof_export.py: All collected data will be exported, path is: /home/u2501213387/MLSys-HW/homework-2/results/msprof-c1/PROF_000001_20261024020300145_02709193MRRBAJFQ/device_0.
+Sat 24 Oct 2026 02:07:49 [INFO] [MSVP] [2715535] msprof_export.py: There is no summary data to export for "/home/u2501213387/MLSys-HW/homework-2/results/msprof-c1/PROF_000001_20261024020300145_02709193MRRBAJFQ/host"
+Sat 24 Oct 2026 02:08:04 [INFO] [MSVP] [2715535] msprof_export.py: All collected data will be exported, path is: /home/u2501213387/MLSys-HW/homework-2/results/msprof-c1/PROF_000001_20261024020300145_02709193MRRBAJFQ/device_0.
+Sat 24 Oct 2026 02:08:04 [INFO] [MSVP] [2715535] msprof_export.py: There is no summary data to export for "/home/u2501213387/MLSys-HW/homework-2/results/msprof-c1/PROF_000001_20261024020300145_02709193MRRBAJFQ/device_0"
+Sat 24 Oct 2026 02:08:04 [INFO] [MSVP] [2715535] msprof_common.py: Start exporting summary output_file.
+Sat 24 Oct 2026 02:08:04 [INFO] [MSVP] [2715535] msprof_common.py: End exporting summary output_file.The file is stored in the /home/u2501213387/MLSys-HW/homework-2/results/msprof-c1/PROF_000001_20261024020300145_02709193MRRBAJFQ/mindstudio_profiler_output path.
+[INFO] Export all data in PROF_000001_20261024020300145_02709193MRRBAJFQ done.
+[INFO] Profiling finished.
+[INFO] Process profiling data complete. Data is saved in /home/u2501213387/MLSys-HW/homework-2/results/msprof-c1/PROF_000001_20261024020300145_02709193MRRBAJFQ

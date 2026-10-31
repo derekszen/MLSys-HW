@@ -1,0 +1,404 @@
++------------------------------------------------------------------------------------------------+
+| npu-smi 25.5.2                   Version: 25.5.2                                               |
++---------------------------+---------------+----------------------------------------------------+
+| NPU   Name                | Health        | Power(W)    Temp(C)           Hugepages-Usage(page)|
+| Chip  Phy-ID              | Bus-Id        | AICore(%)   Memory-Usage(MB)  HBM-Usage(MB)        |
++===========================+===============+====================================================+
+| 0     Ascend910           | OK            | 169.7       45                0    / 0             |
+| 0     0                   | 0000:9D:00.0  | 0           0    / 0          6725 / 65536         |
++------------------------------------------------------------------------------------------------+
+| 0     Ascend910           | OK            | -           46                0    / 0             |
+| 1     1                   | 0000:9F:00.0  | 0           0    / 0          2894 / 65536         |
++===========================+===============+====================================================+
+| 1     Ascend910           | OK            | 170.9       45                0    / 0             |
+| 0     2                   | 0000:99:00.0  | 0           0    / 0          5901 / 65536         |
++------------------------------------------------------------------------------------------------+
+| 1     Ascend910           | OK            | -           47                0    / 0             |
+| 1     3                   | 0000:9B:00.0  | 0           0    / 0          2889 / 65536         |
++===========================+===============+====================================================+
+| 2     Ascend910           | OK            | 164.6       49                0    / 0             |
+| 0     4                   | 0000:95:00.0  | 0           0    / 0          7240 / 65536         |
++------------------------------------------------------------------------------------------------+
+| 2     Ascend910           | OK            | -           48                0    / 0             |
+| 1     5                   | 0000:97:00.0  | 0           0    / 0          2882 / 65536         |
++===========================+===============+====================================================+
+| 3     Ascend910           | OK            | 165.2       48                0    / 0             |
+| 0     6                   | 0000:91:00.0  | 0           0    / 0          5676 / 65536         |
++------------------------------------------------------------------------------------------------+
+| 3     Ascend910           | OK            | -           48                0    / 0             |
+| 1     7                   | 0000:93:00.0  | 0           0    / 0          5433 / 65536         |
++===========================+===============+====================================================+
++---------------------------+---------------+----------------------------------------------------+
+| NPU     Chip              | Process id    | Process name             | Process memory(MB)      |
++===========================+===============+====================================================+
+| 0       0                 | 3035563       | tokenspeedsch            | 3541                    |
+| 0       0                 | 3035352       | python                   | 112                     |
+| 0       0                 | 3035106       | ts-serve                 | 112                     |
++===========================+===============+====================================================+
+| 1       0                 | 3673391       | tokenspeedsch            | 2560                    |
+| 1       0                 | 3673263       | ts-serve                 | 112                     |
+| 1       0                 | 3673342       | python                   | 112                     |
++===========================+===============+====================================================+
+| 2       0                 | 1164519       | tokenspeedsch            | 3895                    |
+| 2       0                 | 1164204       | python                   | 112                     |
+| 2       0                 | 1163942       | ts-serve                 | 112                     |
++===========================+===============+====================================================+
+| 3       0                 | 1617842       | tokenspeedsch            | 2540                    |
+| 3       0                 | 1617754       | python                   | 112                     |
+| 3       1                 | 3197695       | ts-serve                 | 112                     |
+| 3       1                 | 3197792       | tokenspeedsch            | 2506                    |
+| 3       1                 | 3197740       | python                   | 112                     |
++===========================+===============+====================================================+
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66: UserWarning: Permission mismatch: The owner of /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/lib/libop_plugin_atb.so does not match.
+  warnings.warn(f"Permission mismatch: The owner of {path} does not match.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+[38;20m[2026-10-24 05:20:43,983 None] - INFO - Specified world_size (1) (server_args.py:1077)[0m
+[38;20m[2026-10-24 05:20:43,983 None] - INFO - Parallelism configuration:
+Mapping(rank=?, world_size=1)
+  Cluster : 1 node(s) x 1 proc(s)
+  Pipeline: pp=1
+  Attention: tp=1  kvp=1  qcp=1  dp=1  head_tp=1
+    Vision: tp=1  item_dp=1
+  LM head : tp=1
+  Dense   : tp=1  dp=1
+  MoE     : tp=1  ep=1  dp=1 (server_args.py:1207)[0m
+[38;20m[2026-10-24 05:20:43,983 None] - INFO - server_args=ServerArgs(model='/home/u2501213387/MLSys-HW/homework-2/models/Qwen3.5-27B', tokenizer='/home/u2501213387/MLSys-HW/homework-2/models/Qwen3.5-27B', tokenizer_mode='auto', skip_tokenizer_init=False, load_format='auto', trust_remote_code=False, dtype='bfloat16', kv_cache_dtype='auto', kv_cache_quant_method='none', quantization=None, quantization_param_path=None, max_model_len=512, device='npu', served_model_name='/home/u2501213387/MLSys-HW/homework-2/models/Qwen3.5-27B', revision=None, language_model_only=True, zmq_msgpack=False, data_parallel_address='127.0.0.1', data_parallel_rpc_port=30500, zmq_engine_index=0, host='127.0.0.1', port=31889, gpu_memory_utilization=0.9, max_num_seqs=2, max_total_tokens=16384, chunked_prefill_size=128, max_prefill_tokens=128, enable_mixed_batch=False, prefix_granularity=64, enable_state_checkpoint_in_forward=False, kv_offload_config=None, mamba_ssm_dtype='float32', stream_interval=1, stream_output=False, enable_inline_detokenizer=True, seed=42, distributed_timeout_seconds=60, download_dir=None, ext_yaml=None, base_gpu_id=0, gpu_id_step=1, log_level='info', enable_log_requests=True, log_requests_level=0, enable_log_request_stats=False, enable_metrics=False, decode_log_interval=40, metrics_reporters=['prometheus'], metrics_reporter_config=None, metrics_port=None, metrics_host=None, app_key=None, kv_events_config=None, rl_control_port=None, rl_control_host=None, weight_version='default', model_update_config=None, model_update_sdk_module=None, model_update_engine_type=None, model_update_draft_weights=None, data_parallel_size=None, pipeline_parallel_size=1, pp_layer_partition=None, load_balance_method='shortest_queue', load_watch_interval=0.02, ep_size=1, init_expert_location='trivial', ep_num_redundant_experts=0, ep_dispatch_algorithm=None, eplb_algorithm='auto', expert_distribution_recorder_mode=None, enable_eplb=False, eplb_rebalance_num_iterations=None, eplb_rebalance_layers_per_chunk=None, dense_gemm_backend='auto', moe_backend='auto', draft_moe_backend=None, moe_mxfp4_fp8_activation=False, all2all_backend='none', deepep_mode='auto', disable_flashinfer_cutlass_moe_fp4_allgather=False, enable_kvstore=False, kvstore_ratio=2.0, kvstore_size=0, kvstore_io_backend='kernel', kvstore_storage_backend=None, kvstore_storage_backend_extra_config=None, retraction_snapshot_host_gb=0.0, retraction_snapshot_ratio=None, retraction_snapshot_max_requests=2, debug_force_retraction_interval=0, dist_init_addr=None, nnodes=1, node_rank=0, hf_overrides='{}', preferred_sampling_params=None, attention_backend=None, kda_backend='auto', drafter_attention_backend=None, skip_softmax_threshold=0.0, sampling_backend='greedy', sampling_stream='batch', dp_sampling=False, dp_sampling_min_bs=None, attention_use_fp4_indexer_cache=None, use_trtllm_ragged_deepseek_prefill=None, kv_parallel_size=1, decode_context_parallel_size=1, query_context_parallel_size=1, deepseek_v41_attention_query_swa_min_tokens=4096, deepseek_v41_attention_query_min_tokens=1024, deepseek_v41_attention_query_parallel_size=1, deepseek_v41_indexer_query_parallel_size=1, deepseek_v4_mega_moe_max_num_tokens=0, deepseek_v4_indexer_prefill_max_logits_mb=512, deepseek_v4_prefill_chunk_size=4, engram_host_table=False, engram_host_table_dir=None, engram_host_table_layout='auto', grammar_backend='none', constrained_decoding=None, reasoning_parser=None, grammar_compile_timeout_secs=30.0, grammar_compile_max_retries=2, disable_any_whitespace=False, disable_capturable_grammar=False, draft_model_path_use_base=False, speculative_config=None, speculative_algorithm=None, speculative_draft_model_path=None, speculative_draft_model_quantization=None, speculative_num_steps=3, speculative_eagle_topk=1, speculative_num_draft_tokens=4, synthetic_acceptance_length=None, enable_speculative_sampling=False, spec_reject_draft_prob_threshold=2.0, enable_replay_ssm=True, eagle3_layers_to_capture=None, speculative_exec_mode=-1, speculative_data_path=None, speculative_compute_intensity='high_intensity', speculative_chain_width_table='off', enable_output_logprobs=True, input_logprob_chunk_tokens=256, disable_pdl=True, enable_prefix_caching=False, disable_kvstore=True, enforce_eager=True, disable_cuda_graph_padding=False, disable_autotune=True, enable_cudagraph_gc=False, disable_nccl_nvls=False, disable_symm_mem=False, disable_overlap_schedule=False, disable_tf32=False, force_deterministic_rsag=False, batch_invariant_collectives=False, disable_sampling_tp_sync=False, numerics='auto', yarn_ramp_mask_device='cuda', mla_lora_scale='folded', layer_boundary_norm='fused', router_topk='fused', logprob_order='torch', moe_combine_order='rank', dsa_slot_order='selection', low_latency_max_num_tokens_per_gpu=256, max_cudagraph_capture_size=160, disable_prefill_graph=True, disable_kda_prefill_graph=False, prefill_graph_max_tokens=None, prefill_graph_capture_sizes=None, prefill_graph_capture_batch_sizes=None, cudagraph_capture_sizes=None, enable_nan_detection=False, enable_nvtx=False, weight_loader_prefetch_checkpoints=True, weight_loader_prefetch_num_threads=8, enable_memory_saver=False, disable_cudagraph_memory_reserve=False, mla_disable_ragged=False, nprocs_per_node=None, world_size=1, attn_tp_size=1, attn_head_tp_size=None, lm_head_tp_size=1, tp_batch_invariant='none', dense_tp_size=1, moe_tp_size=1, mapping=Mapping(rank=?, world_size=1)
+  Cluster : 1 node(s) x 1 proc(s)
+  Pipeline: pp=1
+  Attention: tp=1  kvp=1  qcp=1  dp=1  head_tp=1
+    Vision: tp=1  item_dp=1
+  LM head : tp=1
+  Dense   : tp=1  dp=1
+  MoE     : tp=1  ep=1  dp=1, emulate_rank_zero=False, mla_chunk_multiplier=4, mm_attention_backend=None, mm_encoder_tp_mode='weights', disaggregation_mode='null', disaggregation_bootstrap_port=8998, disaggregation_transfer_backend='mooncake', disaggregation_ib_device=None, disaggregation_layerwise_interval=1, pdlb_url=None, comm_fusion_max_num_tokens=2048, enable_allreduce_fusion=False, enable_expert_parallel=False) (engine.py:146)[0m
+/home/u2501213387/MLSys-HW/homework-1/.venv/lib/python3.11/site-packages/transformers/modeling_rope_utils.py:1036: FutureWarning: `rope_config_validation` is deprecated and has been removed. Its functionality has been moved to RotaryEmbeddingConfigMixin.validate_rope method. PreTrainedConfig inherits this class, so please call self.validate_rope() instead. Also, make sure to use the new rope_parameters syntax. You can call self.standardize_rope_params() in the meantime.
+  warnings.warn(
+[38;20m[2026-10-24 05:20:44,019 ] - INFO - Running in language-model-only mode: vision/audio encoders will be skipped; requests with multimodal inputs will be rejected. (model_config.py:894)[0m
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66: UserWarning: Permission mismatch: The owner of /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/lib/libop_plugin_atb.so does not match.
+  warnings.warn(f"Permission mismatch: The owner of {path} does not match.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+[2026-10-24 05:20:52 ATTN TP RANK 0] Triton compile monitor is not available on NPU
+/home/u2501213387/MLSys-HW/homework-1/.venv/lib/python3.11/site-packages/transformers/modeling_rope_utils.py:1036: FutureWarning: `rope_config_validation` is deprecated and has been removed. Its functionality has been moved to RotaryEmbeddingConfigMixin.validate_rope method. PreTrainedConfig inherits this class, so please call self.validate_rope() instead. Also, make sure to use the new rope_parameters syntax. You can call self.standardize_rope_params() in the meantime.
+  warnings.warn(
+[38;20m[2026-10-24 05:20:52,919  ATTN TP RANK 0] - INFO - Running in language-model-only mode: vision/audio encoders will be skipped; requests with multimodal inputs will be rejected. (model_config.py:894)[0m
+[38;20m[2026-10-24 05:20:52,922  ATTN TP RANK 0] - INFO - Init torch distributed begin. Avail mem=61.0622 GB (distributed_initializer.py:147)[0m
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[W1024 05:20:52.698383360 compiler_depend.ts:1065] Warning: The watchdog timeout 60000ms(which is set by init_process_group) is less than or equal to HCCL execution timeout 1836000ms! The plog may not be recorded. (function ProcessGroupHCCL)
+[rank0]:[W1024 05:20:52.698919120 compiler_depend.ts:1065] Warning: The watchdog timeout 60000ms(which is set by init_process_group) is less than or equal to HCCL execution timeout 1836000ms! The plog may not be recorded. (function ProcessGroupHCCL)
+[38;20m[2026-10-24 05:20:52,932  ATTN TP RANK 0] - INFO - Init comm buff end. Avail mem=61.0622 GB (distributed_initializer.py:260)[0m
+[38;20m[2026-10-24 05:20:52,932  ATTN TP RANK 0] - INFO - Current Process distributed state:  global rank: 0  attn_tp_rank: 0  attn_dp_rank: 0 (distributed_initializer.py:265)[0m
+[38;20m[2026-10-24 05:20:53,857  ATTN TP RANK 0] - INFO - Load weight begin. avail mem=61.06 GB (weight_loader.py:77)[0m
+[2026-10-24 05:20:54 ATTN TP RANK 0] using attn output gate!
+[38;20m[2026-10-24 05:20:56,809  ATTN TP RANK 0] - INFO - Prefetching 11/11 checkpoint shards as local reader 0/1 into the OS page cache (window 40.0 GiB, up to 8 range-reader threads). (weight_utils.py:593)[0m
+Loading safetensors checkpoint shards:   0% Completed | 0/11 [00:00<?, ?it/s]
+Loading safetensors checkpoint shards:   9% Completed | 1/11 [00:01<00:13,  1.33s/it]
+Loading safetensors checkpoint shards:  18% Completed | 2/11 [00:02<00:11,  1.24s/it]
+Loading safetensors checkpoint shards:  27% Completed | 3/11 [00:03<00:08,  1.09s/it]
+[38;20m[2026-10-24 05:21:00,608  ATTN TP RANK 0] - INFO - Checkpoint prefetch finished after 3.80s. (weight_utils.py:652)[0m
+Loading safetensors checkpoint shards:  36% Completed | 4/11 [00:04<00:07,  1.09s/it]
+Loading safetensors checkpoint shards:  45% Completed | 5/11 [00:05<00:06,  1.15s/it]
+Loading safetensors checkpoint shards:  55% Completed | 6/11 [00:07<00:05,  1.18s/it]
+Loading safetensors checkpoint shards:  64% Completed | 7/11 [00:08<00:04,  1.18s/it]
+Loading safetensors checkpoint shards:  73% Completed | 8/11 [00:09<00:03,  1.14s/it]
+Loading safetensors checkpoint shards:  82% Completed | 9/11 [00:10<00:02,  1.14s/it]
+Loading safetensors checkpoint shards:  91% Completed | 10/11 [00:11<00:01,  1.15s/it]
+Loading safetensors checkpoint shards: 100% Completed | 11/11 [00:12<00:00,  1.01s/it]
+Loading safetensors checkpoint shards: 100% Completed | 11/11 [00:12<00:00,  1.12s/it]
+
+[38;20m[2026-10-24 05:21:09,216  ATTN TP RANK 0] - INFO - Load weight end. type=Qwen3_5ForConditionalGeneration, dtype=torch.bfloat16, avail mem=10.37 GB (weight_loader.py:122)[0m
+[38;20m[2026-10-24 05:21:09,218  ATTN TP RANK 0] - INFO - CUDA-graph memory reserve off, startup residue unreserved: --enforce-eager captures no graphs (device.py:1409)[0m
+[2026-10-24 05:21:09 ATTN TP RANK 0] Cache profile: parent_bytes=100663296, P=128, parents=10, token_capacity=15360, layers=64 (draft 0), groups={'full_attention': 12, 'linear_attention_0': 1, 'linear_attention_1': 1}
+[38;20m[2026-10-24 05:21:09,280  ATTN TP RANK 0] - INFO - Allocated cache arena: device_bytes=1107296256, host_bytes=0, logical_plan_bytes=1107296256, prefix_granularity=128, num_lcm_blocks=10, device npu (arena.py:206)[0m
+[38;20m[2026-10-24 05:21:09,282  ATTN TP RANK 0] - INFO - Initialized cache view over 15360 slots as torch.bfloat16, layers from 0, rank 0 (base.py:234)[0m
+[38;20m[2026-10-24 05:21:09,283  ATTN TP RANK 0] - INFO - KV Cache is allocated. K size: 0.47 GB, V size: 0.47 GB. (mha.py:98)[0m
+[2026-10-24 05:21:09 ATTN TP RANK 0] Created hybrid_linear_attn backend: 16 full attn layers, 48 linear attn layers, LCM state fields
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch/utils/_device.py:103: UserWarning: Cannot create tensor with interal format while allow_internel_format=False, tensor will be created with base format. (Triggered internally at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:338.)
+  return func(*args, **kwargs)
+[2026-10-24 05:21:09 ATTN TP RANK 0] Batch-DP spec-verify: requested=False, infra_supports=False, enabled=False min_bs=None (drafter=False, backend_supports_dp=False, tp_size=1, tp_group=True)
+[38;20m[2026-10-24 05:21:09,319  ATTN TP RANK 0] - INFO - Prewarming Triton RSAG communication states (model_executor.py:975)[0m
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py:4876: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  warnings.warn(  # warn only once
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py:4876: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  warnings.warn(  # warn only once
+[38;20m[2026-10-24 05:21:11,877  ATTN TP RANK 0] - INFO - Finished prewarming Triton RSAG communication states (model_executor.py:977)[0m
+[38;20m[2026-10-24 05:21:11,878  ATTN TP RANK 0] - INFO - ModelExecutor initialized (model_executor.py:812)[0m
+[38;20m[2026-10-24 05:21:11,878  ATTN TP RANK 0] - INFO - Kernel tuning disabled (--disable-autotune) (model_executor.py:1098)[0m
+[38;20m[2026-10-24 05:21:11,879  ATTN TP RANK 0] - INFO - workspace frozen: 256.00 MB (workspace.py:146)[0m
+[38;20m[2026-10-24 05:21:11,887  ATTN TP RANK 0] - INFO - Device memory summary (rank 0, npu 0, GB):
++---------------------------------+------------+
+| Component                       |         GB |
++---------------------------------+------------+
+| Attention weights               |       0.00 |
+| MoE weights                     |      21.25 |
+| Dense/MLP weights               |      10.62 |
+| Other weights (embed/head/norm) |      18.29 |
+| KV cache                        |       1.03 |
+| Activations + device graphs     |       0.25 |
+| Torch allocated (total)         |      51.45 |
+| Torch reserved (allocator pool) |      51.93 |
+| Non-torch (context/collectives) |       0.30 |
+| Device used (driver view)       |      52.23 |
+| Device free                     |       9.05 |
+| Device total                    |      61.28 |
++---------------------------------+------------+ (scheduler_utils.py:1228)[0m
+[38;20m[2026-10-24 05:21:11,899  ATTN TP RANK 0] - INFO - Retraction snapshot pool: 0.10 GB (1 LCM blocks of 100663296 bytes; derived: 0.1 of 10 Device LCM blocks, no Host L2 tier), up to 2 retracted requests (0.00 MB slot-state arena); no Host L2 tier, whole images go to the pool (executor.py:343)[0m
+[38;20m[2026-10-24 05:21:11,900  ATTN TP RANK 0] - INFO - Scheduler config: prefix_granularity=128 num_device_pages=11 max_scheduled_tokens=128 decode_input_tokens=1 overlap_schedule_depth=1 disable_l2_cache=True enable_l3_storage=False num_snapshot_pages=2 max_retracted_requests=2 debug_force_retraction_interval=0 max_batch_size=2 (global max_num_seqs=2, dp_size=1) disable_prefix_cache=True prefix_replay_tokens=0 state_checkpoint_in_forward=False cache_groups=['linear_attention_0', 'linear_attention_1', 'full_attention'] (event_loop.py:438)[0m
+[38;20m[2026-10-24 05:21:11,900  ATTN TP RANK 0] - INFO - Single-request token limit: cache=9215 model=512 effective=512 max_input=511 (event_loop.py:522)[0m
+[2026-10-24 05:21:12 ATTN TP RANK 0] Froze 641909 startup objects out of garbage collection; full collections now run between rounds
+[33;20m[2026-10-24 05:21:14,244 ] - WARNING - Signal handler is not added because the tokenizer manager is not in the main thread. This disables graceful shutdown of the tokenizer manager when SIGTERM is received. (async_llm.py:676)[0m
+[38;20m[2026-10-24 05:21:14,245 ] - INFO - Receive: obj=GenerateReqInput(sampling_params=[{'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}], input_extra_infos=None, user_rid=['8f6569072dcd4e36b8c44af5d23aa2ac'], rid=['8f6569072dcd4e36b8c44af5d23aa2ac'], return_logprob=[False], logprob_start_len=[-1], top_logprobs_num=[0], token_ids_logprob=[None], return_text_in_logprobs=False, logprob_format=[None], stream=False, log_metrics=True, session_params=None, custom_logit_processor=[None], return_hidden_states=False, bootstrap_host=[None], bootstrap_port=[None], bootstrap_room=[None], data_parallel_rank=[None]) (async_llm.py:282)[0m
+[38;20m[2026-10-24 05:21:14,246  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 5, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:21:29,479  ATTN TP RANK 0] - INFO - Req: 8f6569072dcd4e36b8c44af5d23aa2ac Finish! Accept_num_tokens_avg: 0 (generation_output_processor.py:611)[0m
+[38;20m[2026-10-24 05:21:29,480 ] - INFO - Finish: obj=GenerateReqInput(sampling_params={'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}, input_extra_infos=None, user_rid='8f6569072dcd4e36b8c44af5d23aa2ac', rid='8f6569072dcd4e36b8c44af5d23aa2ac', return_logprob=False, logprob_start_len=-1, top_logprobs_num=0, token_ids_logprob=None, return_text_in_logprobs=False, logprob_format=None, stream=False, log_metrics=True, session_params=None, custom_logit_processor=None, return_hidden_states=False, bootstrap_host=None, bootstrap_port=None, bootstrap_room=None, data_parallel_rank=None), out={'meta_info': {'id': '8f6569072dcd4e36b8c44af5d23aa2ac', 'finish_reason': {'type': 'length', 'length': 16}, 'prompt_tokens': 5, 'weight_version': 'default', 'completion_tokens': 16, 'cached_tokens': 0, 'e2e_latency': 15.235499143600464}, 'output_extra_info': {'decode_prefix_len': 0}} (async_llm.py:394)[0m
+[38;20m[2026-10-24 05:21:29,480 ] - INFO - Receive: obj=GenerateReqInput(sampling_params=[{'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}], input_extra_infos=None, user_rid=['c47b201c96e1422f8d50773423b5526e'], rid=['c47b201c96e1422f8d50773423b5526e'], return_logprob=[True], logprob_start_len=[-1], top_logprobs_num=[0], token_ids_logprob=[None], return_text_in_logprobs=False, logprob_format=[None], stream=False, log_metrics=True, session_params=None, custom_logit_processor=[None], return_hidden_states=False, bootstrap_host=[None], bootstrap_port=[None], bootstrap_room=[None], data_parallel_rank=[None]) (async_llm.py:282)[0m
+[38;20m[2026-10-24 05:21:29,627  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 5, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:21:32,402  ATTN TP RANK 0] - INFO - Req: c47b201c96e1422f8d50773423b5526e Finish! Accept_num_tokens_avg: 0 (generation_output_processor.py:611)[0m
+[38;20m[2026-10-24 05:21:32,402 ] - INFO - Finish: obj=GenerateReqInput(sampling_params={'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}, input_extra_infos=None, user_rid='c47b201c96e1422f8d50773423b5526e', rid='c47b201c96e1422f8d50773423b5526e', return_logprob=True, logprob_start_len=-1, top_logprobs_num=0, token_ids_logprob=None, return_text_in_logprobs=False, logprob_format=None, stream=False, log_metrics=True, session_params=None, custom_logit_processor=None, return_hidden_states=False, bootstrap_host=None, bootstrap_port=None, bootstrap_room=None, data_parallel_rank=None), out={'meta_info': {'id': 'c47b201c96e1422f8d50773423b5526e', 'finish_reason': {'type': 'length', 'length': 16}, 'prompt_tokens': 5, 'weight_version': 'default', 'input_token_logprobs': [[None, 369, None]], 'output_token_logprobs': [[-0.4046560525894165, 11751, None], [-0.27986273169517517, 13, None], [-1.9365302324295044, 271, None], [-1.3409353494644165, 248068, None], [-0.694767951965332, 198, None], [-0.0007194076315499842, 90700, None], [-0.0002221814211225137, 8340, None], [-0.00012206286191940308, 25, None], [-0.00041368984966538846, 271, None], [-8.189342770492658e-05, 16, None], [-4.6491513785440475e-06, 13, None], [-0.00026008085114881396, 220, None], [-0.0008646087371744215, 2972, None], [-0.0003177614707965404, 2014, None], [-3.5762778338721546e-07, 53983, None], [-6.556489097420126e-06, 279, None]], 'completion_tokens': 16, 'cached_tokens': 0, 'e2e_latency': 2.9217545986175537}, 'output_extra_info': {'decode_prefix_len': 0}} (async_llm.py:394)[0m
+[38;20m[2026-10-24 05:21:33,490 ] - INFO - Receive: obj=GenerateReqInput(sampling_params=[{'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}], input_extra_infos=None, user_rid=['010581e47ae8437fac47ad5f0e136700'], rid=['010581e47ae8437fac47ad5f0e136700'], return_logprob=[False], logprob_start_len=[-1], top_logprobs_num=[0], token_ids_logprob=[None], return_text_in_logprobs=False, logprob_format=[None], stream=False, log_metrics=True, session_params=None, custom_logit_processor=[None], return_hidden_states=False, bootstrap_host=[None], bootstrap_port=[None], bootstrap_room=[None], data_parallel_rank=[None]) (async_llm.py:282)[0m
+[38;20m[2026-10-24 05:21:33,490  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 32, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:21:34,504  ATTN TP RANK 0] - INFO - Decode batch. #dp-rank: 0, #running-req: 1, avg_seq_len: 36.0, #pages(active/cached/total): 3/2/10, page ratio: 0.30, gen throughput (token/s): 1.46, #queue-req: 0 (batch_log.py:202)[0m
+[38;20m[2026-10-24 05:21:36,556  ATTN TP RANK 0] - INFO - Req: 010581e47ae8437fac47ad5f0e136700 Finish! Accept_num_tokens_avg: 0 (generation_output_processor.py:611)[0m
+[38;20m[2026-10-24 05:21:36,557 ] - INFO - Finish: obj=GenerateReqInput(sampling_params={'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}, input_extra_infos=None, user_rid='010581e47ae8437fac47ad5f0e136700', rid='010581e47ae8437fac47ad5f0e136700', return_logprob=False, logprob_start_len=-1, top_logprobs_num=0, token_ids_logprob=None, return_text_in_logprobs=False, logprob_format=None, stream=False, log_metrics=True, session_params=None, custom_logit_processor=None, return_hidden_states=False, bootstrap_host=None, bootstrap_port=None, bootstrap_room=None, data_parallel_rank=None), out={'meta_info': {'id': '010581e47ae8437fac47ad5f0e136700', 'finish_reason': {'type': 'length', 'length': 16}, 'prompt_tokens': 32, 'weight_version': 'default', 'completion_tokens': 16, 'cached_tokens': 0, 'e2e_latency': 3.066864490509033}, 'output_extra_info': {'decode_prefix_len': 0}} (async_llm.py:394)[0m
+[38;20m[2026-10-24 05:21:36,557 ] - INFO - Receive: obj=GenerateReqInput(sampling_params=[{'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}], input_extra_infos=None, user_rid=['ea813cc337864d1bbdc49e8ea0e56c5f'], rid=['ea813cc337864d1bbdc49e8ea0e56c5f'], return_logprob=[True], logprob_start_len=[-1], top_logprobs_num=[0], token_ids_logprob=[None], return_text_in_logprobs=False, logprob_format=[None], stream=False, log_metrics=True, session_params=None, custom_logit_processor=[None], return_hidden_states=False, bootstrap_host=[None], bootstrap_port=[None], bootstrap_room=[None], data_parallel_rank=[None]) (async_llm.py:282)[0m
+[38;20m[2026-10-24 05:21:36,702  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 32, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:21:39,698  ATTN TP RANK 0] - INFO - Req: ea813cc337864d1bbdc49e8ea0e56c5f Finish! Accept_num_tokens_avg: 0 (generation_output_processor.py:611)[0m
+[38;20m[2026-10-24 05:21:39,699 ] - INFO - Finish: obj=GenerateReqInput(sampling_params={'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}, input_extra_infos=None, user_rid='ea813cc337864d1bbdc49e8ea0e56c5f', rid='ea813cc337864d1bbdc49e8ea0e56c5f', return_logprob=True, logprob_start_len=-1, top_logprobs_num=0, token_ids_logprob=None, return_text_in_logprobs=False, logprob_format=None, stream=False, log_metrics=True, session_params=None, custom_logit_processor=None, return_hidden_states=False, bootstrap_host=None, bootstrap_port=None, bootstrap_room=None, data_parallel_rank=None), out={'meta_info': {'id': 'ea813cc337864d1bbdc49e8ea0e56c5f', 'finish_reason': {'type': 'length', 'length': 16}, 'prompt_tokens': 32, 'weight_version': 'default', 'input_token_logprobs': [[None, 14294, None]], 'output_token_logprobs': [[-0.007899354211986065, 9064, None], [-0.01575944572687149, 11988, None], [-0.006360051687806845, 33625, None], [-0.0028775022365152836, 13016, None], [-0.006538781803101301, 1518, None], [-0.0033627175725996494, 28043, None], [-0.004946969449520111, 4906, None], [-0.023299487307667732, 13, None], [-1.0282496213912964, 271, None], [-2.6143836975097656, 1919, None], [-1.3557437658309937, 5392, None], [-1.4605743885040283, 17855, None], [-0.45030179619789124, 264, None], [-1.925592303276062, 491, None], [-1.4599322080612183, 1654, None], [-0.6962489485740662, 310, None]], 'completion_tokens': 16, 'cached_tokens': 0, 'e2e_latency': 3.1416051387786865}, 'output_extra_info': {'decode_prefix_len': 0}} (async_llm.py:394)[0m
+[38;20m[2026-10-24 05:21:40,809 ] - INFO - Receive: obj=GenerateReqInput(sampling_params=[{'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}], input_extra_infos=None, user_rid=['bfd91540c44c4f73bca813de0f131cb3'], rid=['bfd91540c44c4f73bca813de0f131cb3'], return_logprob=[False], logprob_start_len=[-1], top_logprobs_num=[0], token_ids_logprob=[None], return_text_in_logprobs=False, logprob_format=[None], stream=False, log_metrics=True, session_params=None, custom_logit_processor=[None], return_hidden_states=False, bootstrap_host=[None], bootstrap_port=[None], bootstrap_room=[None], data_parallel_rank=[None]) (async_llm.py:282)[0m
+[38;20m[2026-10-24 05:21:40,810  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 128, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:21:40,810  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 128, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:21:44,735  ATTN TP RANK 0] - INFO - Decode batch. #dp-rank: 0, #running-req: 1, avg_seq_len: 265.0, #pages(active/cached/total): 3/4/10, page ratio: 0.30, gen throughput (token/s): 3.42, #queue-req: 0 (batch_log.py:202)[0m
+[38;20m[2026-10-24 05:21:45,919  ATTN TP RANK 0] - INFO - Req: bfd91540c44c4f73bca813de0f131cb3 Finish! Accept_num_tokens_avg: 0 (generation_output_processor.py:611)[0m
+[38;20m[2026-10-24 05:21:45,920 ] - INFO - Finish: obj=GenerateReqInput(sampling_params={'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}, input_extra_infos=None, user_rid='bfd91540c44c4f73bca813de0f131cb3', rid='bfd91540c44c4f73bca813de0f131cb3', return_logprob=False, logprob_start_len=-1, top_logprobs_num=0, token_ids_logprob=None, return_text_in_logprobs=False, logprob_format=None, stream=False, log_metrics=True, session_params=None, custom_logit_processor=None, return_hidden_states=False, bootstrap_host=None, bootstrap_port=None, bootstrap_room=None, data_parallel_rank=None), out={'meta_info': {'id': 'bfd91540c44c4f73bca813de0f131cb3', 'finish_reason': {'type': 'length', 'length': 16}, 'prompt_tokens': 256, 'weight_version': 'default', 'completion_tokens': 16, 'cached_tokens': 0, 'e2e_latency': 5.110978364944458}, 'output_extra_info': {'decode_prefix_len': 0}} (async_llm.py:394)[0m
+[38;20m[2026-10-24 05:21:45,920 ] - INFO - Receive: obj=GenerateReqInput(sampling_params=[{'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}], input_extra_infos=None, user_rid=['2bb9360789484e14adfd964ebbb60def'], rid=['2bb9360789484e14adfd964ebbb60def'], return_logprob=[True], logprob_start_len=[-1], top_logprobs_num=[0], token_ids_logprob=[None], return_text_in_logprobs=False, logprob_format=[None], stream=False, log_metrics=True, session_params=None, custom_logit_processor=[None], return_hidden_states=False, bootstrap_host=[None], bootstrap_port=[None], bootstrap_room=[None], data_parallel_rank=[None]) (async_llm.py:282)[0m
+[38;20m[2026-10-24 05:21:46,066  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 128, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:21:46,066  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 128, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:21:51,180  ATTN TP RANK 0] - INFO - Req: 2bb9360789484e14adfd964ebbb60def Finish! Accept_num_tokens_avg: 0 (generation_output_processor.py:611)[0m
+[38;20m[2026-10-24 05:21:51,180 ] - INFO - Finish: obj=GenerateReqInput(sampling_params={'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}, input_extra_infos=None, user_rid='2bb9360789484e14adfd964ebbb60def', rid='2bb9360789484e14adfd964ebbb60def', return_logprob=True, logprob_start_len=-1, top_logprobs_num=0, token_ids_logprob=None, return_text_in_logprobs=False, logprob_format=None, stream=False, log_metrics=True, session_params=None, custom_logit_processor=None, return_hidden_states=False, bootstrap_host=None, bootstrap_port=None, bootstrap_room=None, data_parallel_rank=None), out={'meta_info': {'id': '2bb9360789484e14adfd964ebbb60def', 'finish_reason': {'type': 'length', 'length': 16}, 'prompt_tokens': 256, 'weight_version': 'default', 'input_token_logprobs': [[None, 13016, None]], 'output_token_logprobs': [[-0.0005146132898516953, 1518, None], [-0.001068616984412074, 28043, None], [-0.0027035849634557962, 4906, None], [-0.004762378055602312, 13, None], [-0.11669588834047318, 12588, None], [-0.0013181816320866346, 6618, None], [-0.0013711584033444524, 5757, None], [-0.001167450100183487, 15491, None], [-0.0016866994556039572, 34780, None], [-0.004628658294677734, 3983, None], [-0.0005099665140733123, 440, None], [-0.002152389846742153, 10727, None], [-0.0007858763565309346, 11436, None], [-0.00104301399551332, 13, None], [-0.005201141815632582, 357, None], [-0.002521551912650466, 14294, None]], 'completion_tokens': 16, 'cached_tokens': 0, 'e2e_latency': 5.260038375854492}, 'output_extra_info': {'decode_prefix_len': 0}} (async_llm.py:394)[0m
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66: UserWarning: Permission mismatch: The owner of /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/lib/libop_plugin_atb.so does not match.
+  warnings.warn(f"Permission mismatch: The owner of {path} does not match.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+[38;20m[2026-10-24 05:22:09,229 None] - INFO - Specified world_size (2) (server_args.py:1077)[0m
+[38;20m[2026-10-24 05:22:09,229 None] - INFO - Parallelism configuration:
+Mapping(rank=?, world_size=2)
+  Cluster : 1 node(s) x 2 proc(s)
+  Pipeline: pp=1
+  Attention: tp=2  kvp=1  qcp=1  dp=1  head_tp=2
+    Vision: tp=2  item_dp=1
+  LM head : tp=2
+  Dense   : tp=2  dp=1
+  MoE     : tp=2  ep=1  dp=1 (server_args.py:1207)[0m
+[38;20m[2026-10-24 05:22:09,229 None] - INFO - server_args=ServerArgs(model='/home/u2501213387/MLSys-HW/homework-2/models/Qwen3.5-27B', tokenizer='/home/u2501213387/MLSys-HW/homework-2/models/Qwen3.5-27B', tokenizer_mode='auto', skip_tokenizer_init=False, load_format='auto', trust_remote_code=False, dtype='bfloat16', kv_cache_dtype='auto', kv_cache_quant_method='none', quantization=None, quantization_param_path=None, max_model_len=512, device='npu', served_model_name='/home/u2501213387/MLSys-HW/homework-2/models/Qwen3.5-27B', revision=None, language_model_only=True, zmq_msgpack=False, data_parallel_address='127.0.0.1', data_parallel_rpc_port=30500, zmq_engine_index=0, host='127.0.0.1', port=31889, gpu_memory_utilization=0.9, max_num_seqs=2, max_total_tokens=16384, chunked_prefill_size=128, max_prefill_tokens=128, enable_mixed_batch=False, prefix_granularity=64, enable_state_checkpoint_in_forward=False, kv_offload_config=None, mamba_ssm_dtype='float32', stream_interval=1, stream_output=False, enable_inline_detokenizer=True, seed=42, distributed_timeout_seconds=60, download_dir=None, ext_yaml=None, base_gpu_id=0, gpu_id_step=1, log_level='info', enable_log_requests=True, log_requests_level=0, enable_log_request_stats=False, enable_metrics=False, decode_log_interval=40, metrics_reporters=['prometheus'], metrics_reporter_config=None, metrics_port=None, metrics_host=None, app_key=None, kv_events_config=None, rl_control_port=None, rl_control_host=None, weight_version='default', model_update_config=None, model_update_sdk_module=None, model_update_engine_type=None, model_update_draft_weights=None, data_parallel_size=None, pipeline_parallel_size=1, pp_layer_partition=None, load_balance_method='shortest_queue', load_watch_interval=0.02, ep_size=1, init_expert_location='trivial', ep_num_redundant_experts=0, ep_dispatch_algorithm=None, eplb_algorithm='auto', expert_distribution_recorder_mode=None, enable_eplb=False, eplb_rebalance_num_iterations=None, eplb_rebalance_layers_per_chunk=None, dense_gemm_backend='auto', moe_backend='auto', draft_moe_backend=None, moe_mxfp4_fp8_activation=False, all2all_backend='none', deepep_mode='auto', disable_flashinfer_cutlass_moe_fp4_allgather=False, enable_kvstore=False, kvstore_ratio=2.0, kvstore_size=0, kvstore_io_backend='kernel', kvstore_storage_backend=None, kvstore_storage_backend_extra_config=None, retraction_snapshot_host_gb=0.0, retraction_snapshot_ratio=None, retraction_snapshot_max_requests=2, debug_force_retraction_interval=0, dist_init_addr=None, nnodes=1, node_rank=0, hf_overrides='{}', preferred_sampling_params=None, attention_backend=None, kda_backend='auto', drafter_attention_backend=None, skip_softmax_threshold=0.0, sampling_backend='greedy', sampling_stream='batch', dp_sampling=False, dp_sampling_min_bs=None, attention_use_fp4_indexer_cache=None, use_trtllm_ragged_deepseek_prefill=None, kv_parallel_size=1, decode_context_parallel_size=1, query_context_parallel_size=1, deepseek_v41_attention_query_swa_min_tokens=4096, deepseek_v41_attention_query_min_tokens=1024, deepseek_v41_attention_query_parallel_size=1, deepseek_v41_indexer_query_parallel_size=1, deepseek_v4_mega_moe_max_num_tokens=0, deepseek_v4_indexer_prefill_max_logits_mb=512, deepseek_v4_prefill_chunk_size=4, engram_host_table=False, engram_host_table_dir=None, engram_host_table_layout='auto', grammar_backend='none', constrained_decoding=None, reasoning_parser=None, grammar_compile_timeout_secs=30.0, grammar_compile_max_retries=2, disable_any_whitespace=False, disable_capturable_grammar=False, draft_model_path_use_base=False, speculative_config=None, speculative_algorithm=None, speculative_draft_model_path=None, speculative_draft_model_quantization=None, speculative_num_steps=3, speculative_eagle_topk=1, speculative_num_draft_tokens=4, synthetic_acceptance_length=None, enable_speculative_sampling=False, spec_reject_draft_prob_threshold=2.0, enable_replay_ssm=True, eagle3_layers_to_capture=None, speculative_exec_mode=-1, speculative_data_path=None, speculative_compute_intensity='high_intensity', speculative_chain_width_table='off', enable_output_logprobs=True, input_logprob_chunk_tokens=256, disable_pdl=True, enable_prefix_caching=False, disable_kvstore=True, enforce_eager=True, disable_cuda_graph_padding=False, disable_autotune=True, enable_cudagraph_gc=False, disable_nccl_nvls=False, disable_symm_mem=False, disable_overlap_schedule=False, disable_tf32=False, force_deterministic_rsag=False, batch_invariant_collectives=False, disable_sampling_tp_sync=False, numerics='auto', yarn_ramp_mask_device='cuda', mla_lora_scale='folded', layer_boundary_norm='fused', router_topk='fused', logprob_order='torch', moe_combine_order='rank', dsa_slot_order='selection', low_latency_max_num_tokens_per_gpu=256, max_cudagraph_capture_size=160, disable_prefill_graph=True, disable_kda_prefill_graph=False, prefill_graph_max_tokens=None, prefill_graph_capture_sizes=None, prefill_graph_capture_batch_sizes=None, cudagraph_capture_sizes=None, enable_nan_detection=False, enable_nvtx=False, weight_loader_prefetch_checkpoints=True, weight_loader_prefetch_num_threads=8, enable_memory_saver=False, disable_cudagraph_memory_reserve=False, mla_disable_ragged=False, nprocs_per_node=None, world_size=2, attn_tp_size=2, attn_head_tp_size=None, lm_head_tp_size=2, tp_batch_invariant='none', dense_tp_size=2, moe_tp_size=2, mapping=Mapping(rank=?, world_size=2)
+  Cluster : 1 node(s) x 2 proc(s)
+  Pipeline: pp=1
+  Attention: tp=2  kvp=1  qcp=1  dp=1  head_tp=2
+    Vision: tp=2  item_dp=1
+  LM head : tp=2
+  Dense   : tp=2  dp=1
+  MoE     : tp=2  ep=1  dp=1, emulate_rank_zero=False, mla_chunk_multiplier=4, mm_attention_backend=None, mm_encoder_tp_mode='weights', disaggregation_mode='null', disaggregation_bootstrap_port=8998, disaggregation_transfer_backend='mooncake', disaggregation_ib_device=None, disaggregation_layerwise_interval=1, pdlb_url=None, comm_fusion_max_num_tokens=2048, enable_allreduce_fusion=False, enable_expert_parallel=False) (engine.py:146)[0m
+/home/u2501213387/MLSys-HW/homework-1/.venv/lib/python3.11/site-packages/transformers/modeling_rope_utils.py:1036: FutureWarning: `rope_config_validation` is deprecated and has been removed. Its functionality has been moved to RotaryEmbeddingConfigMixin.validate_rope method. PreTrainedConfig inherits this class, so please call self.validate_rope() instead. Also, make sure to use the new rope_parameters syntax. You can call self.standardize_rope_params() in the meantime.
+  warnings.warn(
+[38;20m[2026-10-24 05:22:09,266 ] - INFO - Running in language-model-only mode: vision/audio encoders will be skipped; requests with multimodal inputs will be rejected. (model_config.py:894)[0m
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66: UserWarning: Permission mismatch: The owner of /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/lib/libop_plugin_atb.so does not match.
+  warnings.warn(f"Permission mismatch: The owner of {path} does not match.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66: UserWarning: Permission mismatch: The owner of /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/lib/libop_plugin_atb.so does not match.
+  warnings.warn(f"Permission mismatch: The owner of {path} does not match.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+  warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+[2026-10-24 05:22:18 ATTN TP RANK 0] Triton compile monitor is not available on NPU
+/home/u2501213387/MLSys-HW/homework-1/.venv/lib/python3.11/site-packages/transformers/modeling_rope_utils.py:1036: FutureWarning: `rope_config_validation` is deprecated and has been removed. Its functionality has been moved to RotaryEmbeddingConfigMixin.validate_rope method. PreTrainedConfig inherits this class, so please call self.validate_rope() instead. Also, make sure to use the new rope_parameters syntax. You can call self.standardize_rope_params() in the meantime.
+  warnings.warn(
+[38;20m[2026-10-24 05:22:18,565  ATTN TP RANK 0] - INFO - Running in language-model-only mode: vision/audio encoders will be skipped; requests with multimodal inputs will be rejected. (model_config.py:894)[0m
+[38;20m[2026-10-24 05:22:18,567  ATTN TP RANK 0] - INFO - Init torch distributed begin. Avail mem=59.7140 GB (distributed_initializer.py:147)[0m
+[2026-10-24 05:22:19 ATTN TP RANK 1] Triton compile monitor is not available on NPU
+/home/u2501213387/MLSys-HW/homework-1/.venv/lib/python3.11/site-packages/transformers/modeling_rope_utils.py:1036: FutureWarning: `rope_config_validation` is deprecated and has been removed. Its functionality has been moved to RotaryEmbeddingConfigMixin.validate_rope method. PreTrainedConfig inherits this class, so please call self.validate_rope() instead. Also, make sure to use the new rope_parameters syntax. You can call self.standardize_rope_params() in the meantime.
+  warnings.warn(
+[38;20m[2026-10-24 05:22:19,089  ATTN TP RANK 1] - INFO - Running in language-model-only mode: vision/audio encoders will be skipped; requests with multimodal inputs will be rejected. (model_config.py:894)[0m
+[38;20m[2026-10-24 05:22:19,664  ATTN TP RANK 1] - INFO - Init torch distributed begin. Avail mem=60.1146 GB (distributed_initializer.py:147)[0m
+[W1024 05:22:19.440141760 compiler_depend.ts:1065] Warning: The watchdog timeout 60000ms(which is set by init_process_group) is less than or equal to HCCL execution timeout 1836000ms! The plog may not be recorded. (function ProcessGroupHCCL)
+[rank1]:[W1024 05:22:19.440946330 compiler_depend.ts:1065] Warning: The watchdog timeout 60000ms(which is set by init_process_group) is less than or equal to HCCL execution timeout 1836000ms! The plog may not be recorded. (function ProcessGroupHCCL)
+[W1024 05:22:19.444839110 compiler_depend.ts:1065] Warning: The watchdog timeout 60000ms(which is set by init_process_group) is less than or equal to HCCL execution timeout 1836000ms! The plog may not be recorded. (function ProcessGroupHCCL)
+[Gloo] Rank 1 is connected to 1 peer ranks. Expected number of connected peer ranks is : 1
+[Gloo] Rank 0 is connected to 1 peer ranks. Expected number of connected peer ranks is : 1
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[rank0]:[W1024 05:22:19.445486550 compiler_depend.ts:1065] Warning: The watchdog timeout 60000ms(which is set by init_process_group) is less than or equal to HCCL execution timeout 1836000ms! The plog may not be recorded. (function ProcessGroupHCCL)
+[rank1]:[W1024 05:22:19.451738900 compiler_depend.ts:1065] Warning: The watchdog timeout 60000ms(which is set by init_process_group) is less than or equal to HCCL execution timeout 1836000ms! The plog may not be recorded. (function ProcessGroupHCCL)
+[rank0]:[W1024 05:22:19.451862450 compiler_depend.ts:1065] Warning: The watchdog timeout 60000ms(which is set by init_process_group) is less than or equal to HCCL execution timeout 1836000ms! The plog may not be recorded. (function ProcessGroupHCCL)
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[38;20m[2026-10-24 05:22:19,683  ATTN TP RANK 0] - INFO - Init comm buff end. Avail mem=58.3742 GB (distributed_initializer.py:260)[0m
+[38;20m[2026-10-24 05:22:19,683  ATTN TP RANK 0] - INFO - Current Process distributed state:  global rank: 0  attn_tp_rank: 0  attn_dp_rank: 0 (distributed_initializer.py:265)[0m
+[38;20m[2026-10-24 05:22:19,683  ATTN TP RANK 1] - INFO - Init comm buff end. Avail mem=60.1134 GB (distributed_initializer.py:260)[0m
+[38;20m[2026-10-24 05:22:19,683  ATTN TP RANK 1] - INFO - Current Process distributed state:  global rank: 1  attn_tp_rank: 1  attn_dp_rank: 0 (distributed_initializer.py:265)[0m
+[38;20m[2026-10-24 05:22:20,611  ATTN TP RANK 0] - INFO - Load weight begin. avail mem=58.37 GB (weight_loader.py:77)[0m
+[38;20m[2026-10-24 05:22:20,612  ATTN TP RANK 1] - INFO - Load weight begin. avail mem=60.11 GB (weight_loader.py:77)[0m
+[2026-10-24 05:22:21 ATTN TP RANK 0] using attn output gate!
+[2026-10-24 05:22:21 ATTN TP RANK 1] using attn output gate!
+[38;20m[2026-10-24 05:22:23,525  ATTN TP RANK 0] - INFO - Prefetching 6/11 checkpoint shards as local reader 0/2 into the OS page cache (window 40.0 GiB, up to 8 range-reader threads). (weight_utils.py:593)[0m
+Loading safetensors checkpoint shards:   0% Completed | 0/11 [00:00<?, ?it/s]
+[38;20m[2026-10-24 05:22:23,688  ATTN TP RANK 1] - INFO - Prefetching 5/11 checkpoint shards as local reader 1/2 into the OS page cache (window 40.0 GiB, up to 8 range-reader threads). (weight_utils.py:593)[0m
+Loading safetensors checkpoint shards:   9% Completed | 1/11 [00:00<00:04,  2.12it/s]
+Loading safetensors checkpoint shards:  18% Completed | 2/11 [00:01<00:06,  1.44it/s]
+[38;20m[2026-10-24 05:22:25,121  ATTN TP RANK 1] - INFO - Checkpoint prefetch finished after 1.43s. (weight_utils.py:652)[0m
+Loading safetensors checkpoint shards:  27% Completed | 3/11 [00:02<00:06,  1.33it/s]
+[38;20m[2026-10-24 05:22:25,808  ATTN TP RANK 0] - INFO - Checkpoint prefetch finished after 2.28s. (weight_utils.py:652)[0m
+Loading safetensors checkpoint shards:  36% Completed | 4/11 [00:02<00:05,  1.28it/s]
+Loading safetensors checkpoint shards:  45% Completed | 5/11 [00:03<00:04,  1.21it/s]
+Loading safetensors checkpoint shards:  55% Completed | 6/11 [00:04<00:04,  1.12it/s]
+Loading safetensors checkpoint shards:  64% Completed | 7/11 [00:05<00:03,  1.11it/s]
+Loading safetensors checkpoint shards:  73% Completed | 8/11 [00:06<00:02,  1.26it/s]
+Loading safetensors checkpoint shards:  82% Completed | 9/11 [00:06<00:01,  1.42it/s]
+Loading safetensors checkpoint shards:  91% Completed | 10/11 [00:07<00:00,  1.33it/s]
+Loading safetensors checkpoint shards: 100% Completed | 11/11 [00:08<00:00,  1.59it/s]
+Loading safetensors checkpoint shards: 100% Completed | 11/11 [00:08<00:00,  1.36it/s]
+
+[38;20m[2026-10-24 05:22:31,642  ATTN TP RANK 1] - INFO - Load weight end. type=Qwen3_5ForConditionalGeneration, dtype=torch.bfloat16, avail mem=32.90 GB (weight_loader.py:122)[0m
+[38;20m[2026-10-24 05:22:31,644  ATTN TP RANK 1] - INFO - CUDA-graph memory reserve off, startup residue unreserved: --enforce-eager captures no graphs (device.py:1409)[0m
+[38;20m[2026-10-24 05:22:31,682  ATTN TP RANK 0] - INFO - Load weight end. type=Qwen3_5ForConditionalGeneration, dtype=torch.bfloat16, avail mem=31.84 GB (weight_loader.py:122)[0m
+[38;20m[2026-10-24 05:22:31,683  ATTN TP RANK 0] - INFO - CUDA-graph memory reserve off, startup residue unreserved: --enforce-eager captures no graphs (device.py:1409)[0m
+[2026-10-24 05:22:31 ATTN TP RANK 0] Cache profile: parent_bytes=50331648, P=128, parents=10, token_capacity=15360, layers=64 (draft 0), groups={'full_attention': 12, 'linear_attention_0': 1, 'linear_attention_1': 1}
+[2026-10-24 05:22:31 ATTN TP RANK 1] Cache profile: parent_bytes=50331648, P=128, parents=10, token_capacity=15360, layers=64 (draft 0), groups={'full_attention': 12, 'linear_attention_0': 1, 'linear_attention_1': 1}
+[38;20m[2026-10-24 05:22:31,691  ATTN TP RANK 0] - INFO - Allocated cache arena: device_bytes=553648128, host_bytes=0, logical_plan_bytes=553648128, prefix_granularity=128, num_lcm_blocks=10, device npu (arena.py:206)[0m
+[38;20m[2026-10-24 05:22:31,694  ATTN TP RANK 0] - INFO - Initialized cache view over 15360 slots as torch.bfloat16, layers from 0, rank 0 (base.py:234)[0m
+[38;20m[2026-10-24 05:22:31,694  ATTN TP RANK 0] - INFO - KV Cache is allocated. K size: 0.24 GB, V size: 0.24 GB. (mha.py:98)[0m
+[2026-10-24 05:22:31 ATTN TP RANK 0] Created hybrid_linear_attn backend: 16 full attn layers, 48 linear attn layers, LCM state fields
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch/utils/_device.py:103: UserWarning: Cannot create tensor with interal format while allow_internel_format=False, tensor will be created with base format. (Triggered internally at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:338.)
+  return func(*args, **kwargs)
+[2026-10-24 05:22:31 ATTN TP RANK 0] Batch-DP spec-verify: requested=False, infra_supports=False, enabled=False min_bs=None (drafter=False, backend_supports_dp=False, tp_size=2, tp_group=True)
+[38;20m[2026-10-24 05:22:31,740  ATTN TP RANK 1] - INFO - Allocated cache arena: device_bytes=553648128, host_bytes=0, logical_plan_bytes=553648128, prefix_granularity=128, num_lcm_blocks=10, device npu (arena.py:206)[0m
+[38;20m[2026-10-24 05:22:31,743  ATTN TP RANK 1] - INFO - Initialized cache view over 15360 slots as torch.bfloat16, layers from 0, rank 1 (base.py:234)[0m
+[38;20m[2026-10-24 05:22:31,743  ATTN TP RANK 1] - INFO - KV Cache is allocated. K size: 0.24 GB, V size: 0.24 GB. (mha.py:98)[0m
+[38;20m[2026-10-24 05:22:31,747  ATTN TP RANK 0] - INFO - Prewarming Triton RSAG communication states (model_executor.py:975)[0m
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py:4876: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  warnings.warn(  # warn only once
+[2026-10-24 05:22:31 ATTN TP RANK 1] Created hybrid_linear_attn backend: 16 full attn layers, 48 linear attn layers, LCM state fields
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch/utils/_device.py:103: UserWarning: Cannot create tensor with interal format while allow_internel_format=False, tensor will be created with base format. (Triggered internally at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:338.)
+  return func(*args, **kwargs)
+[2026-10-24 05:22:31 ATTN TP RANK 1] Batch-DP spec-verify: requested=False, infra_supports=False, enabled=False min_bs=None (drafter=False, backend_supports_dp=False, tp_size=2, tp_group=True)
+[38;20m[2026-10-24 05:22:31,783  ATTN TP RANK 1] - INFO - Prewarming Triton RSAG communication states (model_executor.py:975)[0m
+[38;20m[2026-10-24 05:22:35,129  ATTN TP RANK 1] - INFO - Finished prewarming Triton RSAG communication states (model_executor.py:977)[0m
+[38;20m[2026-10-24 05:22:35,129  ATTN TP RANK 0] - INFO - Finished prewarming Triton RSAG communication states (model_executor.py:977)[0m
+[38;20m[2026-10-24 05:22:35,130  ATTN TP RANK 0] - INFO - ModelExecutor initialized (model_executor.py:812)[0m
+[38;20m[2026-10-24 05:22:35,130  ATTN TP RANK 1] - INFO - ModelExecutor initialized (model_executor.py:812)[0m
+[38;20m[2026-10-24 05:22:35,132  ATTN TP RANK 0] - INFO - Kernel tuning disabled (--disable-autotune) (model_executor.py:1098)[0m
+[38;20m[2026-10-24 05:22:35,132  ATTN TP RANK 1] - INFO - Kernel tuning disabled (--disable-autotune) (model_executor.py:1098)[0m
+[38;20m[2026-10-24 05:22:35,133  ATTN TP RANK 0] - INFO - workspace frozen: 256.00 MB (workspace.py:146)[0m
+[38;20m[2026-10-24 05:22:35,133  ATTN TP RANK 1] - INFO - workspace frozen: 256.00 MB (workspace.py:146)[0m
+[38;20m[2026-10-24 05:22:35,141  ATTN TP RANK 0] - INFO - Device memory summary (rank 0, npu 0, GB):
++---------------------------------+------------+
+| Component                       |         GB |
++---------------------------------+------------+
+| Attention weights               |       0.00 |
+| MoE weights                     |      10.62 |
+| Dense/MLP weights               |       5.31 |
+| Other weights (embed/head/norm) |       9.18 |
+| KV cache                        |       0.52 |
+| Activations + device graphs     |       0.31 |
+| Torch allocated (total)         |      25.94 |
+| Torch reserved (allocator pool) |      26.33 |
+| Non-torch (context/collectives) |       5.03 |
+| Device used (driver view)       |      31.37 |
+| Device free                     |      29.90 |
+| Device total                    |      61.27 |
++---------------------------------+------------+ (scheduler_utils.py:1228)[0m
+[38;20m[2026-10-24 05:22:35,152  ATTN TP RANK 0] - INFO - Retraction snapshot pool: 0.05 GB (1 LCM blocks of 50331648 bytes; derived: 0.1 of 10 Device LCM blocks, no Host L2 tier), up to 2 retracted requests (0.00 MB slot-state arena); no Host L2 tier, whole images go to the pool (executor.py:343)[0m
+[38;20m[2026-10-24 05:22:35,153  ATTN TP RANK 0] - INFO - Scheduler config: prefix_granularity=128 num_device_pages=11 max_scheduled_tokens=128 decode_input_tokens=1 overlap_schedule_depth=1 disable_l2_cache=True enable_l3_storage=False num_snapshot_pages=2 max_retracted_requests=2 debug_force_retraction_interval=0 max_batch_size=2 (global max_num_seqs=2, dp_size=1) disable_prefix_cache=True prefix_replay_tokens=0 state_checkpoint_in_forward=False cache_groups=['linear_attention_0', 'linear_attention_1', 'full_attention'] (event_loop.py:438)[0m
+[38;20m[2026-10-24 05:22:35,153  ATTN TP RANK 0] - INFO - Single-request token limit: cache=9215 model=512 effective=512 max_input=511 (event_loop.py:522)[0m
+[38;20m[2026-10-24 05:22:35,154  ATTN TP RANK 1] - INFO - Scheduler config: prefix_granularity=128 num_device_pages=11 max_scheduled_tokens=128 decode_input_tokens=1 overlap_schedule_depth=1 disable_l2_cache=True enable_l3_storage=False num_snapshot_pages=2 max_retracted_requests=2 debug_force_retraction_interval=0 max_batch_size=2 (global max_num_seqs=2, dp_size=1) disable_prefix_cache=True prefix_replay_tokens=0 state_checkpoint_in_forward=False cache_groups=['linear_attention_0', 'linear_attention_1', 'full_attention'] (event_loop.py:438)[0m
+[38;20m[2026-10-24 05:22:35,154  ATTN TP RANK 1] - INFO - Single-request token limit: cache=9215 model=512 effective=512 max_input=511 (event_loop.py:522)[0m
+[2026-10-24 05:22:35 ATTN TP RANK 1] Froze 641866 startup objects out of garbage collection; full collections now run between rounds
+[2026-10-24 05:22:36 ATTN TP RANK 0] Froze 642003 startup objects out of garbage collection; full collections now run between rounds
+[33;20m[2026-10-24 05:22:37,465 ] - WARNING - Signal handler is not added because the tokenizer manager is not in the main thread. This disables graceful shutdown of the tokenizer manager when SIGTERM is received. (async_llm.py:676)[0m
+[38;20m[2026-10-24 05:22:37,466 ] - INFO - Receive: obj=GenerateReqInput(sampling_params=[{'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}], input_extra_infos=None, user_rid=['7147cecf7c42478fb4a62af67df316fc'], rid=['7147cecf7c42478fb4a62af67df316fc'], return_logprob=[False], logprob_start_len=[-1], top_logprobs_num=[0], token_ids_logprob=[None], return_text_in_logprobs=False, logprob_format=[None], stream=False, log_metrics=True, session_params=None, custom_logit_processor=[None], return_hidden_states=False, bootstrap_host=[None], bootstrap_port=[None], bootstrap_room=[None], data_parallel_rank=[None]) (async_llm.py:282)[0m
+/home/u2501213387/MLSys-HW/homework-1/tokenspeed/python/tokenspeed/runtime/utils/common.py:413: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:206.)
+  tensor_data = torch.ByteTensor(
+[38;20m[2026-10-24 05:22:37,468  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 5, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:22:41,579  ATTN TP RANK 0] - INFO - Req: 7147cecf7c42478fb4a62af67df316fc Finish! Accept_num_tokens_avg: 0 (generation_output_processor.py:611)[0m
+[38;20m[2026-10-24 05:22:41,579 ] - INFO - Finish: obj=GenerateReqInput(sampling_params={'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}, input_extra_infos=None, user_rid='7147cecf7c42478fb4a62af67df316fc', rid='7147cecf7c42478fb4a62af67df316fc', return_logprob=False, logprob_start_len=-1, top_logprobs_num=0, token_ids_logprob=None, return_text_in_logprobs=False, logprob_format=None, stream=False, log_metrics=True, session_params=None, custom_logit_processor=None, return_hidden_states=False, bootstrap_host=None, bootstrap_port=None, bootstrap_room=None, data_parallel_rank=None), out={'meta_info': {'id': '7147cecf7c42478fb4a62af67df316fc', 'finish_reason': {'type': 'length', 'length': 16}, 'prompt_tokens': 5, 'weight_version': 'default', 'completion_tokens': 16, 'cached_tokens': 0, 'e2e_latency': 4.113791227340698}, 'output_extra_info': {'decode_prefix_len': 0}} (async_llm.py:394)[0m
+[38;20m[2026-10-24 05:22:41,580 ] - INFO - Receive: obj=GenerateReqInput(sampling_params=[{'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}], input_extra_infos=None, user_rid=['bf704a0b880b43b684cc0623e0d8b0eb'], rid=['bf704a0b880b43b684cc0623e0d8b0eb'], return_logprob=[True], logprob_start_len=[-1], top_logprobs_num=[0], token_ids_logprob=[None], return_text_in_logprobs=False, logprob_format=[None], stream=False, log_metrics=True, session_params=None, custom_logit_processor=[None], return_hidden_states=False, bootstrap_host=[None], bootstrap_port=[None], bootstrap_room=[None], data_parallel_rank=[None]) (async_llm.py:282)[0m
+[38;20m[2026-10-24 05:22:41,752  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 5, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:22:45,093  ATTN TP RANK 0] - INFO - Req: bf704a0b880b43b684cc0623e0d8b0eb Finish! Accept_num_tokens_avg: 0 (generation_output_processor.py:611)[0m
+[38;20m[2026-10-24 05:22:45,093 ] - INFO - Finish: obj=GenerateReqInput(sampling_params={'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}, input_extra_infos=None, user_rid='bf704a0b880b43b684cc0623e0d8b0eb', rid='bf704a0b880b43b684cc0623e0d8b0eb', return_logprob=True, logprob_start_len=-1, top_logprobs_num=0, token_ids_logprob=None, return_text_in_logprobs=False, logprob_format=None, stream=False, log_metrics=True, session_params=None, custom_logit_processor=None, return_hidden_states=False, bootstrap_host=None, bootstrap_port=None, bootstrap_room=None, data_parallel_rank=None), out={'meta_info': {'id': 'bf704a0b880b43b684cc0623e0d8b0eb', 'finish_reason': {'type': 'length', 'length': 16}, 'prompt_tokens': 5, 'weight_version': 'default', 'input_token_logprobs': [[None, 369, None]], 'output_token_logprobs': [[-0.397491991519928, 11751, None], [-0.27825209498405457, 13, None], [-1.93363356590271, 271, None], [-1.3539040088653564, 248068, None], [-0.6949306130409241, 198, None], [-0.0006355411605909467, 90700, None], [-0.00017724849749356508, 8340, None], [-0.00010489866690477356, 25, None], [-0.0004459816846065223, 271, None], [-7.045020902296528e-05, 16, None], [-4.6491513785440475e-06, 13, None], [-0.00027724236133508384, 220, None], [-0.0008934320067055523, 2972, None], [-0.0002817710628733039, 2014, None], [-3.5762778338721546e-07, 53983, None], [-6.6756979322235566e-06, 279, None]], 'completion_tokens': 16, 'cached_tokens': 0, 'e2e_latency': 3.513310194015503}, 'output_extra_info': {'decode_prefix_len': 0}} (async_llm.py:394)[0m
+[38;20m[2026-10-24 05:22:46,273 ] - INFO - Receive: obj=GenerateReqInput(sampling_params=[{'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}], input_extra_infos=None, user_rid=['192f2ce69bd9479e897536f50c6117ec'], rid=['192f2ce69bd9479e897536f50c6117ec'], return_logprob=[False], logprob_start_len=[-1], top_logprobs_num=[0], token_ids_logprob=[None], return_text_in_logprobs=False, logprob_format=[None], stream=False, log_metrics=True, session_params=None, custom_logit_processor=[None], return_hidden_states=False, bootstrap_host=[None], bootstrap_port=[None], bootstrap_room=[None], data_parallel_rank=[None]) (async_llm.py:282)[0m
+[38;20m[2026-10-24 05:22:46,275  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 32, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:22:47,405  ATTN TP RANK 0] - INFO - Decode batch. #dp-rank: 0, #running-req: 1, avg_seq_len: 36.0, #pages(active/cached/total): 3/2/10, page ratio: 0.30, gen throughput (token/s): 2.69, #queue-req: 0 (batch_log.py:202)[0m
+[38;20m[2026-10-24 05:22:49,695  ATTN TP RANK 0] - INFO - Req: 192f2ce69bd9479e897536f50c6117ec Finish! Accept_num_tokens_avg: 0 (generation_output_processor.py:611)[0m
+[38;20m[2026-10-24 05:22:49,696 ] - INFO - Finish: obj=GenerateReqInput(sampling_params={'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}, input_extra_infos=None, user_rid='192f2ce69bd9479e897536f50c6117ec', rid='192f2ce69bd9479e897536f50c6117ec', return_logprob=False, logprob_start_len=-1, top_logprobs_num=0, token_ids_logprob=None, return_text_in_logprobs=False, logprob_format=None, stream=False, log_metrics=True, session_params=None, custom_logit_processor=None, return_hidden_states=False, bootstrap_host=None, bootstrap_port=None, bootstrap_room=None, data_parallel_rank=None), out={'meta_info': {'id': '192f2ce69bd9479e897536f50c6117ec', 'finish_reason': {'type': 'length', 'length': 16}, 'prompt_tokens': 32, 'weight_version': 'default', 'completion_tokens': 16, 'cached_tokens': 0, 'e2e_latency': 3.4232492446899414}, 'output_extra_info': {'decode_prefix_len': 0}} (async_llm.py:394)[0m
+[38;20m[2026-10-24 05:22:49,696 ] - INFO - Receive: obj=GenerateReqInput(sampling_params=[{'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}], input_extra_infos=None, user_rid=['b0915450a15145b281e84f5a69b35cf4'], rid=['b0915450a15145b281e84f5a69b35cf4'], return_logprob=[True], logprob_start_len=[-1], top_logprobs_num=[0], token_ids_logprob=[None], return_text_in_logprobs=False, logprob_format=[None], stream=False, log_metrics=True, session_params=None, custom_logit_processor=[None], return_hidden_states=False, bootstrap_host=[None], bootstrap_port=[None], bootstrap_room=[None], data_parallel_rank=[None]) (async_llm.py:282)[0m
+[38;20m[2026-10-24 05:22:49,868  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 32, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:22:53,262  ATTN TP RANK 0] - INFO - Req: b0915450a15145b281e84f5a69b35cf4 Finish! Accept_num_tokens_avg: 0 (generation_output_processor.py:611)[0m
+[38;20m[2026-10-24 05:22:53,263 ] - INFO - Finish: obj=GenerateReqInput(sampling_params={'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}, input_extra_infos=None, user_rid='b0915450a15145b281e84f5a69b35cf4', rid='b0915450a15145b281e84f5a69b35cf4', return_logprob=True, logprob_start_len=-1, top_logprobs_num=0, token_ids_logprob=None, return_text_in_logprobs=False, logprob_format=None, stream=False, log_metrics=True, session_params=None, custom_logit_processor=None, return_hidden_states=False, bootstrap_host=None, bootstrap_port=None, bootstrap_room=None, data_parallel_rank=None), out={'meta_info': {'id': 'b0915450a15145b281e84f5a69b35cf4', 'finish_reason': {'type': 'length', 'length': 16}, 'prompt_tokens': 32, 'weight_version': 'default', 'input_token_logprobs': [[None, 14294, None]], 'output_token_logprobs': [[-0.007971733808517456, 9064, None], [-0.01582902856171131, 11988, None], [-0.0069506047293543816, 33625, None], [-0.003141232766211033, 13016, None], [-0.0066054570488631725, 1518, None], [-0.0033451335038989782, 28043, None], [-0.004789309576153755, 4906, None], [-0.02358059212565422, 13, None], [-1.0321650505065918, 271, None], [-2.609642267227173, 1919, None], [-1.2853931188583374, 5392, None], [-1.5379432439804077, 17855, None], [-0.4390828609466553, 264, None], [-1.9310154914855957, 491, None], [-1.4887193441390991, 1654, None], [-0.6960136294364929, 310, None]], 'completion_tokens': 16, 'cached_tokens': 0, 'e2e_latency': 3.5662293434143066}, 'output_extra_info': {'decode_prefix_len': 0}} (async_llm.py:394)[0m
+[38;20m[2026-10-24 05:22:54,430 ] - INFO - Receive: obj=GenerateReqInput(sampling_params=[{'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}], input_extra_infos=None, user_rid=['7f015772fe0b4f2e99c334f28a2cf455'], rid=['7f015772fe0b4f2e99c334f28a2cf455'], return_logprob=[False], logprob_start_len=[-1], top_logprobs_num=[0], token_ids_logprob=[None], return_text_in_logprobs=False, logprob_format=[None], stream=False, log_metrics=True, session_params=None, custom_logit_processor=[None], return_hidden_states=False, bootstrap_host=[None], bootstrap_port=[None], bootstrap_room=[None], data_parallel_rank=[None]) (async_llm.py:282)[0m
+[38;20m[2026-10-24 05:22:54,432  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 128, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:22:54,434  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 128, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:22:58,660  ATTN TP RANK 0] - INFO - Decode batch. #dp-rank: 0, #running-req: 1, avg_seq_len: 265.0, #pages(active/cached/total): 3/4/10, page ratio: 0.30, gen throughput (token/s): 3.11, #queue-req: 0 (batch_log.py:202)[0m
+[38;20m[2026-10-24 05:22:59,967  ATTN TP RANK 0] - INFO - Req: 7f015772fe0b4f2e99c334f28a2cf455 Finish! Accept_num_tokens_avg: 0 (generation_output_processor.py:611)[0m
+[38;20m[2026-10-24 05:22:59,967 ] - INFO - Finish: obj=GenerateReqInput(sampling_params={'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}, input_extra_infos=None, user_rid='7f015772fe0b4f2e99c334f28a2cf455', rid='7f015772fe0b4f2e99c334f28a2cf455', return_logprob=False, logprob_start_len=-1, top_logprobs_num=0, token_ids_logprob=None, return_text_in_logprobs=False, logprob_format=None, stream=False, log_metrics=True, session_params=None, custom_logit_processor=None, return_hidden_states=False, bootstrap_host=None, bootstrap_port=None, bootstrap_room=None, data_parallel_rank=None), out={'meta_info': {'id': '7f015772fe0b4f2e99c334f28a2cf455', 'finish_reason': {'type': 'length', 'length': 16}, 'prompt_tokens': 256, 'weight_version': 'default', 'completion_tokens': 16, 'cached_tokens': 0, 'e2e_latency': 5.5374579429626465}, 'output_extra_info': {'decode_prefix_len': 0}} (async_llm.py:394)[0m
+[38;20m[2026-10-24 05:22:59,968 ] - INFO - Receive: obj=GenerateReqInput(sampling_params=[{'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}], input_extra_infos=None, user_rid=['8820e5aab01d4d709054dc94148591ce'], rid=['8820e5aab01d4d709054dc94148591ce'], return_logprob=[True], logprob_start_len=[-1], top_logprobs_num=[0], token_ids_logprob=[None], return_text_in_logprobs=False, logprob_format=[None], stream=False, log_metrics=True, session_params=None, custom_logit_processor=[None], return_hidden_states=False, bootstrap_host=[None], bootstrap_port=[None], bootstrap_room=[None], data_parallel_rank=[None]) (async_llm.py:282)[0m
+[38;20m[2026-10-24 05:23:00,135  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 128, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:23:00,137  ATTN TP RANK 0] - INFO - Prefill batch. #dp-rank: 0, #new-seq: 1, #new-token: 128, #cached-token: 0, #running-req: 1, #queue-req: 0 (batch_log.py:166)[0m
+[38;20m[2026-10-24 05:23:05,668  ATTN TP RANK 0] - INFO - Req: 8820e5aab01d4d709054dc94148591ce Finish! Accept_num_tokens_avg: 0 (generation_output_processor.py:611)[0m
+[38;20m[2026-10-24 05:23:05,669 ] - INFO - Finish: obj=GenerateReqInput(sampling_params={'temperature': 0, 'max_new_tokens': 16, 'ignore_eos': True}, input_extra_infos=None, user_rid='8820e5aab01d4d709054dc94148591ce', rid='8820e5aab01d4d709054dc94148591ce', return_logprob=True, logprob_start_len=-1, top_logprobs_num=0, token_ids_logprob=None, return_text_in_logprobs=False, logprob_format=None, stream=False, log_metrics=True, session_params=None, custom_logit_processor=None, return_hidden_states=False, bootstrap_host=None, bootstrap_port=None, bootstrap_room=None, data_parallel_rank=None), out={'meta_info': {'id': '8820e5aab01d4d709054dc94148591ce', 'finish_reason': {'type': 'length', 'length': 16}, 'prompt_tokens': 256, 'weight_version': 'default', 'input_token_logprobs': [[None, 13016, None]], 'output_token_logprobs': [[-0.0006257721106521785, 1518, None], [-0.0010932666482403874, 28043, None], [-0.0031453920528292656, 4906, None], [-0.006255570333451033, 13, None], [-0.13483485579490662, 12588, None], [-0.0015825617592781782, 6618, None], [-0.0015510207740589976, 5757, None], [-0.0016753936652094126, 15491, None], [-0.0015919642755761743, 34780, None], [-0.013009080663323402, 3983, None], [-0.0005896736402064562, 440, None], [-0.002680164063349366, 10727, None], [-0.0032450896687805653, 11436, None], [-0.001263773301616311, 13, None], [-0.006144087761640549, 357, None], [-0.0010315817780792713, 14294, None]], 'completion_tokens': 16, 'cached_tokens': 0, 'e2e_latency': 5.700944900512695}, 'output_extra_info': {'decode_prefix_len': 0}} (async_llm.py:394)[0m
+{
+  "passed": true,
+  "selected_logprob_atol": 0.15,
+  "scope": "greedy IDs and selected logprobs, not full logits; inspect rank/device logs separately",
+  "cases": [
+    {
+      "case": "smoke",
+      "repeat": 0,
+      "request": 0,
+      "greedy_exact": true,
+      "max_selected_logprob_error": 0.012968659400939941,
+      "passed": true
+    },
+    {
+      "case": "length_32",
+      "repeat": 0,
+      "request": 0,
+      "greedy_exact": true,
+      "max_selected_logprob_error": 0.0773688554763794,
+      "passed": true
+    },
+    {
+      "case": "length_256",
+      "repeat": 0,
+      "request": 0,
+      "greedy_exact": true,
+      "max_selected_logprob_error": 0.01813896745443344,
+      "passed": true
+    }
+  ]
+}

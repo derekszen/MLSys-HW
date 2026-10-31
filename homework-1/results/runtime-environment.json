@@ -1,0 +1,24 @@
+{
+  "python": "3.11.16 (main, Aug 27 2026, 14:37:14) [GCC 14.3.0]",
+  "machine": "aarch64",
+  "packages": {
+    "torch": "2.9.0+cpu",
+    "torch-npu": "2.9.0",
+    "transformers": "5.12.0",
+    "triton-ascend": "3.2.1",
+    "pytest": "8.4.2",
+    "tokenspeed-scheduler": "0.1.42",
+    "apache-tvm-ffi": "0.1.13",
+    "compressed-tensors": "0.15.0",
+    "numpy": "2.4.6",
+    "tokenizers": "0.22.2"
+  },
+  "triton_module_version": "3.2.0",
+  "torch_module_path": "/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch/__init__.py",
+  "triton_module_path": "/home/u2501213387/MLSys-HW/homework-1/.venv/lib/python3.11/site-packages/triton/__init__.py",
+  "physical_device": 1,
+  "logical_device": "npu:0",
+  "device_name": "Ascend910_9362",
+  "cann": "/usr/local/Ascend/cann-9.0.0",
+  "shared_environment_modified": false
+}

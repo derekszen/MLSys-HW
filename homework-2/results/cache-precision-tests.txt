@@ -1,0 +1,310 @@
+....................F
+=================================== FAILURES ===================================
+_________________________ test_explicit_float16_kv_cli _________________________
+
+self = ArgumentParser(prog='__main__.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)
+args = ['--model', '/tmp/pytest-of-u2501213387/pytest-3/test_explicit_float16_kv_cli0', '--device', 'cpu', '--sampling-backend', 'greedy', ...]
+namespace = Namespace(model_path=None, model='/tmp/pytest-of-u2501213387/pytest-3/test_explicit_float16_kv_cli0', tokenizer=None, ...model_update_config=None, model_update_sdk_module=None, model_update_engine_type=None, model_update_draft_weights=None)
+
+    def parse_known_args(self, args=None, namespace=None):
+        if args is None:
+            # args default to the system args
+            args = _sys.argv[1:]
+        else:
+            # make sure that args are mutable
+            args = list(args)
+    
+        # default Namespace built from parser defaults
+        if namespace is None:
+            namespace = Namespace()
+    
+        # add any action defaults that aren't present
+        for action in self._actions:
+            if action.dest is not SUPPRESS:
+                if not hasattr(namespace, action.dest):
+                    if action.default is not SUPPRESS:
+                        setattr(namespace, action.dest, action.default)
+    
+        # add any parser defaults that aren't present
+        for dest in self._defaults:
+            if not hasattr(namespace, dest):
+                setattr(namespace, dest, self._defaults[dest])
+    
+        # parse the arguments and exit if there are any errors
+        if self.exit_on_error:
+            try:
+>               namespace, args = self._parse_known_args(args, namespace)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/opt/miniconda3/envs/aics/lib/python3.11/argparse.py:1907: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/miniconda3/envs/aics/lib/python3.11/argparse.py:2128: in _parse_known_args
+    start_index = consume_optional(start_index)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/envs/aics/lib/python3.11/argparse.py:2068: in consume_optional
+    take_action(action, args, option_string)
+/opt/miniconda3/envs/aics/lib/python3.11/argparse.py:1967: in take_action
+    argument_values = self._get_values(action, argument_strings)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/envs/aics/lib/python3.11/argparse.py:2507: in _get_values
+    self._check_value(action, value)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ArgumentParser(prog='__main__.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)
+action = _StoreAction(option_strings=['--device'], dest='device', nargs=None, const=None, default='cuda', type=<class 'str'>, choices=['cuda', 'npu'], required=False, help='The device type.', metavar=None)
+value = 'cpu'
+
+    def _check_value(self, action, value):
+        # converted value must be one of the choices (if specified)
+        if action.choices is not None and value not in action.choices:
+            args = {'value': value,
+                    'choices': ', '.join(map(repr, action.choices))}
+            msg = _('invalid choice: %(value)r (choose from %(choices)s)')
+>           raise ArgumentError(action, msg % args)
+E           argparse.ArgumentError: argument --device: invalid choice: 'cpu' (choose from 'cuda', 'npu')
+
+/opt/miniconda3/envs/aics/lib/python3.11/argparse.py:2563: ArgumentError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-u2501213387/pytest-3/test_explicit_float16_kv_cli0')
+
+    def test_explicit_float16_kv_cli(tmp_path):
+        parser = argparse.ArgumentParser()
+        ServerArgs.add_cli_args(parser)
+        args = ServerArgs.from_cli_args(
+>           parser.parse_args(
+                [
+                    "--model",
+                    str(tmp_path),
+                    "--device",
+                    "cpu",
+                    "--sampling-backend",
+                    "greedy",
+                    "--disable-pdl",
+                    "--kv-cache-dtype",
+                    "float16",
+                ]
+            )
+        )
+
+test/runtime/test_qwen35_cache_precision.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/miniconda3/envs/aics/lib/python3.11/argparse.py:1874: in parse_args
+    args, argv = self.parse_known_args(args, namespace)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/envs/aics/lib/python3.11/argparse.py:1909: in parse_known_args
+    self.error(str(err))
+/opt/miniconda3/envs/aics/lib/python3.11/argparse.py:2640: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ArgumentParser(prog='__main__.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)
+status = 2
+message = "__main__.py: error: argument --device: invalid choice: 'cpu' (choose from 'cuda', 'npu')\n"
+
+    def exit(self, status=0, message=None):
+        if message:
+            self._print_message(message, _sys.stderr)
+>       _sys.exit(status)
+E       SystemExit: 2
+
+/opt/miniconda3/envs/aics/lib/python3.11/argparse.py:2627: SystemExit
+----------------------------- Captured stderr call -----------------------------
+usage: __main__.py [-h] [--model MODEL] [--tokenizer TOKENIZER] [--host HOST]
+                   [--port PORT] [--tokenizer-mode {auto,slow,deepseek_v4}]
+                   [--skip-tokenizer-init | --no-skip-tokenizer-init]
+                   [--language-model-only] [--zmq-msgpack | --no-zmq-msgpack]
+                   [--data-parallel-address DATA_PARALLEL_ADDRESS]
+                   [--data-parallel-rpc-port DATA_PARALLEL_RPC_PORT]
+                   [--zmq-engine-index ZMQ_ENGINE_INDEX] [--ext-yaml EXT_YAML]
+                   [--load-format {auto,pt,safetensors,instanttensor,npcache,dummy,extensible}]
+                   [--trust-remote-code | --no-trust-remote-code]
+                   [--dtype {auto,half,float16,bfloat16,float,float32}]
+                   [--kv-cache-dtype {auto,bfloat16,float16,fp8,fp8_e4m3,mxfp8}]
+                   [--kv-cache-quant-method {none,per_token_head}]
+                   [--quantization {fp8,mxfp4,nvfp4,w8a8_fp8,compressed-tensors}]
+                   [--quantization-param-path QUANTIZATION_PARAM_PATH]
+                   [--max-model-len MAX_MODEL_LEN] [--device {cuda,npu}]
+                   [--served-model-name SERVED_MODEL_NAME]
+                   [--revision REVISION]
+                   [--gpu-memory-utilization GPU_MEMORY_UTILIZATION]
+                   [--max-num-seqs MAX_NUM_SEQS]
+                   [--max-total-tokens MAX_TOTAL_TOKENS]
+                   [--chunked-prefill-size CHUNKED_PREFILL_SIZE]
+                   [--enable-mixed-batch]
+                   [--prefix-granularity PREFIX_GRANULARITY]
+                   [--enable-state-checkpoint-in-forward]
+                   [--kv-offload-config KV_OFFLOAD_CONFIG] [--disable-kvstore]
+                   [--kvstore-ratio KVSTORE_RATIO]
+                   [--kvstore-size KVSTORE_SIZE]
+                   [--kvstore-io-backend {direct,kernel}]
+                   [--kvstore-storage-backend {mooncake,memory}]
+                   [--kvstore-storage-backend-extra-config KVSTORE_STORAGE_BACKEND_EXTRA_CONFIG]
+                   [--retraction-snapshot-host-gb RETRACTION_SNAPSHOT_HOST_GB]
+                   [--retraction-snapshot-ratio RETRACTION_SNAPSHOT_RATIO]
+                   [--retraction-snapshot-max-requests RETRACTION_SNAPSHOT_MAX_REQUESTS]
+                   [--debug-force-retraction-interval DEBUG_FORCE_RETRACTION_INTERVAL]
+                   [--mamba-ssm-dtype {float32,bfloat16}]
+                   [--max-prefill-tokens MAX_PREFILL_TOKENS]
+                   [--stream-interval STREAM_INTERVAL] [--stream-output]
+                   [--seed SEED]
+                   [--distributed-timeout-seconds DISTRIBUTED_TIMEOUT_SECONDS]
+                   [--download-dir DOWNLOAD_DIR] [--base-gpu-id BASE_GPU_ID]
+                   [--gpu-id-step GPU_ID_STEP] [--log-level LOG_LEVEL]
+                   [--enable-log-requests | --no-enable-log-requests]
+                   [--log-requests-level {0,1,2}]
+                   [--enable-log-request-stats | --no-enable-log-request-stats]
+                   [--enable-metrics] [--metrics-reporters METRICS_REPORTERS]
+                   [--metrics-reporter-config METRICS_REPORTER_CONFIG]
+                   [--metrics-port METRICS_PORT] [--metrics-host METRICS_HOST]
+                   [--app-key APP_KEY]
+                   [--decode-log-interval DECODE_LOG_INTERVAL]
+                   [--kv-events-config KV_EVENTS_CONFIG]
+                   [--data-parallel-size DATA_PARALLEL_SIZE]
+                   [--pipeline-parallel-size PIPELINE_PARALLEL_SIZE]
+                   [--pp-layer-partition PP_LAYER_PARTITION]
+                   [--load-balance-method {round_robin,shortest_queue,minimum_cache_usage}]
+                   [--load-watch-interval LOAD_WATCH_INTERVAL]
+                   [--expert-parallel-size EXPERT_PARALLEL_SIZE]
+                   [--init-expert-location INIT_EXPERT_LOCATION]
+                   [--ep-num-redundant-experts EP_NUM_REDUNDANT_EXPERTS]
+                   [--ep-dispatch-algorithm {static,dynamic,fake,static_with_zero_expert,dynamic_with_zero_expert}]
+                   [--eplb-algorithm EPLB_ALGORITHM]
+                   [--expert-distribution-recorder-mode {stat}]
+                   [--enable-eplb]
+                   [--eplb-rebalance-num-iterations EPLB_REBALANCE_NUM_ITERATIONS]
+                   [--eplb-rebalance-layers-per-chunk EPLB_REBALANCE_LAYERS_PER_CHUNK]
+                   [--dense-gemm-backend {auto,trtllm_cutedsl,deepgemm}]
+                   [--moe-backend MOE_BACKEND] [--moe-mxfp4-fp8-activation]
+                   [--draft-moe-backend DRAFT_MOE_BACKEND]
+                   [--all2all-backend ALL2ALL_BACKEND]
+                   [--deepep-mode {normal,low_latency,auto}]
+                   [--disable-flashinfer-cutlass-moe-fp4-allgather]
+                   [--dist-init-addr DIST_INIT_ADDR] [--nnodes NNODES]
+                   [--node-rank NODE_RANK] [--hf-overrides HF_OVERRIDES]
+                   [--preferred-sampling-params PREFERRED_SAMPLING_PARAMS]
+                   [--attention-backend ATTENTION_BACKEND]
+                   [--kda-backend {auto,fla,flashkda,cutedsl_kda}]
+                   [--drafter-attention-backend DRAFTER_ATTENTION_BACKEND]
+                   [--skip-softmax-threshold SKIP_SOFTMAX_THRESHOLD]
+                   [--sampling-backend {greedy,flashinfer,flashinfer_full,triton,triton_full,ascend_full}]
+                   [--sampling-stream {batch,per-request}] [--dp-sampling]
+                   [--dp-sampling-min-bs DP_SAMPLING_MIN_BS]
+                   [--attention-use-fp4-indexer-cache [ATTENTION_USE_FP4_INDEXER_CACHE]]
+                   [--attention-config.use-trtllm-ragged-deepseek-prefill [USE_TRTLLM_RAGGED_DEEPSEEK_PREFILL]]
+                   [--deepseek-v4-mega-moe-max-num-tokens DEEPSEEK_V4_MEGA_MOE_MAX_NUM_TOKENS]
+                   [--deepseek-v4-indexer-prefill-max-logits-mb DEEPSEEK_V4_INDEXER_PREFILL_MAX_LOGITS_MB]
+                   [--deepseek-v4-prefill-chunk-size DEEPSEEK_V4_PREFILL_CHUNK_SIZE]
+                   [--engram-host-table | --no-engram-host-table]
+                   [--engram-host-table-dir ENGRAM_HOST_TABLE_DIR]
+                   [--engram-host-table-layout {auto,shared,sharded}]
+                   [--grammar-backend {xgrammar,none}]
+                   [--reasoning-parser REASONING_PARSER]
+                   [--grammar-compile-timeout-secs GRAMMAR_COMPILE_TIMEOUT_SECS]
+                   [--grammar-compile-max-retries GRAMMAR_COMPILE_MAX_RETRIES]
+                   [--disable-any-whitespace] [--disable-capturable-grammar]
+                   [--mla-disable-ragged] [--draft-model-path-use-base]
+                   [--speculative-config SPECULATIVE_CONFIG]
+                   [--speculative-algorithm SPECULATIVE_ALGORITHM]
+                   [--speculative-draft-model-path SPECULATIVE_DRAFT_MODEL_PATH]
+                   [--speculative-draft-model-quantization SPECULATIVE_DRAFT_MODEL_QUANTIZATION]
+                   [--speculative-num-steps SPECULATIVE_NUM_STEPS]
+                   [--speculative-eagle-topk SPECULATIVE_EAGLE_TOPK]
+                   [--speculative-num-draft-tokens SPECULATIVE_NUM_DRAFT_TOKENS]
+                   [--speculative-exec-mode {-1,0,1,2}]
+                   [--speculative-data-path SPECULATIVE_DATA_PATH]
+                   [--speculative-compute-intensity {high_intensity,low_intensity,chain_intensity}]
+                   [--speculative-chain-width-table SPECULATIVE_CHAIN_WIDTH_TABLE]
+                   [--synthetic-acceptance-length SYNTHETIC_ACCEPTANCE_LENGTH]
+                   [--enable-speculative-sampling]
+                   [--spec-reject-draft-prob-threshold SPEC_REJECT_DRAFT_PROB_THRESHOLD]
+                   [--disable-replay-ssm] [--enable-replay-ssm]
+                   [--enable-output-logprobs]
+                   [--input-logprob-chunk-tokens INPUT_LOGPROB_CHUNK_TOKENS]
+                   [--eagle3-layers-to-capture EAGLE3_LAYERS_TO_CAPTURE]
+                   [--disable-pdl]
+                   [--enable-prefix-caching | --disable-prefix-caching]
+                   [--enforce-eager] [--disable-cuda-graph-padding]
+                   [--disable-autotune] [--enable-cudagraph-gc]
+                   [--disable-nccl-nvls] [--disable-symm-mem]
+                   [--disable-overlap-schedule] [--disable-tf32]
+                   [--max-cudagraph-capture-size MAX_CUDAGRAPH_CAPTURE_SIZE]
+                   [--cudagraph-capture-sizes CUDAGRAPH_CAPTURE_SIZE [CUDAGRAPH_CAPTURE_SIZE ...]]
+                   [--disable-prefill-graph] [--disable-kda-prefill-graph]
+                   [--prefill-graph-max-tokens PREFILL_GRAPH_MAX_TOKENS]
+                   [--prefill-graph-capture-token-sizes TOKENS [TOKENS ...] |
+                   --prefill-graph-capture-sizes TOKENS [TOKENS ...]]
+                   [--prefill-graph-capture-batch-sizes BS [BS ...]]
+                   [--enable-nan-detection] [--enable-nvtx]
+                   [--disable-weight-loader-prefetch-checkpoints]
+                   [--weight-loader-prefetch-num-threads WEIGHT_LOADER_PREFETCH_NUM_THREADS]
+                   [--enable-memory-saver]
+                   [--disable-cudagraph-memory-reserve]
+                   [--tensor-parallel-size TENSOR_PARALLEL_SIZE]
+                   [--enable-expert-parallel] [--attn-tp-size ATTN_TP_SIZE]
+                   [--kv-parallel-size KV_PARALLEL_SIZE]
+                   [--decode-context-parallel-size DECODE_CONTEXT_PARALLEL_SIZE]
+                   [--attn-head-tp-size ATTN_HEAD_TP_SIZE]
+                   [--lm-head-tp-size LM_HEAD_TP_SIZE]
+                   [--tp-batch-invariant {none,attn,attn+dense}]
+                   [--deepseek-v41-attention-query-swa-min-tokens DEEPSEEK_V41_ATTENTION_QUERY_SWA_MIN_TOKENS]
+                   [--deepseek-v41-attention-query-min-tokens DEEPSEEK_V41_ATTENTION_QUERY_MIN_TOKENS]
+                   [--deepseek-v41-attention-query-parallel-size DEEPSEEK_V41_ATTENTION_QUERY_PARALLEL_SIZE]
+                   [--deepseek-v41-indexer-query-parallel-size DEEPSEEK_V41_INDEXER_QUERY_PARALLEL_SIZE]
+                   [--query-context-parallel-size QUERY_CONTEXT_PARALLEL_SIZE]
+                   [--dense-tp-size DENSE_TP_SIZE] [--moe-tp-size MOE_TP_SIZE]
+                   [--nprocs-per-node NPROCS_PER_NODE]
+                   [--world-size WORLD_SIZE] [--emulate-rank-zero]
+                   [--force-deterministic-rsag]
+                   [--batch-invariant-collectives]
+                   [--numerics {auto,rl-bitwise}]
+                   [--yarn-ramp-mask-device {cuda,cpu}]
+                   [--mla-lora-scale {folded,runtime}]
+                   [--layer-boundary-norm {fused,unfused}]
+                   [--router-topk {fused,torch}]
+                   [--logprob-order {torch,megatron}]
+                   [--moe-combine-order {rank,slot}]
+                   [--dsa-slot-order {selection,sorted}]
+                   [--disable-sampling-tp-sync]
+                   [--low-latency-max-num-tokens-per-gpu LOW_LATENCY_MAX_NUM_TOKENS_PER_GPU]
+                   [--mla-chunk-multiplier MLA_CHUNK_MULTIPLIER]
+                   [--mm-attention-backend {fa3,fa4,triton_attn,flashinfer_cudnn}]
+                   [--mm-encoder-tp-mode {weights,data}]
+                   [--disaggregation-mode {null,prefill,decode,encode}]
+                   [--comm-fusion-max-num-tokens COMM_FUSION_MAX_NUM_TOKENS]
+                   [--enable-allreduce-fusion]
+                   [--disaggregation-bootstrap-port DISAGGREGATION_BOOTSTRAP_PORT]
+                   [--disaggregation-transfer-backend {mooncake}]
+                   [--disaggregation-ib-device DISAGGREGATION_IB_DEVICE]
+                   [--disaggregation-layerwise-interval DISAGGREGATION_LAYERWISE_INTERVAL]
+                   [--pdlb-url PDLB_URL] [--rl-control-port RL_CONTROL_PORT]
+                   [--rl-control-host RL_CONTROL_HOST]
+                   [--rl-control-api-key RL_CONTROL_API_KEY]
+                   [--weight-version WEIGHT_VERSION]
+                   [--model-update-config MODEL_UPDATE_CONFIG]
+                   [--model-update-sdk-module MODEL_UPDATE_SDK_MODULE]
+                   [--model-update-engine-type MODEL_UPDATE_ENGINE_TYPE]
+                   [--model-update-draft-weights {retain,refresh}]
+                   [model]
+__main__.py: error: argument --device: invalid choice: 'cpu' (choose from 'cuda', 'npu')
+=============================== warnings summary ===============================
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+    warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+    warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66: UserWarning: Permission mismatch: The owner of /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/lib/libop_plugin_atb.so does not match.
+    warnings.warn(f"Permission mismatch: The owner of {path} does not match.")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED test/runtime/test_qwen35_cache_precision.py::test_explicit_float16_kv_cli
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 20 passed, 5 warnings in 3.83s

@@ -1,0 +1,3 @@
+# Local offline decode-trace analysis and its tests only.
+# Do not use this file to modify the shared course-server environment.
+numpy==2.4.6

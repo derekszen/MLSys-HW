@@ -1,0 +1,34 @@
+{
+  "apply_order": [
+    "git apply --check /path/to/homework-1/patches/ascend-qwen3.5.patch",
+    "git apply /path/to/homework-1/patches/ascend-qwen3.5.patch",
+    "git apply --check /path/to/homework-2/patches/hccl-torch29.patch",
+    "git apply /path/to/homework-2/patches/hccl-torch29.patch"
+  ],
+  "base_commit": "52bdb9763bb2da3d61336398072671885cc0a33e",
+  "files": {
+    "docs/hccl-torch29.md": {
+      "mode": "100644",
+      "sha256": "52de1df03b1d052a1cb45edf560bae8c9cbfa4af99f9747954fe98f591dfe9b6"
+    },
+    "python/tokenspeed/runtime/distributed/comm_backend/hccl.py": {
+      "mode": "100644",
+      "sha256": "c15d81cefd2e6e148978b7e7e6386730ee05680d5de4319d8f06c7a8658b9d15"
+    },
+    "test/runtime/test_hccl_torch29.py": {
+      "mode": "100644",
+      "sha256": "5bd49239ce67c8e2c0656bd6285082f30721295c784facc6944f9652893edc50"
+    }
+  },
+  "kind": "incremental_after_frozen_hw1",
+  "new_files": [
+    "docs/hccl-torch29.md",
+    "test/runtime/test_hccl_torch29.py"
+  ],
+  "patch": "hccl-torch29.patch",
+  "prerequisite": {
+    "patch": "homework-1/patches/ascend-qwen3.5.patch",
+    "sha256": "e68f2f26e49d30180280adbab0bb0ebaf433246e27457788e60277621613b8c6"
+  },
+  "sha256": "8e3c8b22c527795e0f962b427f945d4c14b75247adbe15798b0a18fce2147364"
+}

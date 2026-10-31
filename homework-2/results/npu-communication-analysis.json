@@ -1,0 +1,1322 @@
+{
+  "schema_version": 1,
+  "status": "validated_bounded_local_device_analysis",
+  "request_comparison_per_rank": [
+    {
+      "tp_rank": 0,
+      "collectives_c1_c2": [
+        102,
+        102
+      ],
+      "compute_tasks_c1_c2": [
+        13168,
+        22641
+      ],
+      "compute_union_c2_over_c1": "1.745921008506200784911672031",
+      "communication_per_output_token_c2_over_c1": "1.718453306706668016405461534"
+    },
+    {
+      "tp_rank": 1,
+      "collectives_c1_c2": [
+        102,
+        102
+      ],
+      "compute_tasks_c1_c2": [
+        13183,
+        22639
+      ],
+      "compute_union_c2_over_c1": "1.703386043558553227241424079",
+      "communication_per_output_token_c2_over_c1": "0.1623848667393081246146019367"
+    }
+  ],
+  "units": "microseconds; exact Decimal quantities serialized as strings; payloads are input bytes, NOT wire bytes",
+  "provenance": [
+    {
+      "path": "homework-2/results/0.8B-npu-batch-experiment-c1/result.json",
+      "bytes": 160628,
+      "sha256": "a04174b03fbbd414409ce6abdef66d1d6f9da30f7ae765a3e1ab44623c65389e"
+    },
+    {
+      "path": "homework-2/results/0.8B-npu-batch-experiment-c2/result.json",
+      "bytes": 161281,
+      "sha256": "ef12b0de498b4dca0b0fb8ed1e3de311a2bf13c10adb950cec57ea15567f6549"
+    },
+    {
+      "path": "homework-2/results/0.8B-correctness-tp2-c1/result.json",
+      "bytes": 168804,
+      "sha256": "2fb46d03730027aff1d4419a0261067e7375ae21d94d8121600bdc0af859a389"
+    },
+    {
+      "path": "homework-2/cases.json",
+      "bytes": 4556,
+      "sha256": "5ffed43aa943d6951a337562beeec9680389408e1699f1537e3ce96a7a6b9e66"
+    },
+    {
+      "path": "homework-2/metadata/Qwen3.5-0.8B/config.json",
+      "bytes": 2907,
+      "sha256": "b90b86f35c8e6925ef74ee04d0e758f0a845c83a42089ad82bbaa948de9b4204"
+    },
+    {
+      "path": "homework-2/metadata/Qwen3.5-0.8B/source-manifest.json",
+      "bytes": 2683,
+      "sha256": "3e9ccd40c3754d454e97b2a0c6744cf382fbe9318e5c02882a0d8a493cd45a89"
+    },
+    {
+      "path": "homework-2/scripts/profile_engine_npu.py",
+      "bytes": 7021,
+      "sha256": "9972d745fdff7dc37a0e12bab8103e2bbda8931bb31d9a2adbe1fee565410551"
+    },
+    {
+      "path": "homework-2/scripts/analyze_npu_traces.py",
+      "bytes": 30452,
+      "sha256": "bfe5e3f1fde5cedbdc23eee6eadb68d919a007bdb094bca817b55622355c7fa6"
+    },
+    {
+      "path": "homework-2/results/0.8B-npu-batch-experiment-c1/hbm-loaded.txt",
+      "bytes": 6237,
+      "sha256": "a6fb8874cc5b5d44d088bdff9053a8974fb206cf7c6b6ac2815426d3e1e072fd"
+    },
+    {
+      "path": "homework-2/results/0.8B-npu-batch-experiment-c1/hw2-npu-c1-input32-TP0.trace.json.gz",
+      "bytes": 2193213,
+      "sha256": "81c6feb7b7d2d526a5cc1c522c59e9bded6b9d74d6c2b9b7ff0894327288de33",
+      "uncompressed_sha256": "1358fc202bfdcbc3cff8dcd948368c974ac86f77cdee95147caf17f6d406d867",
+      "uncompressed_bytes": 38189624
+    },
+    {
+      "path": "homework-2/results/0.8B-npu-batch-experiment-c1/hw2-npu-c1-input32-TP1.trace.json.gz",
+      "bytes": 2201903,
+      "sha256": "5bf0d02663011768181fb3bec16f52bcff6fd105b2a8e9b8965c07e2275652d2",
+      "uncompressed_sha256": "6fa94df5f1c94f297645e8bc87f2d5f81865e8024286efdf8340aea2d3a9b068",
+      "uncompressed_bytes": 38178383
+    },
+    {
+      "path": "homework-2/results/0.8B-npu-batch-experiment-c2/hbm-loaded.txt",
+      "bytes": 6237,
+      "sha256": "7123942cdcc100a452365fb9071337517aaf607403979044a0dbc77ae5db8dad"
+    },
+    {
+      "path": "homework-2/results/0.8B-npu-batch-experiment-c2/hw2-npu-c2-input32-TP0.trace.json.gz",
+      "bytes": 3269180,
+      "sha256": "8d577321e677da77480035adcebf02864901b0ed31b95c854d74bc1fcaca34be",
+      "uncompressed_sha256": "0c57d11bc36f78ef41db648c30d6c686e98bfe7a5d27517078ecef16e38283ac",
+      "uncompressed_bytes": 57032958
+    },
+    {
+      "path": "homework-2/results/0.8B-npu-batch-experiment-c2/hw2-npu-c2-input32-TP1.trace.json.gz",
+      "bytes": 3288503,
+      "sha256": "2d3d7b9fee58a1c7d99adb5365e277c4d1a06694194a1234c98454b14c62df70",
+      "uncompressed_sha256": "bf2f1a0141600bdc27aa7b1a969cad6babb3182be4b8a49705755ada81f3ab34",
+      "uncompressed_bytes": 57022601
+    }
+  ],
+  "validation": {
+    "profile_c1_c2_config_source_runtime_environment_exact": true,
+    "canonical_prefix_ids": [
+      9064,
+      11988
+    ],
+    "canonical_source_differences": [
+      {
+        "tree": "python",
+        "file": "tokenspeed/runtime/engine/request_handler.py",
+        "canonical_sha256": "775fd01ac2dbc3f1cb40a83d64738b1780eed210373150950f9f2400ef2b460f",
+        "profile_sha256": "99b7571d5ab79867f1c2bd9a30cde88aaaf4439ec433a792579b6a2d58d402bd"
+      }
+    ],
+    "canonical_source_note": "Canonical run predates the NPU profile-hook change in request_handler.py; only that file may differ. Hash inventories do not reconstruct the old code diff.",
+    "source_tree_sha256": {
+      "python": "6c17cc6ef55e98812a2b32ad7f52fc44aa91a34a654b549bf20d40ced6ec7f5d",
+      "tokenspeed-kernel/python": "36489c6490fe5290df76f617b4e8a224129292b977d10a19abaffba921bcc23f",
+      "tokenspeed-kernel-npu/python": "7a02b8ec4b1c35d8cc756d96c31c665371d68bd0b123d9a785901df7a4cd46d1"
+    },
+    "runtime_versions": {
+      "torch": "2.9.0+cpu",
+      "torch_npu": "2.9.0",
+      "triton": "3.2.0"
+    }
+  },
+  "traces": [
+    {
+      "ownership": {
+        "tp_rank": 0,
+        "logical_device": 0,
+        "physical_device": 4,
+        "owned_worker": {
+          "pid": 2934402,
+          "ppid": 2933941,
+          "name": "tokenspeed::scheduler_tp0"
+        },
+        "runner_pid": 2933941,
+        "hardware_chrome_pid": 3004828068,
+        "communication_chrome_pid": 3004828132,
+        "host_chrome_pid": 3004827903,
+        "hccl_src_rank": 0,
+        "literal_RankId_metadata": false,
+        "group_tid": 0,
+        "group": "Group group_name_1 Communication",
+        "card": 2,
+        "chip": 0,
+        "worker_pid_seen_on_card_chip": true
+      },
+      "clock": {
+        "request_unix_us": [
+          "1792817202870924.38",
+          "1792817203186481.1"
+        ],
+        "request_wall_us": "315556.72",
+        "request_monotonic_us": "315554.76",
+        "enable_us": [
+          "1792817202854119.910"
+        ],
+        "disable_us": [
+          "1792817203258297.050"
+        ],
+        "same_epoch_bracket_verified": true,
+        "criterion": "Unix ns/1000 inside CANN enable/disable; each margin <1s; wall/monotonic delta <100us",
+        "active_end_minus_request_end_us": "69787.470"
+      },
+      "device_active_span": {
+        "window_us": [
+          "1792817202873896.590",
+          "1792817203256268.570"
+        ],
+        "span_us": "382371.980",
+        "compute_us": "101364.840",
+        "communication_envelopes_us": "35664.500",
+        "overlap_us": "0",
+        "compute_only_us": "101364.840",
+        "communication_only_us": "35664.500",
+        "explicit_control_union_us": "32857.220",
+        "control_outside_compute_comm_us": "744.560",
+        "unclassified_gap_us": "244598.080",
+        "associated_hccl_kernel_outside_envelopes_us": "11142.160",
+        "compute_task_counts": {
+          "AI_CORE": 291,
+          "AI_CPU": 21,
+          "AI_VECTOR_CORE": 12941,
+          "MIX_AIC": 18,
+          "MIX_AIV": 1575
+        },
+        "compute_tasks": 14846,
+        "collectives": {
+          "AllGather": 3,
+          "AllReduce": 147,
+          "Broadcast": 3
+        },
+        "collective_count": 153,
+        "partially_clipped_collectives": 0,
+        "communication_by_operation_us": {
+          "AllGather": "267.480",
+          "AllReduce": "34747.800",
+          "Broadcast": "649.220"
+        },
+        "payloads": [
+          {
+            "operation": "AllGather",
+            "dtype": "BFP16",
+            "input_elements": 124160,
+            "input_bytes_per_operation": 248320,
+            "operations": 3,
+            "envelope_union_us": "267.480"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 1024,
+            "input_bytes_per_operation": 2048,
+            "operations": 98,
+            "envelope_union_us": "19180.820"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 32768,
+            "input_bytes_per_operation": 65536,
+            "operations": 49,
+            "envelope_union_us": "15566.980"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 1,
+            "input_bytes_per_operation": 4,
+            "operations": 1,
+            "envelope_union_us": "252.720"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 6,
+            "input_bytes_per_operation": 24,
+            "operations": 2,
+            "envelope_union_us": "396.500"
+          }
+        ]
+      },
+      "request_window": {
+        "window_us": [
+          "1792817202870924.38",
+          "1792817203186481.1"
+        ],
+        "span_us": "315556.72",
+        "compute_us": "92499.580",
+        "communication_envelopes_us": "26079.120",
+        "overlap_us": "0",
+        "compute_only_us": "92499.580",
+        "communication_only_us": "26079.120",
+        "explicit_control_union_us": "24611.200",
+        "control_outside_compute_comm_us": "559.940",
+        "unclassified_gap_us": "196418.080",
+        "associated_hccl_kernel_outside_envelopes_us": "7778.380",
+        "compute_task_counts": {
+          "AI_CORE": 194,
+          "AI_CPU": 14,
+          "AI_VECTOR_CORE": 11488,
+          "MIX_AIC": 12,
+          "MIX_AIV": 1460
+        },
+        "compute_tasks": 13168,
+        "collectives": {
+          "AllGather": 2,
+          "AllReduce": 98,
+          "Broadcast": 2
+        },
+        "collective_count": 102,
+        "partially_clipped_collectives": 0,
+        "communication_by_operation_us": {
+          "AllGather": "202.780",
+          "AllReduce": "25437.460",
+          "Broadcast": "438.880"
+        },
+        "payloads": [
+          {
+            "operation": "AllGather",
+            "dtype": "BFP16",
+            "input_elements": 124160,
+            "input_bytes_per_operation": 248320,
+            "operations": 2,
+            "envelope_union_us": "202.780"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 1024,
+            "input_bytes_per_operation": 2048,
+            "operations": 49,
+            "envelope_union_us": "9870.480"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 32768,
+            "input_bytes_per_operation": 65536,
+            "operations": 49,
+            "envelope_union_us": "15566.980"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 1,
+            "input_bytes_per_operation": 4,
+            "operations": 1,
+            "envelope_union_us": "252.720"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 6,
+            "input_bytes_per_operation": 24,
+            "operations": 1,
+            "envelope_union_us": "186.160"
+          }
+        ],
+        "communication_us_per_returned_output_token": "13039.560"
+      },
+      "representative_device_envelopes": [
+        {
+          "name": "hcom_allReduce__909_0_1",
+          "operation": "AllReduce",
+          "pid": 3004828132,
+          "tid": 0,
+          "interval_us": [
+            "1792817202882730.090",
+            "1792817202883180.730"
+          ],
+          "args": {
+            "connection_id": 34897,
+            "model id": 4294967295,
+            "data_type": "BFP16",
+            "alg_type": "RING-RING-NHR",
+            "count": 32768,
+            "relay": "no",
+            "retry": "no"
+          }
+        },
+        {
+          "name": "hcom_allGather__909_49_1",
+          "operation": "AllGather",
+          "pid": 3004828132,
+          "tid": 0,
+          "interval_us": [
+            "1792817203099296.670",
+            "1792817203099406.710"
+          ],
+          "args": {
+            "connection_id": 84964,
+            "model id": 4294967295,
+            "data_type": "BFP16",
+            "alg_type": "RING-RING-NHR",
+            "count": 124160,
+            "relay": "no",
+            "retry": "no"
+          }
+        },
+        {
+          "name": "hcom_broadcast__909_50_1",
+          "operation": "Broadcast",
+          "pid": 3004828132,
+          "tid": 0,
+          "interval_us": [
+            "1792817203099475.410",
+            "1792817203099728.130"
+          ],
+          "args": {
+            "connection_id": 85042,
+            "model id": 4294967295,
+            "data_type": "INT32",
+            "alg_type": "RING-RING-NHR",
+            "count": 1,
+            "relay": "no",
+            "retry": "no"
+          }
+        }
+      ],
+      "diagnostics": {
+        "events": 164543,
+        "hardware_tasks": 24242,
+        "collective_sequence_sha256": "33ca2405cf29ad1c91664ff4f0c1cffe874851ab3eca0081587a2d9937c135e7",
+        "hccl_subtasks_identically_mapped": 7245,
+        "subtasks_not_contained_in_parent": 6,
+        "hccl_kernels_excluded_from_compute": 153,
+        "hccl_kernels_without_envelope_overlap": 1,
+        "host_HcclAllReduce_API_events_not_device_ops": 0,
+        "post_request_collectives": {
+          "AllReduce": 49,
+          "AllGather": 1,
+          "Broadcast": 1
+        },
+        "top_full_span_compute_names": {
+          "aclnnMul_MulAiCore_Mul": 3915,
+          "aclnnCast_CastAiCore_Cast": 2637,
+          "aclnnReduceSum_ReduceSumOpAiCore_ReduceSum": 1298,
+          "aclnnAdd_AddAiCore_Add": 928,
+          "aclnnExp_ExpAiCore_Exp": 630,
+          "aclnnMuls_MulAiCore_Mul": 605
+        }
+      },
+      "concurrency": 1,
+      "trace": {
+        "path": "homework-2/results/0.8B-npu-batch-experiment-c1/hw2-npu-c1-input32-TP0.trace.json.gz",
+        "bytes": 38189624,
+        "sha256": "1358fc202bfdcbc3cff8dcd948368c974ac86f77cdee95147caf17f6d406d867",
+        "stored_file": {
+          "path": "homework-2/results/0.8B-npu-batch-experiment-c1/hw2-npu-c1-input32-TP0.trace.json.gz",
+          "bytes": 2193213,
+          "sha256": "81c6feb7b7d2d526a5cc1c522c59e9bded6b9d74d6c2b9b7ff0894327288de33"
+        },
+        "compression": "gzip"
+      }
+    },
+    {
+      "ownership": {
+        "tp_rank": 1,
+        "logical_device": 1,
+        "physical_device": 5,
+        "owned_worker": {
+          "pid": 2934403,
+          "ppid": 2933941,
+          "name": "tokenspeed::scheduler_tp1"
+        },
+        "runner_pid": 2933941,
+        "hardware_chrome_pid": 3004829093,
+        "communication_chrome_pid": 3004829157,
+        "host_chrome_pid": 3004828927,
+        "hccl_src_rank": 1,
+        "literal_RankId_metadata": false,
+        "group_tid": 0,
+        "group": "Group group_name_1 Communication",
+        "card": 2,
+        "chip": 1,
+        "worker_pid_seen_on_card_chip": true
+      },
+      "clock": {
+        "request_unix_us": [
+          "1792817202870924.38",
+          "1792817203186481.1"
+        ],
+        "request_wall_us": "315556.72",
+        "request_monotonic_us": "315554.76",
+        "enable_us": [
+          "1792817202863151.465"
+        ],
+        "disable_us": [
+          "1792817203258397.265"
+        ],
+        "same_epoch_bracket_verified": true,
+        "criterion": "Unix ns/1000 inside CANN enable/disable; each margin <1s; wall/monotonic delta <100us",
+        "active_end_minus_request_end_us": "69316.085"
+      },
+      "device_active_span": {
+        "window_us": [
+          "1792817202873733.085",
+          "1792817203255797.185"
+        ],
+        "span_us": "382064.100",
+        "compute_us": "103171.360",
+        "communication_envelopes_us": "93884.440",
+        "overlap_us": "0",
+        "compute_only_us": "103171.360",
+        "communication_only_us": "93884.440",
+        "explicit_control_union_us": "99595.900",
+        "control_outside_compute_comm_us": "671.340",
+        "unclassified_gap_us": "184336.960",
+        "associated_hccl_kernel_outside_envelopes_us": "3507.780",
+        "compute_task_counts": {
+          "AI_CORE": 291,
+          "AI_CPU": 21,
+          "AI_VECTOR_CORE": 12941,
+          "MIX_AIC": 18,
+          "MIX_AIV": 1575
+        },
+        "compute_tasks": 14846,
+        "collectives": {
+          "AllGather": 3,
+          "AllReduce": 147,
+          "Broadcast": 3
+        },
+        "collective_count": 153,
+        "partially_clipped_collectives": 0,
+        "communication_by_operation_us": {
+          "AllGather": "568.280",
+          "AllReduce": "91882.560",
+          "Broadcast": "1433.600"
+        },
+        "payloads": [
+          {
+            "operation": "AllGather",
+            "dtype": "BFP16",
+            "input_elements": 124160,
+            "input_bytes_per_operation": 248320,
+            "operations": 3,
+            "envelope_union_us": "568.280"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 1024,
+            "input_bytes_per_operation": 2048,
+            "operations": 98,
+            "envelope_union_us": "56543.280"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 32768,
+            "input_bytes_per_operation": 65536,
+            "operations": 49,
+            "envelope_union_us": "35339.280"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 1,
+            "input_bytes_per_operation": 4,
+            "operations": 1,
+            "envelope_union_us": "231.680"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 6,
+            "input_bytes_per_operation": 24,
+            "operations": 2,
+            "envelope_union_us": "1201.920"
+          }
+        ]
+      },
+      "request_window": {
+        "window_us": [
+          "1792817202870924.38",
+          "1792817203186481.1"
+        ],
+        "span_us": "315556.72",
+        "compute_us": "94123.420",
+        "communication_envelopes_us": "63765.240",
+        "overlap_us": "0",
+        "compute_only_us": "94123.420",
+        "communication_only_us": "63765.240",
+        "explicit_control_union_us": "68441.320",
+        "control_outside_compute_comm_us": "407.620",
+        "unclassified_gap_us": "157260.440",
+        "associated_hccl_kernel_outside_envelopes_us": "2873.040",
+        "compute_task_counts": {
+          "AI_CORE": 194,
+          "AI_CPU": 14,
+          "AI_VECTOR_CORE": 11503,
+          "MIX_AIC": 12,
+          "MIX_AIV": 1460
+        },
+        "compute_tasks": 13183,
+        "collectives": {
+          "AllGather": 2,
+          "AllReduce": 98,
+          "Broadcast": 2
+        },
+        "collective_count": 102,
+        "partially_clipped_collectives": 0,
+        "communication_by_operation_us": {
+          "AllGather": "324.220",
+          "AllReduce": "62584.320",
+          "Broadcast": "856.700"
+        },
+        "payloads": [
+          {
+            "operation": "AllGather",
+            "dtype": "BFP16",
+            "input_elements": 124160,
+            "input_bytes_per_operation": 248320,
+            "operations": 2,
+            "envelope_union_us": "324.220"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 1024,
+            "input_bytes_per_operation": 2048,
+            "operations": 49,
+            "envelope_union_us": "27245.040"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 32768,
+            "input_bytes_per_operation": 65536,
+            "operations": 49,
+            "envelope_union_us": "35339.280"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 1,
+            "input_bytes_per_operation": 4,
+            "operations": 1,
+            "envelope_union_us": "231.680"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 6,
+            "input_bytes_per_operation": 24,
+            "operations": 1,
+            "envelope_union_us": "625.020"
+          }
+        ],
+        "communication_us_per_returned_output_token": "31882.620"
+      },
+      "representative_device_envelopes": [
+        {
+          "name": "hcom_allReduce__909_0_1",
+          "operation": "AllReduce",
+          "pid": 3004829157,
+          "tid": 0,
+          "interval_us": [
+            "1792817202880817.565",
+            "1792817202883175.145"
+          ],
+          "args": {
+            "connection_id": 34896,
+            "model id": 4294967295,
+            "data_type": "BFP16",
+            "alg_type": "RING-RING-NHR",
+            "count": 32768,
+            "relay": "no",
+            "retry": "no"
+          }
+        },
+        {
+          "name": "hcom_allGather__909_49_1",
+          "operation": "AllGather",
+          "pid": 3004829157,
+          "tid": 0,
+          "interval_us": [
+            "1792817203099229.005",
+            "1792817203099403.645"
+          ],
+          "args": {
+            "connection_id": 81447,
+            "model id": 4294967295,
+            "data_type": "BFP16",
+            "alg_type": "RING-RING-NHR",
+            "count": 124160,
+            "relay": "no",
+            "retry": "no"
+          }
+        },
+        {
+          "name": "hcom_broadcast__909_50_1",
+          "operation": "Broadcast",
+          "pid": 3004829157,
+          "tid": 0,
+          "interval_us": [
+            "1792817203099497.185",
+            "1792817203099728.865"
+          ],
+          "args": {
+            "connection_id": 81494,
+            "model id": 4294967295,
+            "data_type": "INT32",
+            "alg_type": "RING-RING-NHR",
+            "count": 1,
+            "relay": "no",
+            "retry": "no"
+          }
+        }
+      ],
+      "diagnostics": {
+        "events": 164512,
+        "hardware_tasks": 24227,
+        "collective_sequence_sha256": "33ca2405cf29ad1c91664ff4f0c1cffe874851ab3eca0081587a2d9937c135e7",
+        "hccl_subtasks_identically_mapped": 7230,
+        "subtasks_not_contained_in_parent": 70,
+        "hccl_kernels_excluded_from_compute": 153,
+        "hccl_kernels_without_envelope_overlap": 28,
+        "host_HcclAllReduce_API_events_not_device_ops": 0,
+        "post_request_collectives": {
+          "AllReduce": 49,
+          "AllGather": 1,
+          "Broadcast": 1
+        },
+        "top_full_span_compute_names": {
+          "aclnnMul_MulAiCore_Mul": 3915,
+          "aclnnCast_CastAiCore_Cast": 2637,
+          "aclnnReduceSum_ReduceSumOpAiCore_ReduceSum": 1298,
+          "aclnnAdd_AddAiCore_Add": 928,
+          "aclnnExp_ExpAiCore_Exp": 630,
+          "aclnnMuls_MulAiCore_Mul": 605
+        }
+      },
+      "concurrency": 1,
+      "trace": {
+        "path": "homework-2/results/0.8B-npu-batch-experiment-c1/hw2-npu-c1-input32-TP1.trace.json.gz",
+        "bytes": 38178383,
+        "sha256": "6fa94df5f1c94f297645e8bc87f2d5f81865e8024286efdf8340aea2d3a9b068",
+        "stored_file": {
+          "path": "homework-2/results/0.8B-npu-batch-experiment-c1/hw2-npu-c1-input32-TP1.trace.json.gz",
+          "bytes": 2201903,
+          "sha256": "5bf0d02663011768181fb3bec16f52bcff6fd105b2a8e9b8965c07e2275652d2"
+        },
+        "compression": "gzip"
+      }
+    },
+    {
+      "ownership": {
+        "tp_rank": 0,
+        "logical_device": 0,
+        "physical_device": 4,
+        "owned_worker": {
+          "pid": 2936113,
+          "ppid": 2935826,
+          "name": "tokenspeed::scheduler_tp0"
+        },
+        "runner_pid": 2935826,
+        "hardware_chrome_pid": 3006580132,
+        "communication_chrome_pid": 3006580196,
+        "host_chrome_pid": 3006579967,
+        "hccl_src_rank": 0,
+        "literal_RankId_metadata": false,
+        "group_tid": 0,
+        "group": "Group group_name_1 Communication",
+        "card": 2,
+        "chip": 0,
+        "worker_pid_seen_on_card_chip": true
+      },
+      "clock": {
+        "request_unix_us": [
+          "1792817251847974.61",
+          "1792817252301412.34"
+        ],
+        "request_wall_us": "453437.73",
+        "request_monotonic_us": "453436.03",
+        "enable_us": [
+          "1792817251842278.965"
+        ],
+        "disable_us": [
+          "1792817252377552.525"
+        ],
+        "same_epoch_bracket_verified": true,
+        "criterion": "Unix ns/1000 inside CANN enable/disable; each margin <1s; wall/monotonic delta <100us",
+        "active_end_minus_request_end_us": "73896.165"
+      },
+      "device_active_span": {
+        "window_us": [
+          "1792817251850530.405",
+          "1792817252375308.505"
+        ],
+        "span_us": "524778.100",
+        "compute_us": "171760.400",
+        "communication_envelopes_us": "113922.760",
+        "overlap_us": "0",
+        "compute_only_us": "171760.400",
+        "communication_only_us": "113922.760",
+        "explicit_control_union_us": "123611.760",
+        "control_outside_compute_comm_us": "957.480",
+        "unclassified_gap_us": "238137.460",
+        "associated_hccl_kernel_outside_envelopes_us": "4517.200",
+        "compute_task_counts": {
+          "AI_CORE": 291,
+          "AI_CPU": 21,
+          "AI_VECTOR_CORE": 21399,
+          "MIX_AIC": 24,
+          "MIX_AIV": 2763
+        },
+        "compute_tasks": 24498,
+        "collectives": {
+          "AllGather": 3,
+          "AllReduce": 147,
+          "Broadcast": 3
+        },
+        "collective_count": 153,
+        "partially_clipped_collectives": 0,
+        "communication_by_operation_us": {
+          "AllGather": "508.620",
+          "AllReduce": "111932.080",
+          "Broadcast": "1482.060"
+        },
+        "payloads": [
+          {
+            "operation": "AllGather",
+            "dtype": "BFP16",
+            "input_elements": 248320,
+            "input_bytes_per_operation": 496640,
+            "operations": 3,
+            "envelope_union_us": "508.620"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 2048,
+            "input_bytes_per_operation": 4096,
+            "operations": 98,
+            "envelope_union_us": "57678.460"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 65536,
+            "input_bytes_per_operation": 131072,
+            "operations": 49,
+            "envelope_union_us": "54253.620"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 2,
+            "input_bytes_per_operation": 8,
+            "operations": 1,
+            "envelope_union_us": "226.920"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 6,
+            "input_bytes_per_operation": 24,
+            "operations": 2,
+            "envelope_union_us": "1255.140"
+          }
+        ]
+      },
+      "request_window": {
+        "window_us": [
+          "1792817251847974.61",
+          "1792817252301412.34"
+        ],
+        "span_us": "453437.73",
+        "compute_us": "161496.960",
+        "communication_envelopes_us": "89631.500",
+        "overlap_us": "0",
+        "compute_only_us": "161496.960",
+        "communication_only_us": "89631.500",
+        "explicit_control_union_us": "99037.920",
+        "control_outside_compute_comm_us": "681.780",
+        "unclassified_gap_us": "201627.490",
+        "associated_hccl_kernel_outside_envelopes_us": "3090.160",
+        "compute_task_counts": {
+          "AI_CORE": 194,
+          "AI_CPU": 14,
+          "AI_VECTOR_CORE": 19767,
+          "MIX_AIC": 18,
+          "MIX_AIV": 2648
+        },
+        "compute_tasks": 22641,
+        "collectives": {
+          "AllGather": 2,
+          "AllReduce": 98,
+          "Broadcast": 2
+        },
+        "collective_count": 102,
+        "partially_clipped_collectives": 0,
+        "communication_by_operation_us": {
+          "AllGather": "234.320",
+          "AllReduce": "88531.960",
+          "Broadcast": "865.220"
+        },
+        "payloads": [
+          {
+            "operation": "AllGather",
+            "dtype": "BFP16",
+            "input_elements": 248320,
+            "input_bytes_per_operation": 496640,
+            "operations": 2,
+            "envelope_union_us": "234.320"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 2048,
+            "input_bytes_per_operation": 4096,
+            "operations": 49,
+            "envelope_union_us": "34278.340"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 65536,
+            "input_bytes_per_operation": 131072,
+            "operations": 49,
+            "envelope_union_us": "54253.620"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 2,
+            "input_bytes_per_operation": 8,
+            "operations": 1,
+            "envelope_union_us": "226.920"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 6,
+            "input_bytes_per_operation": 24,
+            "operations": 1,
+            "envelope_union_us": "638.300"
+          }
+        ],
+        "communication_us_per_returned_output_token": "22407.875"
+      },
+      "representative_device_envelopes": [
+        {
+          "name": "hcom_allReduce__909_0_1",
+          "operation": "AllReduce",
+          "pid": 3006580196,
+          "tid": 0,
+          "interval_us": [
+            "1792817251858871.245",
+            "1792817251859335.205"
+          ],
+          "args": {
+            "connection_id": 55378,
+            "model id": 4294967295,
+            "data_type": "BFP16",
+            "alg_type": "RING-RING-NHR",
+            "count": 65536,
+            "relay": "no",
+            "retry": "no"
+          }
+        },
+        {
+          "name": "hcom_allGather__909_49_1",
+          "operation": "AllGather",
+          "pid": 3006580196,
+          "tid": 0,
+          "interval_us": [
+            "1792817252201346.425",
+            "1792817252201370.945"
+          ],
+          "args": {
+            "connection_id": 137509,
+            "model id": 4294967295,
+            "data_type": "BFP16",
+            "alg_type": "RING-RING-NHR",
+            "count": 248320,
+            "relay": "no",
+            "retry": "no"
+          }
+        },
+        {
+          "name": "hcom_broadcast__909_50_1",
+          "operation": "Broadcast",
+          "pid": 3006580196,
+          "tid": 0,
+          "interval_us": [
+            "1792817252201424.145",
+            "1792817252201651.065"
+          ],
+          "args": {
+            "connection_id": 137556,
+            "model id": 4294967295,
+            "data_type": "INT32",
+            "alg_type": "RING-RING-NHR",
+            "count": 2,
+            "relay": "no",
+            "retry": "no"
+          }
+        }
+      ],
+      "diagnostics": {
+        "events": 251829,
+        "hardware_tasks": 33873,
+        "collective_sequence_sha256": "5e000dc0e57ebb31c83ea5894914a0f53041828d0ea1244a6b01332bc9410dff",
+        "hccl_subtasks_identically_mapped": 7245,
+        "subtasks_not_contained_in_parent": 112,
+        "hccl_kernels_excluded_from_compute": 153,
+        "hccl_kernels_without_envelope_overlap": 40,
+        "host_HcclAllReduce_API_events_not_device_ops": 0,
+        "post_request_collectives": {
+          "AllReduce": 49,
+          "AllGather": 1,
+          "Broadcast": 1
+        },
+        "top_full_span_compute_names": {
+          "aclnnMul_MulAiCore_Mul": 7029,
+          "aclnnCast_CastAiCore_Cast": 3915,
+          "aclnnReduceSum_ReduceSumOpAiCore_ReduceSum": 2486,
+          "aclnnAdd_AddAiCore_Add": 1666,
+          "aclnnExp_ExpAiCore_Exp": 1224,
+          "aclnnMuls_MulAiCore_Mul": 1199
+        }
+      },
+      "concurrency": 2,
+      "trace": {
+        "path": "homework-2/results/0.8B-npu-batch-experiment-c2/hw2-npu-c2-input32-TP0.trace.json.gz",
+        "bytes": 57032958,
+        "sha256": "0c57d11bc36f78ef41db648c30d6c686e98bfe7a5d27517078ecef16e38283ac",
+        "stored_file": {
+          "path": "homework-2/results/0.8B-npu-batch-experiment-c2/hw2-npu-c2-input32-TP0.trace.json.gz",
+          "bytes": 3269180,
+          "sha256": "8d577321e677da77480035adcebf02864901b0ed31b95c854d74bc1fcaca34be"
+        },
+        "compression": "gzip"
+      }
+    },
+    {
+      "ownership": {
+        "tp_rank": 1,
+        "logical_device": 1,
+        "physical_device": 5,
+        "owned_worker": {
+          "pid": 2936114,
+          "ppid": 2935826,
+          "name": "tokenspeed::scheduler_tp1"
+        },
+        "runner_pid": 2935826,
+        "hardware_chrome_pid": 3006581157,
+        "communication_chrome_pid": 3006581221,
+        "host_chrome_pid": 3006580991,
+        "hccl_src_rank": 1,
+        "literal_RankId_metadata": false,
+        "group_tid": 0,
+        "group": "Group group_name_1 Communication",
+        "card": 2,
+        "chip": 1,
+        "worker_pid_seen_on_card_chip": true
+      },
+      "clock": {
+        "request_unix_us": [
+          "1792817251847974.61",
+          "1792817252301412.34"
+        ],
+        "request_wall_us": "453437.73",
+        "request_monotonic_us": "453436.03",
+        "enable_us": [
+          "1792817251838857.835"
+        ],
+        "disable_us": [
+          "1792817252377509.535"
+        ],
+        "same_epoch_bracket_verified": true,
+        "criterion": "Unix ns/1000 inside CANN enable/disable; each margin <1s; wall/monotonic delta <100us",
+        "active_end_minus_request_end_us": "74298.075"
+      },
+      "device_active_span": {
+        "window_us": [
+          "1792817251850411.715",
+          "1792817252375710.415"
+        ],
+        "span_us": "525298.700",
+        "compute_us": "171277.020",
+        "communication_envelopes_us": "35082.980",
+        "overlap_us": "0",
+        "compute_only_us": "171277.020",
+        "communication_only_us": "35082.980",
+        "explicit_control_union_us": "33793.160",
+        "control_outside_compute_comm_us": "758.500",
+        "unclassified_gap_us": "318180.200",
+        "associated_hccl_kernel_outside_envelopes_us": "10730.700",
+        "compute_task_counts": {
+          "AI_CORE": 291,
+          "AI_CPU": 21,
+          "AI_VECTOR_CORE": 21399,
+          "MIX_AIC": 24,
+          "MIX_AIV": 2763
+        },
+        "compute_tasks": 24498,
+        "collectives": {
+          "AllGather": 3,
+          "AllReduce": 147,
+          "Broadcast": 3
+        },
+        "collective_count": 153,
+        "partially_clipped_collectives": 0,
+        "communication_by_operation_us": {
+          "AllGather": "136.020",
+          "AllReduce": "34311.580",
+          "Broadcast": "635.380"
+        },
+        "payloads": [
+          {
+            "operation": "AllGather",
+            "dtype": "BFP16",
+            "input_elements": 248320,
+            "input_bytes_per_operation": 496640,
+            "operations": 3,
+            "envelope_union_us": "136.020"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 2048,
+            "input_bytes_per_operation": 4096,
+            "operations": 98,
+            "envelope_union_us": "23645.480"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 65536,
+            "input_bytes_per_operation": 131072,
+            "operations": 49,
+            "envelope_union_us": "10666.100"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 2,
+            "input_bytes_per_operation": 8,
+            "operations": 1,
+            "envelope_union_us": "216.960"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 6,
+            "input_bytes_per_operation": 24,
+            "operations": 2,
+            "envelope_union_us": "418.420"
+          }
+        ]
+      },
+      "request_window": {
+        "window_us": [
+          "1792817251847974.61",
+          "1792817252301412.34"
+        ],
+        "span_us": "453437.73",
+        "compute_us": "160328.520",
+        "communication_envelopes_us": "20709.020",
+        "overlap_us": "0",
+        "compute_only_us": "160328.520",
+        "communication_only_us": "20709.020",
+        "explicit_control_union_us": "19448.580",
+        "control_outside_compute_comm_us": "496.240",
+        "unclassified_gap_us": "271903.950",
+        "associated_hccl_kernel_outside_envelopes_us": "8025.280",
+        "compute_task_counts": {
+          "AI_CORE": 194,
+          "AI_CPU": 14,
+          "AI_VECTOR_CORE": 19765,
+          "MIX_AIC": 18,
+          "MIX_AIV": 2648
+        },
+        "compute_tasks": 22639,
+        "collectives": {
+          "AllGather": 2,
+          "AllReduce": 98,
+          "Broadcast": 2
+        },
+        "collective_count": 102,
+        "partially_clipped_collectives": 0,
+        "communication_by_operation_us": {
+          "AllGather": "78.840",
+          "AllReduce": "20193.040",
+          "Broadcast": "437.140"
+        },
+        "payloads": [
+          {
+            "operation": "AllGather",
+            "dtype": "BFP16",
+            "input_elements": 248320,
+            "input_bytes_per_operation": 496640,
+            "operations": 2,
+            "envelope_union_us": "78.840"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 2048,
+            "input_bytes_per_operation": 4096,
+            "operations": 49,
+            "envelope_union_us": "9526.940"
+          },
+          {
+            "operation": "AllReduce",
+            "dtype": "BFP16",
+            "input_elements": 65536,
+            "input_bytes_per_operation": 131072,
+            "operations": 49,
+            "envelope_union_us": "10666.100"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 2,
+            "input_bytes_per_operation": 8,
+            "operations": 1,
+            "envelope_union_us": "216.960"
+          },
+          {
+            "operation": "Broadcast",
+            "dtype": "INT32",
+            "input_elements": 6,
+            "input_bytes_per_operation": 24,
+            "operations": 1,
+            "envelope_union_us": "220.180"
+          }
+        ],
+        "communication_us_per_returned_output_token": "5177.255"
+      },
+      "representative_device_envelopes": [
+        {
+          "name": "hcom_allReduce__909_0_1",
+          "operation": "AllReduce",
+          "pid": 3006581221,
+          "tid": 0,
+          "interval_us": [
+            "1792817251858119.255",
+            "1792817251859328.215"
+          ],
+          "args": {
+            "connection_id": 55378,
+            "model id": 4294967295,
+            "data_type": "BFP16",
+            "alg_type": "RING-RING-NHR",
+            "count": 65536,
+            "relay": "no",
+            "retry": "no"
+          }
+        },
+        {
+          "name": "hcom_allGather__909_49_1",
+          "operation": "AllGather",
+          "pid": 3006581221,
+          "tid": 0,
+          "interval_us": [
+            "1792817252201356.255",
+            "1792817252201367.615"
+          ],
+          "args": {
+            "connection_id": 144109,
+            "model id": 4294967295,
+            "data_type": "BFP16",
+            "alg_type": "RING-RING-NHR",
+            "count": 248320,
+            "relay": "no",
+            "retry": "no"
+          }
+        },
+        {
+          "name": "hcom_broadcast__909_50_1",
+          "operation": "Broadcast",
+          "pid": 3006581221,
+          "tid": 0,
+          "interval_us": [
+            "1792817252201435.815",
+            "1792817252201652.775"
+          ],
+          "args": {
+            "connection_id": 144191,
+            "model id": 4294967295,
+            "data_type": "INT32",
+            "alg_type": "RING-RING-NHR",
+            "count": 2,
+            "relay": "no",
+            "retry": "no"
+          }
+        }
+      ],
+      "diagnostics": {
+        "events": 251796,
+        "hardware_tasks": 33858,
+        "collective_sequence_sha256": "5e000dc0e57ebb31c83ea5894914a0f53041828d0ea1244a6b01332bc9410dff",
+        "hccl_subtasks_identically_mapped": 7230,
+        "subtasks_not_contained_in_parent": 12,
+        "hccl_kernels_excluded_from_compute": 153,
+        "hccl_kernels_without_envelope_overlap": 4,
+        "host_HcclAllReduce_API_events_not_device_ops": 0,
+        "post_request_collectives": {
+          "AllReduce": 49,
+          "AllGather": 1,
+          "Broadcast": 1
+        },
+        "top_full_span_compute_names": {
+          "aclnnMul_MulAiCore_Mul": 7029,
+          "aclnnCast_CastAiCore_Cast": 3915,
+          "aclnnReduceSum_ReduceSumOpAiCore_ReduceSum": 2486,
+          "aclnnAdd_AddAiCore_Add": 1666,
+          "aclnnExp_ExpAiCore_Exp": 1224,
+          "aclnnMuls_MulAiCore_Mul": 1199
+        }
+      },
+      "concurrency": 2,
+      "trace": {
+        "path": "homework-2/results/0.8B-npu-batch-experiment-c2/hw2-npu-c2-input32-TP1.trace.json.gz",
+        "bytes": 57022601,
+        "sha256": "bf2f1a0141600bdc27aa7b1a969cad6babb3182be4b8a49705755ada81f3ab34",
+        "stored_file": {
+          "path": "homework-2/results/0.8B-npu-batch-experiment-c2/hw2-npu-c2-input32-TP1.trace.json.gz",
+          "bytes": 3288503,
+          "sha256": "2d3d7b9fee58a1c7d99adb5365e277c4d1a06694194a1234c98454b14c62df70"
+        },
+        "compression": "gzip"
+      }
+    }
+  ],
+  "theoretical_hidden_allreduce": {
+    "formula": "1024 * T * 2 = 2048*T input bytes (BF16)",
+    "decode_c1_bytes": 2048,
+    "decode_c2_bytes": 4096,
+    "prefill_c1_bytes": 65536,
+    "prefill_c2_bytes": 131072
+  },
+  "limitations": [
+    "One warmed profile batch per concurrency, 32 input / 2 returned output tokens; not the separate three-repeat benchmark matrix.",
+    "Same-epoch verification uses profiler bracketing and runner clocks; no sub-microsecond external clock calibration. No offset fitting.",
+    "Device-active first/last spans are not request wall latency. Request metrics use exact saved Unix-ns boundaries when bracketing verifies.",
+    "51 collective envelopes per rank start after request end; no unverified cause (extra forward, drain, etc.) is asserted.",
+    "Parent envelopes, hardware HCCL kernels, and plane subtasks have differing extents. Envelopes alone define communication; auxiliary extents are exposed, not added twice.",
+    "Explicit control intervals can overlap work on other streams and do not measure whole-device stall. Gaps include unclassified/other device work, host scheduling and launch gaps; not pure CPU wait.",
+    "Payload count/dtype gives logical per-operation input size, not link traffic or network bandwidth. Shared-device snapshots do not prove exclusivity or peak HBM.",
+    "No per-rank durations are summed into end-to-end latency; output IDs certify only the two-token prefix here, not general accuracy/performance."
+  ]
+}

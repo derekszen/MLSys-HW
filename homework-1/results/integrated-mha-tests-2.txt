@@ -1,0 +1,98 @@
+tar: tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/mha.py: time stamp 2026-10-23 18:47:36 is 23.07428892 s in the future
+............................................................[W1023 18:47:20.418737640 compiler_depend.ts:164] Warning: Device do not support double dtype now, dtype cast replace with float. (function operator())
+F
+=================================== FAILURES ===================================
+________________ test_paged_extend[native-None-64-False-dtype0] ________________
+
+ops = (<module 'tokenspeed_kernel_npu.ops.mha' from '/home/u2501213387/MLSys-HW/homework-1/tokenspeed/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/mha.py'>, {})
+dtype = torch.bfloat16, causal = False, page_size = 64, scale = None
+
+    @pytest.mark.parametrize("dtype", [torch.bfloat16, torch.float16])
+    @pytest.mark.parametrize("causal", [False, True])
+    @pytest.mark.parametrize("page_size", [64, 128])
+    @pytest.mark.parametrize("scale", [None, 0.125])
+    def test_paged_extend(ops, dtype, causal, page_size, scale):
+        module, dispatch = ops
+        q_lengths, kv_lengths = [0, 3, 1, 7, 0], [0, 129, 63, 199, 0]
+        host = _paged_case(
+            q_lengths, kv_lengths, dtype=dtype, head_dim=256, page_size=page_size
+        )
+        q, k, v, table = (tensor.to("npu") for tensor in host)
+        saved = [tensor.clone() for tensor in (q, k, v, table)]
+>       output = _extend(
+            module,
+            dispatch,
+            q,
+            k,
+            v,
+            table,
+            q_lengths,
+            kv_lengths,
+            causal=causal,
+            scale=scale,
+        )
+
+tokenspeed-kernel-npu/test/test_mha_d256.py:184: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tokenspeed-kernel-npu/test/test_mha_d256.py:117: in _extend
+    return module.mha_extend_with_kvcache(
+tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/mha.py:179: in mha_extend_with_kvcache
+    result, _ = torch_npu.npu_fused_infer_attention_score(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <OpOverloadPacket(op='npu.npu_fused_infer_attention_score')>
+args = (tensor([[[-1.7422, -0.3555,  0.4062,  ..., -0.5898,  1.6406, -0.5430],
+         [-0.2012, -1.1953, -0.8672,  ...,  0....
+         [-1.3125, -0.1177,  0.3438,  ...,  0.1943,  0.6953,  0.9336]]],
+       device='npu:0', dtype=torch.bfloat16))
+kwargs = {'actual_seq_lengths_kv': [129], 'atten_mask': None, 'block_size': 64, 'block_table': tensor([[ 0,  9, 15, 14]], device='npu:0', dtype=torch.int32), ...}
+
+    def __call__(self, /, *args: _P.args, **kwargs: _P.kwargs) -> _T:
+        # overloading __call__ to ensure torch.ops.foo.bar()
+        # is still callable from JIT
+        # We save the function ptr as the `op` attribute on
+        # OpOverloadPacket to access it here.
+    
+        # Directly calling OverloadPacket goes into C++, which will check
+        # the schema and cause an error for torchbind op when inputs consist of FakeScriptObject so we
+        # intercept it here and call TorchBindOpverload instead.
+        if self._has_torchbind_op_overload and _must_dispatch_in_python(args, kwargs):
+            return _call_overload_packet_from_python(self, *args, **kwargs)
+>       return self._op(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       RuntimeError: npu_fused_infer_attention_score_symint:build/CMakeFiles/torch_npu.dir/compiler_depend.ts:415 NPU function error: call aclnnFusedInferAttentionScoreV3 failed, error code is 561002
+E       [ERROR] 2026-10-23-18:47:20 (PID:2583216, Device:0, RankID:-1) ERR00100 PTA call acl api failed.
+E       EZ9999: Inner Error!
+E       EZ9999[PID: 2583216] 2026-10-23-18:47:20.512.760 (EZ9999):  In no quant GQA (QS > 1) scenario, when page attention enable, blockSize(64) should be a multiple of 128, and should be in range of [128, 1024].[FUNC:CheckFeatureBlockSize][FILE:fused_infer_attention_score_tiling_check_feature.cpp][LINE:103]
+E               TraceBack (most recent call last):
+E              FusedInferAttentionScore do tiling failed, ret is -1.
+E              Check NnopbaseExecutorDoTiling(executor) failed
+E              Check NnopbaseExecutorTilingAndUpdateBinInfo(executor) failed
+E              Check NnopbaseExecutorMatchCache(executor) failed
+E              Check NnopbaseRunForWorkspace(*executor, workspaceSize) failed
+
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch/_ops.py:1255: RuntimeError
+=============================== warnings summary ===============================
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+    warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+    warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66: UserWarning: Permission mismatch: The owner of /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/lib/libop_plugin_atb.so does not match.
+    warnings.warn(f"Permission mismatch: The owner of {path} does not match.")
+
+test/test_mha_d256.py::test_packed_prefill[native-lengths0-None-dtype0]
+  /home/u2501213387/MLSys-HW/homework-1/tokenspeed/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/mha.py:95: UserWarning: Cannot create tensor with interal format while allow_internel_format=False, tensor will be created with base format. (Triggered internally at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:338.)
+    output = torch.empty_like(q)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tokenspeed-kernel-npu/test/test_mha_d256.py::test_paged_extend[native-None-64-False-dtype0]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 60 passed, 6 warnings in 7.59s

@@ -1,0 +1,160 @@
+........................................................................ [ 87%]
+.........F
+=================================== FAILURES ===================================
+___________________________ test_public_registry_npu ___________________________
+
+    def test_public_registry_npu():
+        pytest.importorskip("torch_npu")
+        if not torch.npu.is_available():
+            pytest.skip("Ascend NPU required")
+>       from tokenspeed_kernel.ops.attention.gdn import (
+            GdnCheckpointLayout,
+            GdnStateCheckpoints,
+            gdn_chunk_prefill,
+            gdn_chunk_prefill_capturable,
+            gdn_chunk_prefill_stores_state_checkpoints,
+            gdn_decode_step,
+        )
+
+tokenspeed-kernel-npu/test/test_gdn.py:448: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tokenspeed-kernel/python/tokenspeed_kernel/ops/attention/gdn/__init__.py:1017: in <module>
+    import tokenspeed_kernel.ops.attention.gdn.triton  # noqa: E402,F401
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tokenspeed-kernel/python/tokenspeed_kernel/ops/attention/gdn/triton.py:55: in <module>
+    from tokenspeed_kernel.ops.attention.gdn._triton.chunk import (
+tokenspeed-kernel/python/tokenspeed_kernel/ops/attention/gdn/_triton/chunk.py:31: in <module>
+    from tokenspeed_kernel.ops.attention.gdn._triton.cumsum import chunk_local_cumsum
+tokenspeed-kernel/python/tokenspeed_kernel/ops/attention/gdn/_triton/cumsum.py:109: in <module>
+    @triton.autotune(
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/triton/runtime/autotuner.py:493: in decorator
+    return Autotuner(fn, fn.arg_names, configs, key, reset_to_zero, restore_value, pre_hook=pre_hook,
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/triton/runtime/autotuner.py:154: in __init__
+    self.do_bench = driver.active.get_benchmarker()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/triton/runtime/driver.py:23: in __getattr__
+    self._initialize_obj()
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/triton/runtime/driver.py:20: in _initialize_obj
+    self._obj = self._init_fn()
+                ^^^^^^^^^^^^^^^
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/triton/runtime/driver.py:9: in _create_driver
+    return actives[0]()
+           ^^^^^^^^^^^^
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/triton/backends/ascend/driver.py:162: in __init__
+    self.utils = NPUUtils()
+                 ^^^^^^^^^^
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/triton/backends/ascend/driver.py:65: in __init__
+    so = _build_npu_ext("npu_utils", None, tmp_src_path)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+obj_name = 'npu_utils', header_path = None
+src_path = '/tmp/tmp6lqc6meu/npu_utils.cpp'
+
+    def _build_npu_ext(obj_name: str, header_path, src_path, *, kernel_launcher="torch", precompile=False) -> str:
+        suffix = sysconfig.get_config_var("EXT_SUFFIX")
+        src_dir = os.path.dirname(src_path)
+        so_path = os.path.join(src_dir, f"{obj_name}{suffix}")
+        if precompile:
+            cc_cmd = _get_cxx_precompiled(header_path)
+            cc_cmd += [src_path]
+        else:
+            cxx = _get_cxx()
+            cc_cmd = [cxx, src_path]
+        # disable all warnings
+        cc_cmd += [f"-w"]
+        # find the python library
+        if hasattr(sysconfig, "get_default_scheme"):
+            scheme = sysconfig.get_default_scheme()
+        else:
+            scheme = sysconfig._get_default_scheme()
+        # 'posix_local' is a custom scheme on Debian. However, starting Python 3.10, the default install
+        # path changes to include 'local'. This change is required to use triton with system-wide python.
+        if scheme == "posix_local":
+            scheme = "posix_prefix"
+        py_include_dir = sysconfig.get_paths(scheme=scheme)["include"]
+        cc_cmd += [f"-I{py_include_dir}"]
+        cc_cmd += [f"-I{os.path.dirname(os.path.realpath(__file__))}"]
+        # find the ascend library
+        asc_path = _get_ascend_path()
+        if header_path is not None:
+            cc_cmd += [f"-I{os.path.dirname(header_path)}"]
+    
+        rt_path = os.path.join(asc_path, "include/experiment/runtime/runtime/rt.h")
+        if not os.path.exists(rt_path):
+            cc_cmd += [
+                f"-I{os.path.join(asc_path, 'pkg_inc')}",
+                f"-I{os.path.join(asc_path, 'pkg_inc/profiling')}",
+            ]
+    
+        cc_cmd += [
+            f"-I{os.path.join(asc_path, 'include')}",
+            f"-I{os.path.join(asc_path, 'include/experiment')}",
+            f"-I{os.path.join(asc_path, 'include/experiment/msprof')}",
+            f"-I{pybind11.get_include()}",
+            f"-L{os.path.join(asc_path, 'lib64')}",
+            "-lruntime",
+            "-lascendcl",
+        ]
+        # FIXME: check why this condition works wrong in parall scene
+        # if kernel_launcher == "torch":
+        import torch
+        import torch_npu
+    
+        torch_path = os.path.dirname(os.path.realpath(torch.__file__))
+        torch_npu_path = os.path.dirname(os.path.realpath(torch_npu.__file__))
+        use_cxx11_abi = _check_cxx11_abi()
+        cc_cmd += [
+            f"-I{os.path.join(torch_path, 'include')}",
+            f"-I{os.path.join(torch_npu_path, 'include')}",
+            f"-L{os.path.join(torch_npu_path, 'lib')}",
+            "-ltorch_npu",
+            f"-D_GLIBCXX_USE_CXX11_ABI={use_cxx11_abi}",
+        ]
+    
+        cc_cmd += ["-std=c++17", "-shared", "-fPIC", "-Winvalid-pch", "-o", so_path]
+    
+        result = subprocess.run(cc_cmd, capture_output=True, text=True)
+    
+        if result.returncode == 0:
+            return so_path
+        else:
+            if "precompiled.h.gch" in result.stderr:
+                # only for clang++, when precompile invalid, fallback to normal compile
+                return _build_npu_ext(obj_name, header_path, src_path, precompile=False)
+            else:
+>               raise RuntimeError(f"Failed to compile {src_path}, error: {result.stderr}")
+E               RuntimeError: Failed to compile /tmp/tmp6lqc6meu/npu_utils.cpp, error: /tmp/tmp6lqc6meu/npu_utils.cpp:321:44: error: ‘RT_LIMIT_TYPE_SIMT_WARP_STACK_SIZE’ is not a member of ‘rtLimitType_t’ {aka ‘tagRtLimitType’}
+E                 321 |         {"WARP_STACK_SIZE", rtLimitType_t::RT_LIMIT_TYPE_SIMT_WARP_STACK_SIZE},
+E                     |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E               /tmp/tmp6lqc6meu/npu_utils.cpp:324:3: error: could not convert ‘{{"LOW_POWER_TIMEOUT", RT_LIMIT_TYPE_LOW_POWER_TIMEOUT}, {"WARP_STACK_SIZE", <expression error>}, {"DVG_WARP_STACK_SIZE", RT_LIMIT_TYPE_SIMT_DVG_WARP_STACK_SIZE}, {"STACK_SIZE", RT_LIMIT_TYPE_STACK_SIZE}}’ from ‘<brace-enclosed initializer list>’ to ‘const std::unordered_map<std::__cxx11::basic_string<char>, tagRtLimitType>’
+E                 324 |   };
+E                     |   ^
+E                     |   |
+E                     |   <brace-enclosed initializer list>
+
+/opt/miniconda3/envs/aics/lib/python3.11/site-packages/triton/backends/ascend/utils.py:413: RuntimeError
+=============================== warnings summary ===============================
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+    warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+    warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66: UserWarning: Permission mismatch: The owner of /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/lib/libop_plugin_atb.so does not match.
+    warnings.warn(f"Permission mismatch: The owner of {path} does not match.")
+
+test/test_gdn.py::test_prefill_variable_batches[npu-True-None-False-dtype0]
+  /home/u2501213387/MLSys-HW/homework-1/tokenspeed/tokenspeed-kernel-npu/python/tokenspeed_kernel_npu/ops/gdn.py:220: UserWarning: Cannot create tensor with interal format while allow_internel_format=False, tensor will be created with base format. (Triggered internally at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:338.)
+    final = torch.empty_like(initial_state) if output_final_state else None
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tokenspeed-kernel-npu/test/test_gdn.py::test_public_registry_npu - Run...
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 81 passed, 81 deselected, 6 warnings in 8.58s

@@ -1,0 +1,79 @@
+....................F
+=================================== FAILURES ===================================
+_________________________ test_explicit_float16_kv_cli _________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-u2501213387/pytest-4/test_explicit_float16_kv_cli0')
+
+    def test_explicit_float16_kv_cli(tmp_path):
+        parser = argparse.ArgumentParser()
+        ServerArgs.add_cli_args(parser)
+>       args = ServerArgs.from_cli_args(
+            parser.parse_args(
+                [
+                    "--model",
+                    str(tmp_path),
+                    "--device",
+                    "npu",  # CLI supports accelerators; parsing allocates no device tensors.
+                    "--sampling-backend",
+                    "greedy",
+                    "--disable-pdl",
+                    "--kv-cache-dtype",
+                    "float16",
+                ]
+            )
+        )
+
+test/runtime/test_qwen35_cache_precision.py:203: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+python/tokenspeed/runtime/utils/server_args.py:4157: in from_cli_args
+    return cls(
+<string>:208: in __init__
+    ???
+python/tokenspeed/runtime/utils/server_args.py:779: in __post_init__
+    self.validate()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ServerArgs(model='/tmp/pytest-of-u2501213387/pytest-4/test_explicit_float16_kv_cli0', tokenizer='/tmp/pytest-of-u25012...nterval=1, pdlb_url=None, comm_fusion_max_num_tokens=2048, enable_allreduce_fusion=False, enable_expert_parallel=False)
+
+    def validate(self):
+        if self.low_latency_max_num_tokens_per_gpu <= 0:
+            raise ValueError("--low-latency-max-num-tokens-per-gpu must be positive")
+        if self.input_logprob_chunk_tokens <= 0:
+            raise ValueError("--input-logprob-chunk-tokens must be positive")
+        if self.device == "npu":
+            if not self.disable_prefill_graph:
+>               raise ValueError("NPU execution requires --disable-prefill-graph")
+E               ValueError: NPU execution requires --disable-prefill-graph
+
+python/tokenspeed/runtime/utils/server_args.py:2290: ValueError
+----------------------------- Captured stderr call -----------------------------
+[38;20m[2026-10-24 05:40:22,635 None] - INFO - Inferred world_size (1) from attn_tp_size (None) x attn_dp_size (None) x pp_size (1) (server_args.py:1073)[0m
+[38;20m[2026-10-24 05:40:22,635 None] - INFO - Parallelism configuration:
+Mapping(rank=?, world_size=1)
+  Cluster : 1 node(s) x 1 proc(s)
+  Pipeline: pp=1
+  Attention: tp=1  kvp=1  qcp=1  dp=1  head_tp=1
+    Vision: tp=1  item_dp=1
+  LM head : tp=1
+  Dense   : tp=1  dp=1
+  MoE     : tp=1  ep=1  dp=1 (server_args.py:1209)[0m
+=============================== warnings summary ===============================
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0 owner does not match the current owner.
+    warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/collect_env.py:58: UserWarning: Warning: The /usr/local/Ascend/cann-9.0.0/aarch64-linux/ascend_toolkit_install.info owner does not match the current owner.
+    warnings.warn(f"Warning: The {path} owner does not match the current owner.")
+
+../../../../../opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66
+  /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/utils/_path_manager.py:66: UserWarning: Permission mismatch: The owner of /opt/miniconda3/envs/aics/lib/python3.11/site-packages/torch_npu/lib/libop_plugin_atb.so does not match.
+    warnings.warn(f"Permission mismatch: The owner of {path} does not match.")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED test/runtime/test_qwen35_cache_precision.py::test_explicit_float16_kv_cli
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 20 passed, 5 warnings in 3.72s

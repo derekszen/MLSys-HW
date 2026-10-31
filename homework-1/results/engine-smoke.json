@@ -1,0 +1,56 @@
+{
+  "config": {
+    "model": "/home/u2501213387/MLSys-HW/homework-1/models/Qwen3.5-0.8B",
+    "device": "npu",
+    "dtype": "bfloat16",
+    "language_model_only": true,
+    "trust_remote_code": false,
+    "max_model_len": 512,
+    "max_num_seqs": 2,
+    "max_total_tokens": 16384,
+    "chunked_prefill_size": 128,
+    "max_prefill_tokens": 128,
+    "gpu_memory_utilization": 0.12,
+    "mamba_ssm_dtype": "float32",
+    "sampling_backend": "greedy",
+    "enforce_eager": true,
+    "disable_prefill_graph": true,
+    "disable_pdl": true,
+    "disable_autotune": true,
+    "seed": 42,
+    "log_level": "info",
+    "port": 31887
+  },
+  "physical_device": 1,
+  "load_seconds": 12.523883810034022,
+  "request_seconds": 16.526404039934278,
+  "result": {
+    "text": " Paris.\nThe capital of France is",
+    "output_ids": [
+      11751,
+      13,
+      198,
+      760,
+      6511,
+      314,
+      9338,
+      369
+    ],
+    "meta_info": {
+      "id": "a4b3ead7589b486585fddaf60b99f3ee",
+      "finish_reason": {
+        "type": "length",
+        "length": 8
+      },
+      "prompt_tokens": 5,
+      "weight_version": "default",
+      "completion_tokens": 8,
+      "cached_tokens": 0,
+      "e2e_latency": 16.525864601135254
+    },
+    "output_extra_info": {
+      "decode_prefix_len": 0
+    }
+  },
+  "scope": "bring-up only; no reference comparison"
+}

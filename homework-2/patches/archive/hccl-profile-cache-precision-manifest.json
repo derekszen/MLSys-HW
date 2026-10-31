@@ -1,0 +1,70 @@
+{
+  "apply_order": [
+    "git apply --check /path/to/homework-1/patches/ascend-qwen3.5.patch",
+    "git apply /path/to/homework-1/patches/ascend-qwen3.5.patch",
+    "git apply --check /path/to/homework-2/patches/hccl-torch29.patch",
+    "git apply /path/to/homework-2/patches/hccl-torch29.patch"
+  ],
+  "base_commit": "52bdb9763bb2da3d61336398072671885cc0a33e",
+  "files": {
+    "docs/hccl-torch29.md": {
+      "mode": "100644",
+      "sha256": "52de1df03b1d052a1cb45edf560bae8c9cbfa4af99f9747954fe98f591dfe9b6"
+    },
+    "docs/npu-profile.md": {
+      "mode": "100644",
+      "sha256": "df9793d09b899fa994c899b2e1f42f580f9c82cb6e3f97f045767ccdf12a2a7b"
+    },
+    "docs/qwen35-cache-precision.md": {
+      "mode": "100644",
+      "sha256": "1d484c0cc85e67759cba0f8c53b0b61d957a31bf093d612dae1970a6048e937e"
+    },
+    "python/tokenspeed/runtime/distributed/comm_backend/hccl.py": {
+      "mode": "100644",
+      "sha256": "c15d81cefd2e6e148978b7e7e6386730ee05680d5de4319d8f06c7a8658b9d15"
+    },
+    "python/tokenspeed/runtime/engine/request_handler.py": {
+      "mode": "100644",
+      "sha256": "99b7571d5ab79867f1c2bd9a30cde88aaaf4439ec433a792579b6a2d58d402bd"
+    },
+    "python/tokenspeed/runtime/layers/attention/configs/base.py": {
+      "mode": "100644",
+      "sha256": "ce3d4d0e4f7ba07701c69030f39b257c8c1123caac160f0ea3749f8000f85c70"
+    },
+    "python/tokenspeed/runtime/layers/attention/kv_cache/recipes/qwen35.py": {
+      "mode": "100644",
+      "sha256": "4b8cea810dd349f89f32172d5ce52cfca799369e8e0bacaef48dd5558a541bf1"
+    },
+    "python/tokenspeed/runtime/utils/server_args.py": {
+      "mode": "100755",
+      "sha256": "d7da6e43991c921384dcf502bc540af265fe735466f4f4e96b8b0816ecfaa64f"
+    },
+    "test/runtime/test_hccl_torch29.py": {
+      "mode": "100644",
+      "sha256": "5bd49239ce67c8e2c0656bd6285082f30721295c784facc6944f9652893edc50"
+    },
+    "test/runtime/test_npu_profile.py": {
+      "mode": "100644",
+      "sha256": "974d60e837f9f4dd6848f7a52229d5a6caac6efdcbdfdb7d7a1a22840ab9fa83"
+    },
+    "test/runtime/test_qwen35_cache_precision.py": {
+      "mode": "100644",
+      "sha256": "a154cc3223dbf458999f597ce7c2f70a06d0825a4b4c23bab57e3c6c237c2caf"
+    }
+  },
+  "kind": "incremental_after_frozen_hw1",
+  "new_files": [
+    "docs/hccl-torch29.md",
+    "docs/npu-profile.md",
+    "docs/qwen35-cache-precision.md",
+    "test/runtime/test_hccl_torch29.py",
+    "test/runtime/test_npu_profile.py",
+    "test/runtime/test_qwen35_cache_precision.py"
+  ],
+  "patch": "hccl-torch29.patch",
+  "prerequisite": {
+    "patch": "homework-1/patches/ascend-qwen3.5.patch",
+    "sha256": "e68f2f26e49d30180280adbab0bb0ebaf433246e27457788e60277621613b8c6"
+  },
+  "sha256": "85eb82b1510fbbcd2b9347cc6b116e95aa2bc43b41065957b0b8a02cd23463bd"
+}
