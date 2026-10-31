@@ -20,7 +20,7 @@ Authority: [the original assignment](assignment.md). **Technical deliverables ar
 ## Before submission
 
 1. Review the consolidated [report](report.md), including its self-contained layer-shape and computation/communication/control tables. The resolved 4B case is a brief fix-and-verification note; its detailed diagnostic is an attachment, not a completion blocker.
-2. The opening contribution table identifies **Zhuoxi Zeng,2501213387** and the documented coordination role.
+2. The opening contribution table identifies **Zhuoxi Zeng,2501213387** and the documented coordination role, plus **two unconfirmed member placeholders**. Confirm and replace both members' names, student IDs and actual contributions before final submission; no tentative name or role is treated as confirmed.
 3. Upload the prepared report and permitted attachments according to the assignment entry. Follow the [submission guide](../SUBMISSION.md) for file mapping and receipt verification. **Nothing has been submitted.**
 
 No exact-equality rule or positive speedup is being invented as a course requirement. The stricter project checks now pass for all selected model configurations; old failures remain available with their original verdicts.
