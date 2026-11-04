@@ -11,7 +11,7 @@ from pathlib import Path
 import statistics
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 CASES = {"smoke": 5, "length_32": 32, "length_256": 256}
 METRICS = ("ttft_ms", "tpot_ms", "total_ms")
 

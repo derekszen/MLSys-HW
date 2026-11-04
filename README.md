@@ -9,6 +9,10 @@ Original assignment files are preserved under each homework directory. See the [
 
 ## Prepare or check submission files
 
+For Steven's offline reproduction checks and the independent HW1 evidence checker,
+see [offline reproduction](homework-2/docs/offline-reproduction.md). These run on a
+Mac or Linux CPU and validate saved evidence; they do not execute NPU inference.
+
 ```bash
 python scripts/build_submissions.py
 (cd submissions && sha256sum -c SHA256SUMS)

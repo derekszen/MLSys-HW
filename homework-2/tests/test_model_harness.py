@@ -196,7 +196,7 @@ class ModelHarnessTests(unittest.TestCase):
                     "completion_tokens": 16, "prompt_tokens": 2, "cached_tokens": 0}}]),
                 shutdown=mock.Mock())
             def start_engine(**kwargs):
-                self.assertEqual(kwargs, config(1) | {"model": str(model), "dtype": "float16", "kv_cache_dtype": "float16", "lm_head_compute_dtype": "float32"})
+                self.assertEqual(kwargs, config(1) | {"model": str(model.resolve()), "dtype": "float16", "kv_cache_dtype": "float16", "lm_head_compute_dtype": "float32"})
                 events.append("engine_started")
                 return engine
             process_info = {"parent_pid": 100, "children": []}

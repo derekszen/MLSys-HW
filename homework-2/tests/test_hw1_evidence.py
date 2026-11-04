@@ -9,8 +9,8 @@ import tempfile
 import unittest
 
 
-ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "scripts/verify_hw1_evidence.py"
+ROOT = Path(__file__).resolve().parents[2]
+SCRIPT = ROOT / "homework-2/scripts/verify_hw1_evidence.py"
 spec = importlib.util.spec_from_file_location("verify_hw1_evidence", SCRIPT)
 checker = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(checker)
