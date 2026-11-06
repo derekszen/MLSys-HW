@@ -405,7 +405,7 @@ class DecodeProbeAnalysisTests(unittest.TestCase):
         raw_path.unlink()
         raw_path.write_bytes(b"ignored raw sibling")
         report = self.analyze()
-        provenance = next(p for p in report["provenance"] if p["path"] == str(archive))
+        provenance = next(p for p in report["provenance"] if p["path"] == str(archive.resolve()))
         self.assertEqual(provenance["selected_sha256"], a.sha256(compressed))
         self.assertEqual(provenance["raw_sha256"], a.sha256(raw))
         self.assertEqual(provenance["compression"], "gzip")

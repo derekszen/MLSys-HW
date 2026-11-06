@@ -1,0 +1,189 @@
+{
+  "base_revision": "034533a0fa13ddda1aa6d4fce0f6632871564851",
+  "changed_code_sha256": {
+    "homework-2/scripts/verify_hw1_evidence.py": "7e31b2c7ef85fae29bf3dea9b15cbe374d78f06be9716695f8a6334b6264e985",
+    "homework-2/tests/test_decode_probe_analysis.py": "8060e9e0c1885cc305b32cfa5aa6670fbdeb1d829226d0a21d6b6ca17db2532d",
+    "homework-2/tests/test_hw1_evidence.py": "a3f2d73db53b4966e28067474c485eba57a2e9f058f44809f6415f5fc03db556",
+    "homework-2/tests/test_model_harness.py": "b2d00763584d0ba1ff25ce4fb2830090fa15f40674cfdc674f710f393dd3e196"
+  },
+  "contributor": "Steven Walxim",
+  "date": "2026-11-04",
+  "environment": {
+    "architecture": "arm64",
+    "numpy": "2.4.6",
+    "os": "Darwin",
+    "python": "3.13.0"
+  },
+  "evidence_input_sha256": {
+    "homework-1/results/benchmark.json": "9a732bf482ee4f6687e024e62079d8af3c1e715cd8e7f2c45b99a86072daac6e",
+    "homework-1/results/model-reference.json": "13d0c120650aeb34ccff3964725be2cd8df8a0aacb73d440e836f4b5747a8dd4",
+    "homework-1/results/model-validation.json": "f2def0d9371f79214b7a2d205dbca75017471c7e7932605caec81fa4cede2b94",
+    "homework-2/cases.json": "5ffed43aa943d6951a337562beeec9680389408e1699f1537e3ce96a7a6b9e66",
+    "homework-2/metadata/Qwen3.5-0.8B/config.json": "b90b86f35c8e6925ef74ee04d0e758f0a845c83a42089ad82bbaa948de9b4204",
+    "homework-2/metadata/Qwen3.5-0.8B/source-manifest.json": "3e9ccd40c3754d454e97b2a0c6744cf382fbe9318e5c02882a0d8a493cd45a89",
+    "homework-2/metadata/Qwen3.5-27B/config.json": "f8d190c5b89c1521220f935d2567a587d6e291ed69066a45a106560b05a2174c",
+    "homework-2/metadata/Qwen3.5-27B/source-manifest.json": "96c6013d005219b3b58f0082c0a04af84e89c939d8df288f72128ce4c971bfad",
+    "homework-2/metadata/Qwen3.5-4B/config.json": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+    "homework-2/metadata/Qwen3.5-4B/source-manifest.json": "54cf8d7ef4431d619e8fb7b69bdb9234f03538efec8dd2f31dab394eb83c56e3",
+    "homework-2/metadata/Qwen3.5-9B/config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+    "homework-2/metadata/Qwen3.5-9B/source-manifest.json": "a66e971f82ed3d450c2af83cbfc6c8e30a484fde591a14ad073cc4d204c4a9f2",
+    "homework-2/results/0.8B-correctness-tp2-c1/result.json": "2fb46d03730027aff1d4419a0261067e7375ae21d94d8121600bdc0af859a389",
+    "homework-2/results/0.8B-npu-batch-experiment-c1/hbm-loaded.txt": "a6fb8874cc5b5d44d088bdff9053a8974fb206cf7c6b6ac2815426d3e1e072fd",
+    "homework-2/results/0.8B-npu-batch-experiment-c1/hw2-npu-c1-input32-TP0.trace.json.gz": "81c6feb7b7d2d526a5cc1c522c59e9bded6b9d74d6c2b9b7ff0894327288de33",
+    "homework-2/results/0.8B-npu-batch-experiment-c1/hw2-npu-c1-input32-TP1.trace.json.gz": "5bf0d02663011768181fb3bec16f52bcff6fd105b2a8e9b8965c07e2275652d2",
+    "homework-2/results/0.8B-npu-batch-experiment-c1/result.json": "a04174b03fbbd414409ce6abdef66d1d6f9da30f7ae765a3e1ab44623c65389e",
+    "homework-2/results/0.8B-npu-batch-experiment-c2/hbm-loaded.txt": "7123942cdcc100a452365fb9071337517aaf607403979044a0dbc77ae5db8dad",
+    "homework-2/results/0.8B-npu-batch-experiment-c2/hw2-npu-c2-input32-TP0.trace.json.gz": "8d577321e677da77480035adcebf02864901b0ed31b95c854d74bc1fcaca34be",
+    "homework-2/results/0.8B-npu-batch-experiment-c2/hw2-npu-c2-input32-TP1.trace.json.gz": "2d3d7b9fee58a1c7d99adb5365e277c4d1a06694194a1234c98454b14c62df70",
+    "homework-2/results/0.8B-npu-batch-experiment-c2/result.json": "ef12b0de498b4dca0b0fb8ed1e3de311a2bf13c10adb950cec57ea15567f6549",
+    "homework-2/results/4B-fp32-head-confirmation-tp1/result.json": "63e66980ee4f2a5806c1e5269c7a058df98a1da8b094b624041ac31ed0287c77",
+    "homework-2/results/4B-fp32-head-confirmation-tp2/result.json": "1e0e90b3efa1e3dccd73fae9561deeb2a62d21355e58325a7ded968887afad6f",
+    "homework-2/results/final-27B/27B-benchmark-tp2-c1/result.json": "159093b120053bc54a0c7a3bc9f4af780218cf90675bbee72e49e805bf5ea5d1",
+    "homework-2/results/final-27B/27B-correctness-tp1-c1/result.json": "989b5a1ebdf1bed6b0bbac532c33636f0d3c8191e12c08c6b1432046a1bddeed",
+    "homework-2/results/final-27B/27B-correctness-tp2-c1/result.json": "4bd53ad8e5960c071858250c731aa0a666d8184714d275f7f376603049320b6a",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp1-c1/hbm-length_256.txt": "efbaac1880f6f2a75ee72d52598a87ca4d64b8da3981b59c36bc3f41bd04aef5",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp1-c1/hbm-length_32.txt": "754f540dabd255b1f7e7e8f0ceed09aa2766a082a4dc48e181d08d211139a02f",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp1-c1/hbm-loaded.txt": "e92ad11e814865de6b27c36b00d4081d4442506a4750248c0d6bbe759c5f5c8a",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp1-c1/result.json": "4d473fefa4ae1e5be6f1cc197e14359f0c6f634dd9dd5a3309676600201d538e",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp1-c2/hbm-length_256.txt": "145254458d095a2ffcc618099d4cd03575d16f5581d61e2e3147f2891c90c7b1",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp1-c2/hbm-length_32.txt": "ac72156abd8dfe9c4dfaa10fe7d1623ff72e92114eb4904cfc7cf8edfc8f0b6d",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp1-c2/hbm-loaded.txt": "bd1e2c3dee27c79c845659267e698a0a9c8abc9e04ec11457ca156cb5a6acb10",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp1-c2/result.json": "3d1dcc21b33fb2ba857d1a17d8ec37ffd2f2c521fdc20f59978cab57fb5d93f5",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp2-c1/hbm-length_256.txt": "54a21aa2f03ddd86c1f42d47875133157fb00937d4ab8d42fec621e69c05bfcd",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp2-c1/hbm-length_32.txt": "5937a11ec039f0a97b2d9fdc5d6148f80a460e3fd4b0eb0c763ffe926abbcaeb",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp2-c1/hbm-loaded.txt": "aaae8bc0cde6c94562a712ed930143713636afdff8a99dcdd95ef12bc6df2002",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp2-c1/result.json": "1a36e7b49ba37489d8205871b6b6e48d33847db27eed9743b366a617f90779e7",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp2-c2/hbm-length_256.txt": "202dfd7ea45ca6143989dd6c071aae2dd616c6b84bba994ee5c189cdb236ee7b",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp2-c2/hbm-length_32.txt": "39db7a342914b0e24dc320808692bf1c468841b852fabfd4a8b1cf7f71d69eeb",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp2-c2/hbm-loaded.txt": "d4aff9ae3ecb89c800516b981a3d88fb54488c33ee6ca59f02befef66ceb02c2",
+    "homework-2/results/final-matrix/0.8B-benchmark-tp2-c2/result.json": "b001ff2826109ed08408934c509de4a8060b788cef25a55541a30bdfe085374d",
+    "homework-2/results/head-fix-regression/0.8B-native-tp1/result.json": "a61d268ab0fb845c3d9e82addcd57657827f34ecebb145875839b7206f32bc14",
+    "homework-2/results/head-fix-regression/0.8B-native-tp2/result.json": "19579350f42270ccf4eb18a4e30fce616ecd3845d296a4943390b38bcc77a31d",
+    "homework-2/results/head-fix-regression/9B-native-tp1/result.json": "7b81cf3911d42a076079541fb34c1e0f95d948153217e49bb59c854cad551800",
+    "homework-2/results/head-fix-regression/9B-native-tp2/result.json": "04ac5b0ef89a589621f877d69d4c360303209071fe27652f6619c518e995df26",
+    "homework-2/scripts/analyze_npu_traces.py": "bfe5e3f1fde5cedbdc23eee6eadb68d919a007bdb094bca817b55622355c7fa6",
+    "homework-2/scripts/profile_engine_npu.py": "9972d745fdff7dc37a0e12bab8103e2bbda8931bb31d9a2adbe1fee565410551"
+  },
+  "execution": "Local CPU/offline verification with AI assistance; no new NPU inference.",
+  "hw1": {
+    "benchmark_cells": 4,
+    "benchmark_samples": 12,
+    "limitations": [
+      "Selected logprobs, not full-logit equivalence.",
+      "HW1 records lack checkpoint/source fingerprints; matching paths/configs do not prove provenance.",
+      "Timing checks verify arithmetic, not clock accuracy or uncontended hardware performance."
+    ],
+    "max_selected_logprob_error": {
+      "length_256": 0.002222776412963867,
+      "length_32": 0.040811240673065186,
+      "smoke": 0.1255553960800171
+    },
+    "passed": true,
+    "scope": "Offline recomputation of saved HW1 observations; no hardware inference executed.",
+    "state_isolation_cases": 3,
+    "validation_cases": 3
+  },
+  "hw2_0_8B_matrix": {
+    "cells": 8,
+    "passed": true,
+    "verified_benchmark_requests": 36
+  },
+  "hw2_communication": {
+    "request_comparison_per_rank": [
+      {
+        "collectives_c1_c2": [
+          102,
+          102
+        ],
+        "communication_per_output_token_c2_over_c1": "1.718453306706668016405461534",
+        "compute_tasks_c1_c2": [
+          13168,
+          22641
+        ],
+        "compute_union_c2_over_c1": "1.745921008506200784911672031",
+        "tp_rank": 0
+      },
+      {
+        "collectives_c1_c2": [
+          102,
+          102
+        ],
+        "communication_per_output_token_c2_over_c1": "0.1623848667393081246146019367",
+        "compute_tasks_c1_c2": [
+          13183,
+          22639
+        ],
+        "compute_union_c2_over_c1": "1.703386043558553227241424079",
+        "tp_rank": 1
+      }
+    ],
+    "status": "validated_bounded_local_device_analysis"
+  },
+  "hw2_hbm": {
+    "all_scheduler_pids_matched": true,
+    "snapshots_verified": 12,
+    "units": "MB as labeled by npu-smi; no implicit GiB conversion"
+  },
+  "hw2_model_comparisons": {
+    "0.8B": {
+      "cases": 3,
+      "dtype": "bfloat16",
+      "lm_head_compute_dtype": "native",
+      "max_selected_logprob_error": 0.057662129402160645,
+      "passed": true
+    },
+    "27B": {
+      "cases": 3,
+      "dtype": "bfloat16",
+      "lm_head_compute_dtype": "native",
+      "max_selected_logprob_error": 0.0773688554763794,
+      "passed": true,
+      "verified_benchmark_requests": 6
+    },
+    "4B": {
+      "cases": 3,
+      "dtype": "float16",
+      "lm_head_compute_dtype": "float32",
+      "max_selected_logprob_error": 0.005949735641479492,
+      "passed": true
+    },
+    "9B": {
+      "cases": 3,
+      "dtype": "float16",
+      "lm_head_compute_dtype": "native",
+      "max_selected_logprob_error": 0.005827903747558594,
+      "passed": true
+    }
+  },
+  "limitations": [
+    "Saved observations were recomputed, not independently recollected.",
+    "Hardware access and the course server hostname/port remain pending.",
+    "No new NPU adaptation or speedup is claimed."
+  ],
+  "student_id": "2501112130",
+  "test_suites": {
+    "hw1-profile": {
+      "failed": 0,
+      "passed": 4,
+      "seconds": 0.0,
+      "skipped": 0
+    },
+    "hw2": {
+      "failed": 0,
+      "passed": 196,
+      "seconds": 17.017,
+      "skipped": 0
+    },
+    "packaging": {
+      "failed": 0,
+      "passed": 24,
+      "seconds": 0.013,
+      "skipped": 0
+    }
+  },
+  "total_tests_passed": 224,
+  "verified_patch_sha256": {
+    "homework-1/patches/ascend-qwen3.5.patch": "e68f2f26e49d30180280adbab0bb0ebaf433246e27457788e60277621613b8c6",
+    "homework-2/patches/hccl-torch29.patch": "76071724b56e1f7922dd3fd9a4c2c5b359f3422252ac10c74daa5e5d0f2350f6"
+  }
+}

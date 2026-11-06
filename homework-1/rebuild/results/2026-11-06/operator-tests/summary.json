@@ -1,0 +1,12 @@
+{
+  "passed": 1058,
+  "failed": 0,
+  "warnings": 6,
+  "pytest_seconds": 10.81,
+  "physical_device": 1,
+  "scope": "Five frozen HW1 Ascend operator suites plus real-model initialization regression; not end-to-end generation.",
+  "log_sha256": "762e0ae6c276b28aa271862396a79352ad9fe5b6f632879ccf32cd526794d622",
+  "raw_log": "pytest.log (retained locally and on server; ignored by Git)",
+  "status_file": "status.json",
+  "command_file": "command.sh"
+}

@@ -147,6 +147,35 @@ class SubmissionToolsTests(unittest.TestCase):
                     self.assertRaises(ValueError):
                 build.selected_files(1)
 
+    def test_outer_selection_accepts_recorded_rebuild_commands(self):
+        names = ["homework-1/report.md"] + [
+            f"homework-1/rebuild/results/2026-11-06/{run}/command.sh"
+            for run in ("operator-tests", "engine-validation", "benchmark")
+        ]
+        for name in names:
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("retained run command\n")
+        inventory = "\0".join(names).encode() + b"\0"
+        with mock.patch.object(build, "ROOT", self.root), \
+                mock.patch.object(build, "run", return_value=inventory):
+            self.assertEqual(build.selected_files(1), sorted(names))
+
+    def test_rebuild_command_exception_does_not_allow_other_scripts_or_symlinks(self):
+        approved = "homework-1/rebuild/results/2026-11-06/benchmark/command.sh"
+        path = self.root / approved
+        path.parent.mkdir(parents=True)
+        target = self.root / "outside.txt"
+        target.write_text("not a regular command record")
+        path.symlink_to(target)
+        other = path.with_name("unexpected.sh")
+        other.write_text("unexpected")
+        for name in (approved, str(other.relative_to(self.root))):
+            with self.subTest(name=name), mock.patch.object(build, "ROOT", self.root), \
+                    mock.patch.object(build, "run", return_value=f"{name}\0".encode()), \
+                    self.assertRaises(ValueError):
+                build.selected_files(1)
+
     def test_package_writer_preserves_executable_modes(self):
         stage = self.root / "stage"
         stage.mkdir()

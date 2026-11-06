@@ -1,0 +1,85 @@
+diff --git a/python/tokenspeed/runtime/models/qwen3_5.py b/python/tokenspeed/runtime/models/qwen3_5.py
+--- a/python/tokenspeed/runtime/models/qwen3_5.py
++++ b/python/tokenspeed/runtime/models/qwen3_5.py
+@@ -1041,7 +1041,9 @@
+         # signaling; at decode the join alone idles the GPU for about 15 us
+         # per MoE layer, longer than the shared expert takes, so it runs
+         # inline there.
+-        alt_stream = None if current_platform().is_amd else torch.cuda.Stream()
++        # CUDA auxiliary streams are only available on NVIDIA.
++        # Ascend and AMD keep this work on the model stream.
++        alt_stream = torch.cuda.Stream() if current_platform().is_nvidia else None
+ 
+         # Embedding layer
+         self.embed_tokens = VocabParallelEmbedding(
+diff --git a/test/runtime/test_qwen35_npu_initialization.py b/test/runtime/test_qwen35_npu_initialization.py
+new file mode 100644
+--- /dev/null
++++ b/test/runtime/test_qwen35_npu_initialization.py
+@@ -0,0 +1,46 @@
++# Copyright (c) 2026 LightSeek Foundation
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++"""Inference-only Qwen3.5 model and Qwen3.5 MoE model compatible with HuggingFace weights."""
++
++import pytest
++import torch
++from tokenspeed_kernel.platform import current_platform
++from transformers import Qwen3_5TextConfig
++
++from tokenspeed.runtime.distributed.mapping import Mapping
++from tokenspeed.runtime.models.qwen3_5 import Qwen3_5ForCausalLM
++
++
++@pytest.mark.skipif(not current_platform().is_npu, reason="Ascend initialization regression")
++def test_qwen35_model_can_initialize_without_cuda():
++    config = Qwen3_5TextConfig(
++        vocab_size=32,
++        hidden_size=16,
++        intermediate_size=32,
++        num_hidden_layers=0,
++    )
++    with torch.device("meta"):
++        model = Qwen3_5ForCausalLM(config, Mapping(rank=0, world_size=1))
++
++    assert len(model.layers) == 0
++    assert model.embed_tokens.weight.shape[1] == 16
++    assert model.embed_tokens.weight.device.type == "meta"
++    assert model.norm.weight.numel() == 16
+diff --git a/docs/qwen35-device-initialization.md b/docs/qwen35-device-initialization.md
+new file mode 100644
+--- /dev/null
++++ b/docs/qwen35-device-initialization.md
+@@ -0,0 +1,15 @@
++# Qwen3.5 device initialization
++
++The optional stream used to overlap shared and routed experts is created only
++on NVIDIA. AMD retains its existing inline path, and Ascend uses the model
++stream. An Ascend deployment must not instantiate `torch.cuda.Stream` from a
++CPU PyTorch build with the NPU extension.
++
++The regression test constructs a real, minimal Qwen3.5 model on the meta device
++in an Ascend environment. This tests initialization without allocating model
++weights or launching kernels. The full checkpoint smoke run separately covers
++weight loading and subsequent runtime behavior.
++
++This guard also appears in the group's frozen HW1 adaptation. The rebuild
++reproduces the failure and adds focused regression coverage; it does not claim
++the original adaptation as a new contribution.
