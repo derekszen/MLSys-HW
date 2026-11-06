@@ -17,9 +17,14 @@ HW1 runs correctly under Steven's account.
 - Clean upstream TokenSpeed failed during model initialization because it created
   a CUDA stream on Ascend. A new regression using the real minimal model on the
   meta device fails before the guard and passes after it.
-- Reused the group's remaining frozen HW1 Ascend adapters in the rebuild. Their
-  new operator test run has not started: permission-review timeout followed by
-  loss of VPN connectivity blocked the launch. Full generation remains pending.
+- Reused the group's remaining frozen HW1 Ascend adapters in the rebuild.
+  All 1,058 operator and initialization tests passed on physical chip 1 under
+  Steven's account (10.81 seconds; six environment warnings).
+  [Run evidence](results/2026-11-06/operator-tests/status.json) and
+  [test summary](results/2026-11-06/operator-tests/summary.json) are retained.
+  The raw pytest log is retained locally and on the server, outside Git.
+  Full generation validation is running separately; a passing operator suite
+  does not establish end-to-end model correctness.
 
 Evidence: [checkpoint](results/2026-11-06/checkpoint.json),
 [fresh reference](results/2026-11-06/reference.json),
@@ -59,9 +64,7 @@ from the server; a hash-verified Git bundle supplied the exact upstream commit.
 
 ## Next
 
-1. Re-establish the VPN link and check for an existing test job before launching.
-2. Recheck device availability; never stop another user's processes.
-3. Run the five Ascend operator test files plus the new initialization test.
-4. Run TokenSpeed validation against the fresh reference, including state
-   isolation, then the required benchmark matrix into new output paths.
-5. Preserve new logs and source checkpoints, then return to HW2 and its PR.
+1. Finish TokenSpeed validation against the fresh reference, including state
+   isolation, then run the required benchmark matrix into new output paths.
+2. Recheck device availability before each run; never stop another user's processes.
+3. Preserve new logs and source checkpoints, then return to HW2 and its PR.
