@@ -1,8 +1,9 @@
 # MLSys-HW
 
-**Student: Zhuoxi Zeng · Student ID: 2501213387** — applies to both homework submissions. **Reports and separate code/evidence packages are prepared; no teaching-platform submission has been performed by this project.** Start with the [submission guide](SUBMISSION.md) and [generated-file instructions](submissions/README.md).
+**Confirmed contributors: Zhuoxi Zeng (2501213387) and Steven Walxim (2501112130).** Each report records their respective work; HW2's third-member details remain unconfirmed. Report sources and package-building tools are retained; generated PDFs/ZIPs are local outputs, not GitHub downloads. No teaching-platform submission has been performed by this project. Start with the [submission guide](SUBMISSION.md) and [generated-file instructions](submissions/README.md).
 
 - [Homework 1: single-chip Qwen3.5-0.8B adaptation](homework-1/README.md) — single-chip inference, reference checks and the 2×2 performance baseline completed. The report includes a self-contained operator matrix and the required contribution statement.
+- [Steven's HW1 reproduction report](homework-1/rebuild/report.md) — fresh single-chip correctness and timing results, with separate attribution for the group's existing implementation and historical memory/profile evidence.
 - [Homework 2: TP=2 and communication analysis](homework-2/README.md) — **all four models pass matched TP1/TP2 checks.** The 4B precision fix is confirmed twice. The report includes typical-layer sharding, performance/HBM matrices, larger-model results, overlap-aware timing and the batch experiment. The 15-file incremental patch is verified; frozen HW1 is unchanged.
 
 Original assignment files are preserved under each homework directory. See the [HW1 requirements](homework-1/REQUIREMENTS.md) and [HW2 requirements](homework-2/REQUIREMENTS.md) for explicit evidence mapping. Final student review must confirm all group members, the factual contribution statement, and the platform's upload rules. No grade is guaranteed.
