@@ -1,0 +1,28 @@
+@page {
+  size: A4;
+  margin: 15mm 16mm 17mm;
+  @bottom-center {
+    content: "Steven Walxim  2501112130  ·  " counter(page);
+    font-family: "PingFang SC", sans-serif;
+    font-size: 8pt;
+    color: #555;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 10pt/1.55 "PingFang SC", "Noto Sans CJK SC", sans-serif; color: #151515; }
+h1, h2, h3 { color: #000; break-after: avoid; }
+h1 { font-size: 20pt; margin: 0 0 5mm; }
+h2 { font-size: 14pt; line-height: 1.4; margin: 0 0 4mm; }
+h3 { font-size: 11pt; margin: 4mm 0 2mm; }
+p { margin: 2mm 0; orphans: 2; widows: 2; }
+a { color: #17466c; text-decoration: none; }
+table { border-collapse: collapse; width: 100%; margin: 3mm 0; font-size: 8.8pt; line-height: 1.45; }
+td, th { border: 0.5pt solid #d9d9d9; padding: 2mm; text-align: left; vertical-align: middle; }
+th { background: #e7edf4; color: #000; }
+tr { break-inside: avoid; }
+thead { display: table-header-group; }
+code { font: 8.3pt/1.45 "Menlo", "PingFang SC", monospace; overflow-wrap: anywhere; }
+pre { margin: 3mm 0; padding: 2mm 0; white-space: pre-wrap; break-inside: avoid; }
+pre code { font-size: 9pt; }
+.page-break { break-before: page; }
+@media screen { body { max-width: 900px; margin: 30px auto; } }

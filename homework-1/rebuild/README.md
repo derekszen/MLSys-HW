@@ -4,6 +4,28 @@ This is a separate reproduction/rebuild record. The group's original HW1 report,
 patch and saved experiments remain unchanged. HW2 review and a PR follow after
 HW1 runs correctly under Steven's account.
 
+## Steven's report
+
+[Chinese report](report.md) records Steven Walxim (2501112130), the fresh
+November 6 reproduction, and the existing group's contribution. It labels the
+group's older process-HBM snapshots and CPU profile separately from new runs.
+Fresh startup allocator/cache measurements are preserved in
+[report evidence](results/2026-11-06/report-evidence.json). Fresh per-process HBM
+snapshots remain on the course server and have not been incorporated here.
+
+Render the standalone report from the outer repository root:
+
+```bash
+python3 scripts/build_steven_hw1.py --output /path/to/2501112130_Steven_Walxim_HW1_Report.pdf
+```
+
+The renderer validates evidence links and PDF text; inspect the rendered pages
+before delivery. This separate report does not change the group's original
+reports or the group submission builder's identity settings. The current local
+sparse checkout omits historical trace archives needed by the full ZIP builder;
+the standalone report reads the available profile summary. No ZIP, PR or
+teaching-platform submission is implied by rendering this PDF.
+
 ## Verified checkpoint — November 6, 2026
 
 - Started from upstream commit `52bdb9763bb2da3d61336398072671885cc0a33e`.
