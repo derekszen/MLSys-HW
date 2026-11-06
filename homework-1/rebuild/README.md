@@ -23,8 +23,18 @@ HW1 runs correctly under Steven's account.
   [Run evidence](results/2026-11-06/operator-tests/status.json) and
   [test summary](results/2026-11-06/operator-tests/summary.json) are retained.
   The raw pytest log is retained locally and on the server, outside Git.
-  Full generation validation is running separately; a passing operator suite
-  does not establish end-to-end model correctness.
+- Full TokenSpeed generation validation passed for input lengths 5, 32 and 256:
+  all 16 greedy output tokens match the fresh Transformers reference exactly.
+  Maximum selected-logprob errors were 0.125555, 0.040811 and 0.002223, below
+  the recorded 0.15 tolerance. All three request-state isolation checks passed.
+  [Validation evidence](results/2026-11-06/engine-validation/validation.json).
+- The warm, uncached single-request benchmark completed all 12 runs: input
+  lengths 32/256 × output lengths 8/16 × three repeats. Every run checked
+  output tokens against the reference and reported zero cached tokens.
+  [Benchmark evidence](results/2026-11-06/benchmark/benchmark.json).
+- Jobs were bounded, detached and logged on the server. Before each run,
+  physical chip 1 had no listed process and the engine port was free. After
+  completion, chip 1 had no listed process and port 31887 was free again.
 
 Evidence: [checkpoint](results/2026-11-06/checkpoint.json),
 [fresh reference](results/2026-11-06/reference.json),
@@ -62,9 +72,25 @@ mismatched dependencies. Do not describe this environment as dependency-clean
 or install CUDA Triton merely to silence that report. GitHub was unreachable
 from the server; a hash-verified Git bundle supplied the exact upstream commit.
 
+## Measured baseline
+
+Median client-observed times in milliseconds; three repeats per row:
+
+| Input tokens | Output tokens | First token | Per subsequent token | Total |
+|---:|---:|---:|---:|---:|
+| 32 | 8 | 266.38 | 73.71 | 782.89 |
+| 32 | 16 | 260.96 | 70.33 | 1315.98 |
+| 256 | 8 | 997.49 | 64.79 | 1451.01 |
+| 256 | 16 | 1000.40 | 66.91 | 1994.15 |
+
+These timings include scheduling and IPC. They are a reproduced baseline, not
+a speedup claim or pure kernel timings. Other chips on the shared server were
+in use. Raw logs remain local and on the server; tracked hash manifests cover
+the copied evidence. Original group evidence was not overwritten.
+
 ## Next
 
-1. Finish TokenSpeed validation against the fresh reference, including state
-   isolation, then run the required benchmark matrix into new output paths.
-2. Recheck device availability before each run; never stop another user's processes.
-3. Preserve new logs and source checkpoints, then return to HW2 and its PR.
+HW1 single-chip execution and the required reproduction matrix are complete.
+Return to HW2 verification and prepare the requested PR. Recheck available
+chips before each future run; never stop another user's processes. No PR,
+merge, or submission has been performed as part of this rebuild.

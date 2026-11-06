@@ -1,0 +1,502 @@
+{
+  "config": {
+    "model": "/home/u2501112130/MLSys-HW/models/Qwen3.5-0.8B",
+    "device": "npu",
+    "dtype": "bfloat16",
+    "language_model_only": true,
+    "trust_remote_code": false,
+    "max_model_len": 512,
+    "max_num_seqs": 2,
+    "max_total_tokens": 16384,
+    "chunked_prefill_size": 128,
+    "max_prefill_tokens": 128,
+    "gpu_memory_utilization": 0.12,
+    "mamba_ssm_dtype": "float32",
+    "sampling_backend": "greedy",
+    "enforce_eager": true,
+    "disable_prefill_graph": true,
+    "disable_pdl": true,
+    "disable_autotune": true,
+    "enable_output_logprobs": true,
+    "seed": 42,
+    "log_level": "info",
+    "port": 31887
+  },
+  "physical_device": 1,
+  "criteria": {
+    "greedy_ids": "exact for all 16 steps",
+    "selected_logprob_atol": 0.15
+  },
+  "cases": [
+    {
+      "name": "smoke",
+      "input_tokens": 5,
+      "output": {
+        "text": " Paris.\nThe capital of France is Paris.\nThe capital of France is",
+        "output_ids": [
+          11751,
+          13,
+          198,
+          760,
+          6511,
+          314,
+          9338,
+          369,
+          11751,
+          13,
+          198,
+          760,
+          6511,
+          314,
+          9338,
+          369
+        ],
+        "meta_info": {
+          "id": "e970b3a538cf428e9b57a2404c25d455",
+          "finish_reason": {
+            "type": "length",
+            "length": 16
+          },
+          "prompt_tokens": 5,
+          "weight_version": "default",
+          "input_token_logprobs": [
+            [
+              null,
+              369,
+              null
+            ]
+          ],
+          "output_token_logprobs": [
+            [
+              -2.0327792167663574,
+              11751,
+              null
+            ],
+            [
+              -0.631776750087738,
+              13,
+              null
+            ],
+            [
+              -1.0283634662628174,
+              198,
+              null
+            ],
+            [
+              -1.6569112539291382,
+              760,
+              null
+            ],
+            [
+              -1.3468379974365234,
+              6511,
+              null
+            ],
+            [
+              -0.05065961554646492,
+              314,
+              null
+            ],
+            [
+              -1.283975601196289,
+              9338,
+              null
+            ],
+            [
+              -0.13166090846061707,
+              369,
+              null
+            ],
+            [
+              -0.8464394807815552,
+              11751,
+              null
+            ],
+            [
+              -0.07243646681308746,
+              13,
+              null
+            ],
+            [
+              -0.12182479351758957,
+              198,
+              null
+            ],
+            [
+              -0.4655839800834656,
+              760,
+              null
+            ],
+            [
+              -0.09308045357465744,
+              6511,
+              null
+            ],
+            [
+              -0.011792589910328388,
+              314,
+              null
+            ],
+            [
+              -0.02607341669499874,
+              9338,
+              null
+            ],
+            [
+              -0.0053669181652367115,
+              369,
+              null
+            ]
+          ],
+          "completion_tokens": 16,
+          "cached_tokens": 0,
+          "e2e_latency": 7.3805928230285645
+        },
+        "output_extra_info": {
+          "decode_prefix_len": 0
+        }
+      },
+      "seconds": 7.381249510217458,
+      "greedy_exact": true,
+      "max_selected_logprob_error": 0.1255553960800171,
+      "passed": true
+    },
+    {
+      "name": "length_32",
+      "input_tokens": 32,
+      "output": {
+        "text": " experiment checks numerical accuracy before measuring performance. Machine learning systems combine mathematical models with efficient",
+        "output_ids": [
+          9064,
+          11988,
+          33625,
+          13016,
+          1518,
+          28043,
+          4906,
+          13,
+          12588,
+          6618,
+          5757,
+          15491,
+          34780,
+          3983,
+          440,
+          10727
+        ],
+        "meta_info": {
+          "id": "98836dc48c7e48b9a6c908716f6527a5",
+          "finish_reason": {
+            "type": "length",
+            "length": 16
+          },
+          "prompt_tokens": 32,
+          "weight_version": "default",
+          "input_token_logprobs": [
+            [
+              null,
+              14294,
+              null
+            ]
+          ],
+          "output_token_logprobs": [
+            [
+              -0.002968431217595935,
+              9064,
+              null
+            ],
+            [
+              -0.020621895790100098,
+              11988,
+              null
+            ],
+            [
+              -0.006379951722919941,
+              33625,
+              null
+            ],
+            [
+              -0.0010698077967390418,
+              13016,
+              null
+            ],
+            [
+              -0.013605012558400631,
+              1518,
+              null
+            ],
+            [
+              -0.006574784871190786,
+              28043,
+              null
+            ],
+            [
+              -0.004021653439849615,
+              4906,
+              null
+            ],
+            [
+              -0.05519528314471245,
+              13,
+              null
+            ],
+            [
+              -0.9804331660270691,
+              12588,
+              null
+            ],
+            [
+              -0.026472745463252068,
+              6618,
+              null
+            ],
+            [
+              -0.016963504254817963,
+              5757,
+              null
+            ],
+            [
+              -0.048243310302495956,
+              15491,
+              null
+            ],
+            [
+              -0.01376352272927761,
+              34780,
+              null
+            ],
+            [
+              -0.0022710978519171476,
+              3983,
+              null
+            ],
+            [
+              -0.005301227327436209,
+              440,
+              null
+            ],
+            [
+              -0.0014662717003375292,
+              10727,
+              null
+            ]
+          ],
+          "completion_tokens": 16,
+          "cached_tokens": 0,
+          "e2e_latency": 1.1962206363677979
+        },
+        "output_extra_info": {
+          "decode_prefix_len": 0
+        }
+      },
+      "seconds": 1.196632329840213,
+      "greedy_exact": true,
+      "max_selected_logprob_error": 0.040811240673065186,
+      "passed": true
+    },
+    {
+      "name": "length_256",
+      "input_tokens": 256,
+      "output": {
+        "text": " before measuring performance. Machine learning systems combine mathematical models with efficient hardware. A reliable",
+        "output_ids": [
+          1518,
+          28043,
+          4906,
+          13,
+          12588,
+          6618,
+          5757,
+          15491,
+          34780,
+          3983,
+          440,
+          10727,
+          11436,
+          13,
+          357,
+          14294
+        ],
+        "meta_info": {
+          "id": "b6aa90f5638143d38ad3aefc1e40cdec",
+          "finish_reason": {
+            "type": "length",
+            "length": 16
+          },
+          "prompt_tokens": 256,
+          "weight_version": "default",
+          "input_token_logprobs": [
+            [
+              null,
+              13016,
+              null
+            ]
+          ],
+          "output_token_logprobs": [
+            [
+              -0.0001196789598907344,
+              1518,
+              null
+            ],
+            [
+              -0.0002261144545627758,
+              28043,
+              null
+            ],
+            [
+              -8.546940807718784e-05,
+              4906,
+              null
+            ],
+            [
+              -0.00042632073746062815,
+              13,
+              null
+            ],
+            [
+              -0.02793864533305168,
+              12588,
+              null
+            ],
+            [
+              -0.0005526207387447357,
+              6618,
+              null
+            ],
+            [
+              -0.000386640167562291,
+              5757,
+              null
+            ],
+            [
+              -0.0007493072189390659,
+              15491,
+              null
+            ],
+            [
+              -0.00067223358200863,
+              34780,
+              null
+            ],
+            [
+              -7.736383122391999e-05,
+              3983,
+              null
+            ],
+            [
+              -0.00015054999676067382,
+              440,
+              null
+            ],
+            [
+              -7.009260298218578e-05,
+              10727,
+              null
+            ],
+            [
+              -6.0437283536884934e-05,
+              11436,
+              null
+            ],
+            [
+              -0.0002131234941771254,
+              13,
+              null
+            ],
+            [
+              -0.003308182582259178,
+              357,
+              null
+            ],
+            [
+              -9.405170567333698e-05,
+              14294,
+              null
+            ]
+          ],
+          "completion_tokens": 16,
+          "cached_tokens": 47,
+          "e2e_latency": 1.8195710182189941
+        },
+        "output_extra_info": {
+          "decode_prefix_len": 0
+        }
+      },
+      "seconds": 1.820059819612652,
+      "greedy_exact": true,
+      "max_selected_logprob_error": 0.002222776412963867,
+      "passed": true
+    }
+  ],
+  "state_isolation": [
+    {
+      "kind": "A_after_B",
+      "output_ids": [
+        11751,
+        13,
+        198,
+        760,
+        6511,
+        314,
+        9338,
+        369,
+        11751,
+        13,
+        198,
+        760,
+        6511,
+        314,
+        9338,
+        369
+      ],
+      "passed": true
+    },
+    {
+      "kind": "batch2",
+      "name": "smoke",
+      "output_ids": [
+        11751,
+        13,
+        198,
+        760,
+        6511,
+        314,
+        9338,
+        369,
+        11751,
+        13,
+        198,
+        760,
+        6511,
+        314,
+        9338,
+        369
+      ],
+      "passed": true
+    },
+    {
+      "kind": "batch2",
+      "name": "length_32",
+      "output_ids": [
+        9064,
+        11988,
+        33625,
+        13016,
+        1518,
+        28043,
+        4906,
+        13,
+        12588,
+        6618,
+        5757,
+        15491,
+        34780,
+        3983,
+        440,
+        10727
+      ],
+      "passed": true
+    }
+  ],
+  "passed": true
+}
