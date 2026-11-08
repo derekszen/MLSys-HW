@@ -2,7 +2,7 @@
 
 **Technical work complete for the recorded assignment scope: all four models run TP2 and have passing matched TP1/TP2 configurations.** 4B's last discrepancy was diagnosed as an FP16 final-logit rounding tie and fixed with an explicit FP32 final projection, verified in two fresh launch pairs. See [completion](COMPLETION.md), [requirements](REQUIREMENTS.md), [4B diagnosis/fix](docs/4B-discrepancy.md), [latest evidence](docs/final-validation.md), and the [Chinese report](report.md). Historical failures remain unchanged; nothing has been submitted.
 
-Homework 1's technical baseline and frozen patch are unchanged. Confirmed identity **Zhuoxi Zeng, 2501213387** applies to both assignments. The reports include the documented coordination contribution. See the [submission guide](../SUBMISSION.md). Nothing has been submitted. Reproduction requires authorized course-server access; personal VPN/keyring configuration is not included in the submission packages.
+Homework 1's technical baseline and frozen patch are unchanged. The reports record **Zhuoxi Zeng (2501213387)** and **Steven Walxim (2501112130)** with their respective contributions. Steven's new NPU runs reproduce the HW1 prerequisite; his HW2 contribution currently covers offline verification of retained results. Third-member details remain unconfirmed. See the [submission guide](../SUBMISSION.md). Nothing has been submitted. Reproduction requires authorized course-server access; personal VPN/keyring configuration is not included in the submission packages.
 
 ## Current results
 

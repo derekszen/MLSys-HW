@@ -1,0 +1,67 @@
+{
+  "fresh_benchmark": {
+    "source": "benchmark/benchmark.log",
+    "sha256": "ba0b3515da49171beef2b61d001a6f6a3926dccc8789992db62a45d376567311",
+    "memory_lines": [
+      "[2026-11-06 05:12:47,448  ATTN TP RANK 0] - INFO - Allocated cache arena: device_bytes=213909504, host_bytes=0, logical_plan_bytes=213909504, prefix_granularity=128, num_lcm_blocks=16, device npu (arena.py:206)",
+      "| Torch allocated (total)         |       1.92 |",
+      "| Torch reserved (allocator pool) |       2.06 |"
+    ],
+    "torch_allocated_gib": 1.92,
+    "torch_reserved_gib": 2.06,
+    "cache_arena_bytes": 213909504,
+    "scope": "Startup observations, not peaks; allocator and arena figures overlap."
+  },
+  "historical_hbm": {
+    "source_prefix": "homework-1/results/",
+    "worker_pid": 2588245,
+    "frontend_pid": 2588138,
+    "snapshots": [
+      {
+        "file": "hbm-startup.txt",
+        "sha256": "07f569e262b9aae9859e73e0fa5a1c47c2869fc0fafd007f94c1d3582a11add0",
+        "matched_rows": [
+          "| 0       1                 | 2588138       | python                   | 112                     |",
+          "| 0       1                 | 2588245       | tokenspeedsch            | 2299                    |"
+        ]
+      },
+      {
+        "file": "hbm-32-8.txt",
+        "sha256": "2fb987c0eab8ddf1af4f9c96d2eb3807e0adae039d1c3750e45fc105a3f5b0a4",
+        "matched_rows": [
+          "| 0       1                 | 2588138       | python                   | 112                     |",
+          "| 0       1                 | 2588245       | tokenspeedsch            | 2525                    |"
+        ]
+      },
+      {
+        "file": "hbm-32-16.txt",
+        "sha256": "2cc8174cad4d0075102c65a125f9fb5a3c34d2e88f6613c5e6fc13c8b260118f",
+        "matched_rows": [
+          "| 0       1                 | 2588138       | python                   | 112                     |",
+          "| 0       1                 | 2588245       | tokenspeedsch            | 2525                    |"
+        ]
+      },
+      {
+        "file": "hbm-256-8.txt",
+        "sha256": "5c431e6fd31674da86e311d6018712673aa9a56148e99c9a533f108c3276834a",
+        "matched_rows": [
+          "| 0       1                 | 2588138       | python                   | 112                     |",
+          "| 0       1                 | 2588245       | tokenspeedsch            | 2525                    |"
+        ]
+      },
+      {
+        "file": "hbm-256-16.txt",
+        "sha256": "dd91729a770b6f522e35bc6291bffc4155dc69ff5d2007e8dd5c771486f7f419",
+        "matched_rows": [
+          "| 0       1                 | 2588138       | python                   | 112                     |",
+          "| 0       1                 | 2588245       | tokenspeedsch            | 2525                    |"
+        ]
+      }
+    ]
+  },
+  "historical_profile": {
+    "source": "homework-1/results/profile-summary.json",
+    "sha256": "c03699e78a92323beb64167c7c5065522c1706f959bd34868f40e3a3ea9ac1b5",
+    "scope": "Group historical CPU-only profile; not a new Steven capture."
+  }
+}

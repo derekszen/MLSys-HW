@@ -1,0 +1,8 @@
+{
+  "started": "2026-11-06T05:09:56.448330+00:00",
+  "state": "finished",
+  "physical_chip": 1,
+  "timeout_seconds": 600,
+  "exit_code": 0,
+  "finished": "2026-11-06T05:11:33.891122+00:00"
+}

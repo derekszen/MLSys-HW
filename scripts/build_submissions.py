@@ -28,6 +28,10 @@ EXCLUDED = {
     "homework-1/ISSUES.md", "homework-1/docs/vpn-access.md", "homework-2/ISSUES.md",
 }
 SUFFIXES = {".md", ".py", ".json", ".txt", ".gz", ".patch"}
+REBUILD_COMMANDS = {
+    f"homework-1/rebuild/results/2026-11-06/{run}/command.sh"
+    for run in ("operator-tests", "engine-validation", "benchmark")
+}
 
 
 def sha256(data):
@@ -87,7 +91,8 @@ def selected_files(homework):
             continue
         safe_name(name)
         path = ROOT / name
-        if (path.is_symlink() or not path.is_file() or path.suffix not in SUFFIXES
+        if (path.is_symlink() or not path.is_file()
+                or (path.suffix not in SUFFIXES and name not in REBUILD_COMMANDS)
                 or "models" in path.relative_to(ROOT).parts
                 or path.name.startswith(".env")
                 or re.search(r"credential|password|secret|campus.auth", path.name, re.I)):

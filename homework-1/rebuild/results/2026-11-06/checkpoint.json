@@ -1,0 +1,49 @@
+{
+  "scope": "HW1 rebuild checkpoint, not complete TokenSpeed inference",
+  "account": "u2501112130",
+  "base_commit": "52bdb9763bb2da3d61336398072671885cc0a33e",
+  "reference_comparison": [
+    {
+      "case": "smoke",
+      "input_tokens": 5,
+      "generated_tokens": 16,
+      "tokens_match": true,
+      "selected_logprob_max_abs_difference": 0.0
+    },
+    {
+      "case": "length_32",
+      "input_tokens": 32,
+      "generated_tokens": 16,
+      "tokens_match": true,
+      "selected_logprob_max_abs_difference": 0.0
+    },
+    {
+      "case": "length_256",
+      "input_tokens": 256,
+      "generated_tokens": 16,
+      "tokens_match": true,
+      "selected_logprob_max_abs_difference": 0.0
+    }
+  ],
+  "clean_upstream_smoke": {
+    "exit_code": 1,
+    "error": "RuntimeError: Tried to instantiate dummy base class Stream",
+    "location": "python/tokenspeed/runtime/models/qwen3_5.py:1044"
+  },
+  "initialization_regression": {
+    "before_fix": "1 failed with the CUDA Stream error",
+    "after_fix": "1 passed",
+    "test_name": "test_qwen35_model_can_initialize_without_cuda",
+    "note": "An earlier test-file import typo caused a collection error; corrected before the actual before/after regression runs."
+  },
+  "operator_integration": "Frozen group HW1 patch integrated except qwen3_5.py, whose stream guard was reconstructed separately",
+  "operator_validation": "Not started: first launch blocked by automatic review timeout, retry failed before SSH connection",
+  "next": "Restore VPN connectivity, run operator tests, engine validation and benchmark",
+  "patch_files": {
+    "python/tokenspeed/runtime/models/qwen3_5.py": "576a7d7134160bbba915aededffd6ae5491818a5a340e05006e601fd2ec84981",
+    "test/runtime/test_qwen35_npu_initialization.py": "20e07cc400662405004f308803e59a088f87e90fb0d84b79fd8f6f59d4526449",
+    "docs/qwen35-device-initialization.md": "78c07e9902acd909818f8ca6013d523e67f96d51527727ae59893aeaa0b5c2ca"
+  },
+  "patch_sha256": "bdf4555d731f7614fb399334ee28931c67422c31f95ad067d73dde60da926f45",
+  "reference_sha256": "44ffa783acaa7989d0421fc63ebb19fd6b0892560ec20505794d1db6aebf06b9"
+}
