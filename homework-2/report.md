@@ -123,7 +123,7 @@ FP16 路径将 conv history 改为 activation dtype，并增加显式 FP16 KV �
 
 [HW2 patch](patches/hccl-torch29.patch) 包含 HCCL API、NPU profiling、FP16 cache plumbing及显式FP32最终投影，共 **15 files /89,738bytes**；[manifest](patches/manifest.json) SHA256为 `76071724b56e1f7922dd3fd9a4c2c5b359f3422252ac10c74daa5e5d0f2350f6`。[验证](patches/patch-verification.json) 在固定base+frozen HW1+HW2上重建 **2972 files byte/mode-exact**，三个原有可执行源文件均保留100755，HW1 patch不变。历史3/6/11文件版本均归档。
 
-[README](README.md) 给出服务器启动和顺序应用patch；[最新索引](docs/final-validation.md) 与 [4B诊断](docs/4B-discrepancy.md#5-reproduce-and-test) 给出离线复算命令。当前本地suite **178 passed**，[日志](results/local-tests-head-fix.txt)；新LM-head40项与cache27项共 **67 passed**，[日志](results/lm-head-precision-tests.txt)；原logits-processor suite **50 passed/1 skipped**，[日志](results/head-fix-native-regression-run.txt)。既有真实NPU profiler tests为10 passed，profile兼容子集29 passed/1 deselected；不声称完整upstream suite通过。
+[README](README.md) 给出服务器启动和顺序应用patch；[最新索引](docs/final-validation.md) 与 [4B诊断](docs/4B-discrepancy.md#5-reproduce-and-test) 给出离线复算命令。最终投影修复批次的历史本地suite **178 passed**，[日志](results/local-tests-head-fix.txt)；该批次LM-head40项与cache27项共 **67 passed**，[日志](results/lm-head-precision-tests.txt)；原logits-processor suite **50 passed/1 skipped**，[日志](results/head-fix-native-regression-run.txt)。既有真实NPU profiler tests为10 passed，profile兼容子集29 passed/1 deselected；不声称完整upstream suite通过。包含 Steven 后续工具的当前本地测试范围见第 8 节。
 
 **原始作业要求的对应关系：** 任务1（四模型双 chip 适配）见第2–3节；任务2（并行正确性）见第3节；任务3（通信路径及耗时）见第2、6节；任务4（性能/HBM 与通信策略对比）见第4–6节。4B 修复已经完成，详细诊断仅为可追溯附件，不是未解决事项。
 
