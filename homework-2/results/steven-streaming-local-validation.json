@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-09",
+  "base_commit": "edeb1c5",
+  "contribution": "HW2 per-request streaming latency measurement and event replay verification",
+  "validation_kind": "local synthetic tests; no NPU run",
+  "focused_new_tests": 25,
+  "full_hw2_tests": 221,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover -s homework-2/tests -v",
+  "test_log_sha256": "7231c069879bd4484bf0aafc85b79b1f6c191b4d16957c64d0c76d542e0304da",
+  "files_sha256": {
+    "homework-2/scripts/run_model.py": "9d813ab4350f7c22bbcf0191b22a46b76b8e8c2cf704dbe8af860c5a25f3f912",
+    "homework-2/scripts/summarize_streaming.py": "91870b790be4a87baaa64a85d9f4908dca7d0728c8d1872e2d32fd73b5b4b547",
+    "homework-2/tests/test_streaming_metrics.py": "7a96ee137e629a67aca0e90e5dad18500f67f3a790a6b5b27d6c724b12dc0b0d"
+  },
+  "hardware_validation": "pending_school_VPN_and_server_access",
+  "prior_results": "unchanged; no new TP2 performance claim"
+}
