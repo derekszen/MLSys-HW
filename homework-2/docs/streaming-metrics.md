@@ -13,10 +13,11 @@ first token or the subsequent delivery rate. The new `--mode streaming` measures
 these separately at concurrency 1 or 2, for either TP1 or TP2. This directly
 supports the assignment's comparison of latency across TP and concurrency.
 
-**Local implementation and synthetic tests are complete; real Ascend streaming
-validation is pending.** Existing performance tables remain measurements of the
+**Local implementation, synthetic tests and real Ascend TP1 streaming validation
+are complete. New TP2 streaming validation is pending a free same-card pair.** Existing performance tables remain measurements of the
 old non-streaming mode. No new acceleration or communication-cost result is
-claimed. See [local validation](../results/steven-streaming-local-validation.json).
+claimed. See [local validation](../results/steven-streaming-local-validation.json) and
+[hardware verification](../results/steven-streaming-20261109/hardware-verification.json).
 
 ## Design and metrics
 
@@ -78,7 +79,7 @@ PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover \
   -s homework-2/tests -v
 ```
 
-## Hardware experiment once access is available
+## TP2 follow-up once a free same-card pair is available
 
 Use the existing [server setup and occupancy checks](../README.md#server-reproduction-templates).
 The runtime must include the verified HW2 adaptation; do not overwrite Steven's
@@ -108,6 +109,33 @@ timeout --signal=TERM --kill-after=20s 600s "$PY" homework-2/scripts/run_model.p
   --result "$OUT/result.json" --output "$OUT/streaming-summary.json"
 ```
 
-Until that experiment succeeds, the contribution claim is implemented/tested
-instrumentation, not new NPU performance evidence. The third member's identity
+TP1 hardware validation now covers 18 measured streaming requests plus two smoke
+requests, with exact reference IDs; nine fresh correctness requests pass the
+selected-logprob tolerance. TP2 remains untested for this new streaming mode.
+The new contribution is implemented instrumentation with real TP1 validation,
+not a new TP2 speedup or communication measurement. The third member's identity
 remains for the group to complete; Steven confirmed there are three members.
+
+## Recheck the recorded hardware evidence locally
+
+All five jobs finished with exit code 0 and released chip 1 and engine port 31891.
+Server-side synthetic tests also passed all 25 cases. The fresh runtime source
+fingerprints match the deployed 2,972-file HW2 source. Code and model configuration
+match between each correctness/streaming pair, except the intentional streaming
+interval/logprob controls. Raw output events, job status and lossless compressed
+logs are retained with checksums.
+
+From the repository root, using fresh output paths:
+
+```bash
+.venv/bin/python homework-2/results/steven-streaming-20261109/verify_hardware.py \
+  --output /tmp/hw2-streaming-hardware-recheck.json
+.venv/bin/python homework-2/scripts/summarize_streaming.py \
+  --result homework-2/results/steven-streaming-20261109/tp1-c2-streaming/result.json \
+  --output /tmp/hw2-streaming-c2-recheck.json
+```
+
+The hardware checker needs the same adapted source tree to reproduce source
+fingerprints. Its reference is Steven's retained November 6 Transformers run;
+no fresh Transformers run or full-logit certification is claimed. The three
+repetitions are descriptive shared-server measurements, not confidence intervals.

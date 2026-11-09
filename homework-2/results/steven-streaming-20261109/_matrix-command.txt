@@ -1,0 +1,21 @@
+set -e
+source /usr/local/Ascend/cann-9.0.0/set_env.sh
+cd /home/u2501112130/MLSys-HW/hw2-streaming-20261109
+export PYTHONPATH="$PWD/homework-1/tokenspeed/python:$PWD/homework-1/tokenspeed/tokenspeed-kernel/python:$PWD/homework-1/tokenspeed/tokenspeed-kernel-npu/python"
+export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 HCCL_NPU_SOCKET_PORT_RANGE=41100-41131
+PY=/home/u2501112130/MLSys-HW/.venv/bin/python
+for spec in 'tp1-c1-correctness correctness 1 1' 'tp1-c1-streaming streaming 1 3' 'tp1-c2-correctness correctness 2 1' 'tp1-c2-streaming streaming 2 3'; do
+  read -r name mode concurrency repeats <<< "$spec"
+  "$PY" supervise_hw2.py "$name" "$mode" "$concurrency" "$repeats"
+  "$PY" - "$name" <<'CHECK'
+import json,sys
+from pathlib import Path
+s=json.loads((Path('runs')/(sys.argv[1]+'-status.json')).read_text())
+assert s['state']=='finished' and s['exit_code']==0,s
+print(sys.argv[1], 'completed', flush=True)
+CHECK
+  if [ "$mode" = streaming ]; then
+    "$PY" homework-2/scripts/summarize_streaming.py --result "runs/$name/result.json" --output "runs/$name/streaming-summary.json"
+  fi
+done
+printf 'completed\n' > runs/tp1-matrix-completed.txt

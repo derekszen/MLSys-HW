@@ -3,7 +3,7 @@
 | 姓名 | 学号 | 主要贡献 |
 | --- | --- | --- |
 | Zhuoxi Zeng | 2501213387 | 确认作业需求与实验目标，协调实验资源及账户访问，提出正确性回归、差异修复与提交材料整理要求。 |
-| Steven Walxim | 2501112130 | 新增 HW2 流式延迟测量模式及离线复核器：按请求索引处理并发交错的 token 数据，记录原始到达事件，计算可观测的 TTFT/TPOT，识别首包合并导致的不可测情况，并校验输出一致性及测量完整性；新增 25 项本地测试，全 HW2 suite 221 项通过。该增量已完成本地实现与合成验证，真实 Ascend 流式实验待运行。此前完成 HW1 离线证据工具、macOS 测试路径修复、已有 HW2 结果复核及本人账户下 HW1 单 chip 前置复现；不将小组已有 TP2 适配和硬件结果归为本人独立完成。 |
+| Steven Walxim | 2501112130 | 新增 HW2 流式延迟测量模式及离线复核器：按请求索引处理并发交错的 token 数据，记录原始到达事件，计算可观测的 TTFT/TPOT，识别首包合并导致的不可测情况，并校验输出一致性及测量完整性；新增 25 项本地测试，全 HW2 suite 221 项通过。该增量已完成本地验证及本人账户下真实 Ascend TP1 实测：两档输入×两档并发×三次重复，共 18 个测量请求及 2 个 smoke 请求通过；TP2 新测量待同卡空闲双 chip。此前完成 HW1 离线证据工具、macOS 测试路径修复、已有 HW2 结果复核及本人账户下 HW1 单 chip 前置复现；不将小组已有 TP2 适配和硬件结果归为本人独立完成。 |
 | 成员 3（姓名待确认） | 待确认 | 待确认 |
 
 Steven 的贡献证据：[新增流式测量实现、测试与实验方法](docs/streaming-metrics.md)、[离线复核工具与方法](docs/offline-reproduction.md)、[2026 年 11 月 6 日单 chip 复现记录](../homework-1/rebuild/README.md)、[独立 HW1 报告](../homework-1/rebuild/report.md)。1,058 项联合测试包含小组已有的 1,057 项参数化用例及新增的 1 项初始化回归，不代表本人新编写了全部测试。
@@ -129,10 +129,25 @@ FP16 路径将 conv history 改为 activation dtype，并增加显式 FP16 KV �
 
 结果保留有限输入、共享服务器、短 profile 与 HBM 非峰值等边界。对应源码、原始结果与复现脚本随附件交付。
 
-## 8. Steven 新增的流式测量工具（本地完成，硬件验证待进行）
+## 8. Steven 新增的流式测量工具与 TP1 硬件验证
 
 既有第 4 节的 batch wall latency 无法区分首 token 等待与后续生成速度。新增 `--mode streaming` 保留每个请求的原始 token 到达事件，支持 TP1/TP2 和并发 1/2；按请求索引及 ID 解复用交错的数据，逐项校验 token 数、终止状态、无缓存条件和 warmup 输出一致性。离线复核器重新计算指标，拒绝缺失样本、被改动的摘要和旧的非流式结果。
 
 TTFT 仅在首个非空 chunk 含一个 token 时提供；若首包已合并多个 token，则记为不可测，不以首包时间冒充精确 TTFT。TPOT 使用 `(末 token 到达时间 − 首 token 到达时间)/(N−1)`；空的结束帧不改变末 token 时间。各条件的指标中位数要求全部请求均可观测，否则只报告覆盖数量。这些是包含调度、IPC 和观测开销的客户端指标，不等同于纯 prefill/decode 或通信耗时。
 
-新增 25 项合成测试通过，包括 CLI 到结果文件的完整模拟路径；与已有 196 项一起构成当前 221 项本地通过测试。详见[实现与运行方法](docs/streaming-metrics.md)和[本地验证记录](results/steven-streaming-local-validation.json)。这些测试不需要 NPU，也不证明硬件性能；旧实验表和 178 项历史测试记录保持原始时间及范围。后续需在获准设备上以相同权重、精度和输入运行新流式矩阵，才能报告新增硬件结果。
+新增 25 项合成测试通过，包括 CLI 到结果文件的完整模拟路径；与已有 196 项一起构成当前 221 项本地通过测试。详见[实现与运行方法](docs/streaming-metrics.md)和[本地验证记录](results/steven-streaming-local-validation.json)。这些合成测试不需要 NPU；真实硬件证据单独列于下方。旧实验表和 178 项历史测试记录保持原始时间及范围。
+
+### 2026-11-09 实机结果（TP1，physical chip 1）
+
+使用独立 HW2 runtime、Qwen3.5-0.8B/BF16/FP32 recurrent state、无 prefix reuse、每请求 16 个输出 token，在本人账户依次完成两输入长度×两并发×三次重复。18 个正式测量请求和另行保留的 2 个 smoke 请求全部通过事件重算、warmup 一致性及已保存 Transformers 参考的输出 ID 核对。另有 9 个新 correctness 请求通过精确 ID 与 selected-logprob 容差检查，最大绝对误差 0.1255553961 ≤ 0.15。该数值判据仍是项目自定标准。
+
+| 输入 token 数 | 并发 | 测量请求数 | TTFT 中位数 ms | TPOT 中位数 ms | Batch wall 中位数 s |
+| --- | --- | --- | --- | --- | --- |
+| 32 | 1 | 3 | 251.028 | 68.057 | 1.274354 |
+| 256 | 1 | 3 | 1011.539 | 66.672 | 2.023089 |
+| 32 | 2 | 6 | 342.099 | 75.906 | 1.482909 |
+| 256 | 2 | 6 | 1461.425 | 107.698 | 3.143219 |
+
+并发 2 的 TTFT/TPOT 中位数汇总三个 batch 中的六个请求；同 batch 的请求并非独立实验重复。全部正式样本均收到单 token chunk，TTFT/TPOT 观测覆盖完整。单 worker HBM 快照为加载后 2299 MB，生成后并发 1 为 2525 MB、并发 2 为 2527 MB，按本次 scheduler PID 匹配，非峰值。
+
+[硬件复核及指标](results/steven-streaming-20261109/hardware-verification.json)、[HBM 归属](results/steven-streaming-20261109/hbm-summary.json)与[原始证据清单](results/steven-streaming-20261109/evidence-manifest.json)保留源码/输入指纹、状态、压缩日志和原始流事件。共享服务器的其他 chip 有既存任务；本次只使用当时无列出进程的 chip 1，逐次检查且结束后释放。所有同卡双 chip 对均至少有一个 chip 被其他任务占用，因此没有运行新 TP2 流式实验。以上支持新增测量工具的 TP1 实机验证及客户端延迟分析，不构成 TP2 加速或通信耗时结论；小组原有 TP2 证据保持独立。

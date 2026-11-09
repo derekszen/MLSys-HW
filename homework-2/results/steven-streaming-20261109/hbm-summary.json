@@ -1,0 +1,263 @@
+{
+  "inputs": [
+    {
+      "path": "/Users/stevenwalxim/Projects/MLSys-HW/homework-2/results/steven-streaming-20261109/tp1-c1-streaming/result.json",
+      "role": "run",
+      "sha256": "5d7ccb428fcd8d49d69b6adfa43747c5c8949079addb8a18d165f01776e16bb0"
+    },
+    {
+      "path": "/Users/stevenwalxim/Projects/MLSys-HW/homework-2/results/steven-streaming-20261109/tp1-c1-streaming/hbm-loaded.txt",
+      "role": "snapshot",
+      "sha256": "da15e37ff55ee86b45fdd5ffb326c30a3bc9c5bdf25ce225076b1953fdceaba8"
+    },
+    {
+      "path": "/Users/stevenwalxim/Projects/MLSys-HW/homework-2/results/steven-streaming-20261109/tp1-c1-streaming/hbm-length_32.txt",
+      "role": "snapshot",
+      "sha256": "be8e578fc5274ce9230ad4a39ee1dd21116e7fd0c74a2e712441868f9ae79633"
+    },
+    {
+      "path": "/Users/stevenwalxim/Projects/MLSys-HW/homework-2/results/steven-streaming-20261109/tp1-c1-streaming/hbm-length_256.txt",
+      "role": "snapshot",
+      "sha256": "5c9c07b103bd6173f18553e9b3a5370ddc0a53a043ef7ced5b384b9eceaf9e5d"
+    },
+    {
+      "path": "/Users/stevenwalxim/Projects/MLSys-HW/homework-2/results/steven-streaming-20261109/tp1-c2-streaming/result.json",
+      "role": "run",
+      "sha256": "f99d1c061d077973f2a99c206af8eb17f119e48cc1199da860b6569ffb0b1aba"
+    },
+    {
+      "path": "/Users/stevenwalxim/Projects/MLSys-HW/homework-2/results/steven-streaming-20261109/tp1-c2-streaming/hbm-loaded.txt",
+      "role": "snapshot",
+      "sha256": "4e90546fb5fab9dbeee2c4ce6c2ddb3893a6e40b9b953b1dce771eea453ae1e8"
+    },
+    {
+      "path": "/Users/stevenwalxim/Projects/MLSys-HW/homework-2/results/steven-streaming-20261109/tp1-c2-streaming/hbm-length_32.txt",
+      "role": "snapshot",
+      "sha256": "30ecfbebf979a9bde1399cc60d97c87c79ee681b51ff5de97b933989124e75d1"
+    },
+    {
+      "path": "/Users/stevenwalxim/Projects/MLSys-HW/homework-2/results/steven-streaming-20261109/tp1-c2-streaming/hbm-length_256.txt",
+      "role": "snapshot",
+      "sha256": "6c9b52c2c4029119938074977c69970e0810221c1d0dc11e82ff90fd76434398"
+    }
+  ],
+  "limitations": [
+    "Loaded, post-length_32 and post-length_256 snapshots; not peaks.",
+    "Missing scheduler PIDs mean unknown complete memory (null), never a pass or zero.",
+    "Cross-chip child allocations retained; no inferred rank mapping or whole-device totals."
+  ],
+  "rows": [
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        3105204,
+        3105205
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        3105205
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 2299
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1794223276.2703662,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 3105205,
+          "process_memory_mb": 2299,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/Users/stevenwalxim/Projects/MLSys-HW/homework-2/results/steven-streaming-20261109/tp1-c1-streaming",
+      "snapshot": "hbm-loaded.txt",
+      "total_owned_child_process_memory_mb": 2299,
+      "unmatched_child_pids": [
+        3105204
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        3105204,
+        3105205
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        3105205
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 2525
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1794223276.2703662,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 3105205,
+          "process_memory_mb": 2525,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/Users/stevenwalxim/Projects/MLSys-HW/homework-2/results/steven-streaming-20261109/tp1-c1-streaming",
+      "snapshot": "hbm-length_32.txt",
+      "total_owned_child_process_memory_mb": 2525,
+      "unmatched_child_pids": [
+        3105204
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        3105204,
+        3105205
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        3105205
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 2525
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1794223276.2703662,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 3105205,
+          "process_memory_mb": 2525,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/Users/stevenwalxim/Projects/MLSys-HW/homework-2/results/steven-streaming-20261109/tp1-c1-streaming",
+      "snapshot": "hbm-length_256.txt",
+      "total_owned_child_process_memory_mb": 2525,
+      "unmatched_child_pids": [
+        3105204
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        3105749,
+        3105750
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        3105750
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 2299
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1794223380.6733336,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 3105750,
+          "process_memory_mb": 2299,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/Users/stevenwalxim/Projects/MLSys-HW/homework-2/results/steven-streaming-20261109/tp1-c2-streaming",
+      "snapshot": "hbm-loaded.txt",
+      "total_owned_child_process_memory_mb": 2299,
+      "unmatched_child_pids": [
+        3105749
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        3105749,
+        3105750
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        3105750
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 2527
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1794223380.6733336,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 3105750,
+          "process_memory_mb": 2527,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/Users/stevenwalxim/Projects/MLSys-HW/homework-2/results/steven-streaming-20261109/tp1-c2-streaming",
+      "snapshot": "hbm-length_32.txt",
+      "total_owned_child_process_memory_mb": 2527,
+      "unmatched_child_pids": [
+        3105749
+      ]
+    },
+    {
+      "all_scheduler_pids_matched": true,
+      "child_pids": [
+        3105749,
+        3105750
+      ],
+      "coverage": "all scheduler child PIDs matched",
+      "matched_child_pids": [
+        3105750
+      ],
+      "missing_scheduler_child_pids": [],
+      "per_chip": [
+        {
+          "card": 0,
+          "chip": 1,
+          "matched_child_process_memory_mb": 2527
+        }
+      ],
+      "process_snapshot_captured_at_unix_seconds": 1794223380.6733336,
+      "rows": [
+        {
+          "card": 0,
+          "chip": 1,
+          "pid": 3105750,
+          "process_memory_mb": 2527,
+          "process_name": "tokenspeedsch"
+        }
+      ],
+      "run": "/Users/stevenwalxim/Projects/MLSys-HW/homework-2/results/steven-streaming-20261109/tp1-c2-streaming",
+      "snapshot": "hbm-length_256.txt",
+      "total_owned_child_process_memory_mb": 2527,
+      "unmatched_child_pids": [
+        3105749
+      ]
+    }
+  ],
+  "scope": "Only captured child PIDs, using summarize_large_run.owned_hbm; no parent or unrelated memory.",
+  "units": "MB as labeled by npu-smi; no implicit GiB conversion"
+}
