@@ -139,3 +139,16 @@ The hardware checker needs the same adapted source tree to reproduce source
 fingerprints. Its reference is Steven's retained November 6 Transformers run;
 no fresh Transformers run or full-logit certification is claimed. The three
 repetitions are descriptive shared-server measurements, not confidence intervals.
+
+## Occupancy-check correction after the completed runs
+
+A final availability cross-check exposed a separator bug in the temporary job
+supervisor's regex. It returned an empty list for the observed npu-smi table.
+No TP2 run followed that result. The corrected parser now rejects unknown or
+malformed tables; five new tests cover the real captured format and error cases.
+All five pre-run inventories and the final snapshot were reparsed: chip 1 had
+no listed process, and every same-card pair had an occupied chip. The original
+supervisor is preserved as historical evidence and marked not for reuse; the
+active server copy uses the corrected parser. See the
+[occupancy audit](../results/steven-streaming-20261109/occupancy-validation.json).
+The full local suite now passes 226 tests; streaming measurement code is unchanged.
