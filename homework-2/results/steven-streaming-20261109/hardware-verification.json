@@ -1,0 +1,197 @@
+{
+  "date": "2026-11-09",
+  "scope": "New real TP1 streaming validation on physical chip1; TP2 pending free same-card pair",
+  "passed": true,
+  "correctness_requests": 9,
+  "streamed_requests_including_smoke": 20,
+  "measured_streaming_requests": 18,
+  "reference": "homework-1/rebuild/results/2026-11-06/reference.json",
+  "reference_sha256": "44ffa783acaa7989d0421fc63ebb19fd6b0892560ec20505794d1db6aebf06b9",
+  "max_selected_logprob_error": 0.1255553960800171,
+  "source_trees_match_local_deployed_runtime": true,
+  "runtime_and_model_config_matched_within_each_correctness_streaming_pair": true,
+  "summary": [
+    {
+      "run": "tp1-c1-stream-smoke",
+      "concurrency": 1,
+      "input_tokens": 32,
+      "repeats": 1,
+      "metrics": {
+        "ttft_ms": {
+          "observed_requests": 1,
+          "total_requests": 1,
+          "median": 240.70525960996747
+        },
+        "tpot_ms": {
+          "observed_requests": 1,
+          "total_requests": 1,
+          "median": 64.63418801625569
+        },
+        "first_chunk_ms": {
+          "observed_requests": 1,
+          "total_requests": 1,
+          "median": 240.70525960996747
+        },
+        "last_token_ms": {
+          "observed_requests": 1,
+          "total_requests": 1,
+          "median": 1210.218079853803
+        }
+      },
+      "batch_seconds_median": 1.2102811699733138
+    },
+    {
+      "run": "tp1-c1-stream-smoke",
+      "concurrency": 1,
+      "input_tokens": 256,
+      "repeats": 1,
+      "metrics": {
+        "ttft_ms": {
+          "observed_requests": 1,
+          "total_requests": 1,
+          "median": 1029.605729971081
+        },
+        "tpot_ms": {
+          "observed_requests": 1,
+          "total_requests": 1,
+          "median": 67.01573934406042
+        },
+        "first_chunk_ms": {
+          "observed_requests": 1,
+          "total_requests": 1,
+          "median": 1029.605729971081
+        },
+        "last_token_ms": {
+          "observed_requests": 1,
+          "total_requests": 1,
+          "median": 2034.8418201319873
+        }
+      },
+      "batch_seconds_median": 2.034876469988376
+    },
+    {
+      "run": "tp1-c1-streaming",
+      "concurrency": 1,
+      "input_tokens": 32,
+      "repeats": 3,
+      "metrics": {
+        "ttft_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 251.02792028337717
+        },
+        "tpot_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 68.05656468495727
+        },
+        "first_chunk_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 251.02792028337717
+        },
+        "last_token_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 1274.2883302271366
+        }
+      },
+      "batch_seconds_median": 1.274354049935937
+    },
+    {
+      "run": "tp1-c1-streaming",
+      "concurrency": 1,
+      "input_tokens": 256,
+      "repeats": 3,
+      "metrics": {
+        "ttft_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 1011.538680177182
+        },
+        "tpot_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 66.67152267570297
+        },
+        "first_chunk_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 1011.538680177182
+        },
+        "last_token_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 2023.0626901611686
+        }
+      },
+      "batch_seconds_median": 2.0230888701044023
+    },
+    {
+      "run": "tp1-c2-streaming",
+      "concurrency": 2,
+      "input_tokens": 32,
+      "repeats": 3,
+      "metrics": {
+        "ttft_ms": {
+          "observed_requests": 6,
+          "total_requests": 6,
+          "median": 342.09930966608226
+        },
+        "tpot_ms": {
+          "observed_requests": 6,
+          "total_requests": 6,
+          "median": 75.9060213342309
+        },
+        "first_chunk_ms": {
+          "observed_requests": 6,
+          "total_requests": 6,
+          "median": 342.09930966608226
+        },
+        "last_token_ms": {
+          "observed_requests": 6,
+          "total_requests": 6,
+          "median": 1482.8794999048114
+        }
+      },
+      "batch_seconds_median": 1.4829090498387814
+    },
+    {
+      "run": "tp1-c2-streaming",
+      "concurrency": 2,
+      "input_tokens": 256,
+      "repeats": 3,
+      "metrics": {
+        "ttft_ms": {
+          "observed_requests": 6,
+          "total_requests": 6,
+          "median": 1461.4247053395957
+        },
+        "tpot_ms": {
+          "observed_requests": 6,
+          "total_requests": 6,
+          "median": 107.69804366864264
+        },
+        "first_chunk_ms": {
+          "observed_requests": 6,
+          "total_requests": 6,
+          "median": 1461.4247053395957
+        },
+        "last_token_ms": {
+          "observed_requests": 6,
+          "total_requests": 6,
+          "median": 3143.1885252241045
+        }
+      },
+      "batch_seconds_median": 3.143218600191176
+    }
+  ],
+  "inputs_sha256": {
+    "homework-2/results/steven-streaming-20261109/tp1-c1-correctness/result.json": "33ce316926472bfe5b310cc00688f567c0bd29e47c3e65a1a2ea3b925bfc4c6a",
+    "homework-2/results/steven-streaming-20261109/tp1-c1-stream-smoke/result.json": "8c0e1fa0fc07214d53e7157a78a8e7bd5d4c696a7e9c8ab6827653b65c85058c",
+    "homework-2/results/steven-streaming-20261109/tp1-c1-streaming/result.json": "5d7ccb428fcd8d49d69b6adfa43747c5c8949079addb8a18d165f01776e16bb0",
+    "homework-2/results/steven-streaming-20261109/tp1-c2-correctness/result.json": "175e46dc1c895766e05edccaa775c3d4a07f8b67989a2cce4d9ee713a7d85d54",
+    "homework-2/results/steven-streaming-20261109/tp1-c2-streaming/result.json": "f99d1c061d077973f2a99c206af8eb17f119e48cc1199da860b6569ffb0b1aba"
+  },
+  "verifier_sha256": "3771add2a43be64712bd90d59c2d5eb2f5c7150da7c317e29950276c7e28b221"
+}

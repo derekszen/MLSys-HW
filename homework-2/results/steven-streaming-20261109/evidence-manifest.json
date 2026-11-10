@@ -1,0 +1,222 @@
+{
+  "files": {
+    "local-streaming-tests.txt": {
+      "sha256": "117ba40b00adfcab3b2e68d59d383f05c71370097dbd6f3220e06fe008b2a918",
+      "remote_relative_path": "local-streaming-tests.txt"
+    },
+    "tp1-c1-streaming-inventory.txt": {
+      "sha256": "b2055b5848e8dea536cd7eb3e8ef43467cab6465bfab5cc7739954cf2aa0d374",
+      "remote_relative_path": "tp1-c1-streaming-inventory.txt"
+    },
+    "tp1-c2-correctness-inventory.txt": {
+      "sha256": "976d682c8167dd554759fec164516160d760949b5db59b39bd74605192500421",
+      "remote_relative_path": "tp1-c2-correctness-inventory.txt"
+    },
+    "tp1-c1-streaming-status.json": {
+      "sha256": "bd2938a04be1e839ef2b8b4dc6545424b730de6a533c9dc8b2442e9a068fa3d9",
+      "remote_relative_path": "tp1-c1-streaming-status.json"
+    },
+    "tp1-c2-correctness-status.json": {
+      "sha256": "8f42ab66fc4c76f6af6128ae643b0d2ff7e5499fd599024cf63153d724c90217",
+      "remote_relative_path": "tp1-c2-correctness-status.json"
+    },
+    "npu-after.txt": {
+      "sha256": "d7450d971aeeea09c49cb198aebf63aaf119208682db302b055e51eb17f26634",
+      "remote_relative_path": "npu-after.txt"
+    },
+    "tp1-c1-correctness-status.json": {
+      "sha256": "f9b230e215f8d6cbc62adfdd62449eb0891a38b45491070c4fefc0b6fa76f018",
+      "remote_relative_path": "tp1-c1-correctness-status.json"
+    },
+    "tp1-c1-stream-smoke-status.json": {
+      "sha256": "7afcf2d171de3190ef20bca00729bfa3a4124deff0bd522803c543883d3a6802",
+      "remote_relative_path": "tp1-c1-stream-smoke-status.json"
+    },
+    "tp1-matrix-completed.txt": {
+      "sha256": "d3be030801b90ea8057d3997d9845c7f850cc7b784450645d5ec2811cc927d7a",
+      "remote_relative_path": "tp1-matrix-completed.txt"
+    },
+    "tp1-c2-streaming-inventory.txt": {
+      "sha256": "6e6e03da839d830a8125901e0fc51b5171c59027bfebef4395359e5bdf960997",
+      "remote_relative_path": "tp1-c2-streaming-inventory.txt"
+    },
+    "_matrix-command.txt": {
+      "sha256": "b92801f5328ab0f5d84c6273f90b03fe874fcb31aad2c1b6e160a28269fb3a31",
+      "remote_relative_path": "_matrix-command.sh"
+    },
+    "tp1-c1-stream-smoke-inventory.txt": {
+      "sha256": "cff06332285c8017fc656fa52628f1b61a39f2127346bbc70325e18237cb1ae6",
+      "remote_relative_path": "tp1-c1-stream-smoke-inventory.txt"
+    },
+    "tp1-c2-streaming-status.json": {
+      "sha256": "51dc233fca8439f70e5be1b9eb4fb98017c6a97133648cd21e1b21c99d4ddb31",
+      "remote_relative_path": "tp1-c2-streaming-status.json"
+    },
+    "tp1-c1-correctness-inventory.txt": {
+      "sha256": "664aacda8ae3f5d62a6d60f3278012f3c45ed8dde4923568cc3400d344fa8f35",
+      "remote_relative_path": "tp1-c1-correctness-inventory.txt"
+    },
+    "_job-supervisor.py": {
+      "sha256": "ebad83e344fe1f63ad56907007cc196d37be4f090f12da44a16a9c7efcfc3655",
+      "remote_relative_path": "_job-supervisor.py"
+    },
+    "tp1-c1-streaming/result.json": {
+      "sha256": "5d7ccb428fcd8d49d69b6adfa43747c5c8949079addb8a18d165f01776e16bb0",
+      "remote_relative_path": "tp1-c1-streaming/result.json"
+    },
+    "tp1-c1-streaming/hbm-length_32.txt": {
+      "sha256": "be8e578fc5274ce9230ad4a39ee1dd21116e7fd0c74a2e712441868f9ae79633",
+      "remote_relative_path": "tp1-c1-streaming/hbm-length_32.txt"
+    },
+    "tp1-c1-streaming/streaming-summary.json": {
+      "sha256": "c3e8dd74944905e57f435dbcbde4c3f4d9d0b54de3df3654421bca74eec930c1",
+      "remote_relative_path": "tp1-c1-streaming/streaming-summary.json"
+    },
+    "tp1-c1-streaming/hbm-length_256.txt": {
+      "sha256": "5c9c07b103bd6173f18553e9b3a5370ddc0a53a043ef7ced5b384b9eceaf9e5d",
+      "remote_relative_path": "tp1-c1-streaming/hbm-length_256.txt"
+    },
+    "tp1-c1-streaming/hbm-before.txt": {
+      "sha256": "6b3dd002320dc95150677e23cbb46b6a3c4ef5ac94b5599a513dd511ba71cd62",
+      "remote_relative_path": "tp1-c1-streaming/hbm-before.txt"
+    },
+    "tp1-c1-streaming/hbm-loaded.txt": {
+      "sha256": "da15e37ff55ee86b45fdd5ffb326c30a3bc9c5bdf25ce225076b1953fdceaba8",
+      "remote_relative_path": "tp1-c1-streaming/hbm-loaded.txt"
+    },
+    "tp1-c1-stream-smoke/result.json": {
+      "sha256": "8c0e1fa0fc07214d53e7157a78a8e7bd5d4c696a7e9c8ab6827653b65c85058c",
+      "remote_relative_path": "tp1-c1-stream-smoke/result.json"
+    },
+    "tp1-c1-stream-smoke/hbm-length_32.txt": {
+      "sha256": "f389e316825938f6f7819342ce33d8481d88b2078d350bb7fb9afed62708b066",
+      "remote_relative_path": "tp1-c1-stream-smoke/hbm-length_32.txt"
+    },
+    "tp1-c1-stream-smoke/streaming-summary.json": {
+      "sha256": "4d309d8ebb92fa8be5adfea9d5e143b31e6893e620459f4d642b372a30b439cc",
+      "remote_relative_path": "tp1-c1-stream-smoke/streaming-summary.json"
+    },
+    "tp1-c1-stream-smoke/hbm-length_256.txt": {
+      "sha256": "337695bc4868aafc3c708e011f70dd42b5ea45f40b8f346116f534819ccaa07a",
+      "remote_relative_path": "tp1-c1-stream-smoke/hbm-length_256.txt"
+    },
+    "tp1-c1-stream-smoke/hbm-before.txt": {
+      "sha256": "60949f23d6b9d1ebfd2cf752cd04b39d97e6c5bec2f63c99ec6bbe47d3bbda92",
+      "remote_relative_path": "tp1-c1-stream-smoke/hbm-before.txt"
+    },
+    "tp1-c1-stream-smoke/hbm-loaded.txt": {
+      "sha256": "56135a1ecb95a37d08f442695e037816dff93db2d340dcac85ade6dc3d81c81c",
+      "remote_relative_path": "tp1-c1-stream-smoke/hbm-loaded.txt"
+    },
+    "tp1-c1-correctness/result.json": {
+      "sha256": "33ce316926472bfe5b310cc00688f567c0bd29e47c3e65a1a2ea3b925bfc4c6a",
+      "remote_relative_path": "tp1-c1-correctness/result.json"
+    },
+    "tp1-c1-correctness/hbm-smoke.txt": {
+      "sha256": "363d6cb0000084351dcc620f2070c58d9f6987b01685112eb559e20e0ef569ab",
+      "remote_relative_path": "tp1-c1-correctness/hbm-smoke.txt"
+    },
+    "tp1-c1-correctness/hbm-length_32.txt": {
+      "sha256": "5c34a724a1fa1f44bf4cba0fa4a8530fe69027f6afa364163acb61ff9a8cec71",
+      "remote_relative_path": "tp1-c1-correctness/hbm-length_32.txt"
+    },
+    "tp1-c1-correctness/hbm-length_256.txt": {
+      "sha256": "97f95bfcf64a9d637ef998865df2967b96a3d2c6d0b1056d6a0ff954bfd4503b",
+      "remote_relative_path": "tp1-c1-correctness/hbm-length_256.txt"
+    },
+    "tp1-c1-correctness/hbm-before.txt": {
+      "sha256": "bad14271a8689dcb3ae420480441480800c808615ddce41d607954f4c4490e67",
+      "remote_relative_path": "tp1-c1-correctness/hbm-before.txt"
+    },
+    "tp1-c1-correctness/hbm-loaded.txt": {
+      "sha256": "35afc9c6bd18a745ab83c28dcc2abb3ecc5078435f4809e60cd08bbca2439446",
+      "remote_relative_path": "tp1-c1-correctness/hbm-loaded.txt"
+    },
+    "tp1-c2-correctness/result.json": {
+      "sha256": "175e46dc1c895766e05edccaa775c3d4a07f8b67989a2cce4d9ee713a7d85d54",
+      "remote_relative_path": "tp1-c2-correctness/result.json"
+    },
+    "tp1-c2-correctness/hbm-smoke.txt": {
+      "sha256": "0e4d540225a639763d6d5a987215f2fecc8ca49f9c81bf816529e7f693f4e27a",
+      "remote_relative_path": "tp1-c2-correctness/hbm-smoke.txt"
+    },
+    "tp1-c2-correctness/hbm-length_32.txt": {
+      "sha256": "515857f906465b7702ee31fd209bc731794b69271d07cc2c5bb18498a7016070",
+      "remote_relative_path": "tp1-c2-correctness/hbm-length_32.txt"
+    },
+    "tp1-c2-correctness/hbm-length_256.txt": {
+      "sha256": "3db63b885cd2bdf30b838d7365c583948ed42e95f0f551402045ed5377f03fe2",
+      "remote_relative_path": "tp1-c2-correctness/hbm-length_256.txt"
+    },
+    "tp1-c2-correctness/hbm-before.txt": {
+      "sha256": "fea4b2179410b3d7faa0287415cb41940eb7955d2984c849403bcba5c9fbd77a",
+      "remote_relative_path": "tp1-c2-correctness/hbm-before.txt"
+    },
+    "tp1-c2-correctness/hbm-loaded.txt": {
+      "sha256": "3b2b6d86188fffc9f0c901adace4a94cbf3dec57be1bfa171e3a7d2c18e0b7f4",
+      "remote_relative_path": "tp1-c2-correctness/hbm-loaded.txt"
+    },
+    "tp1-c2-streaming/result.json": {
+      "sha256": "f99d1c061d077973f2a99c206af8eb17f119e48cc1199da860b6569ffb0b1aba",
+      "remote_relative_path": "tp1-c2-streaming/result.json"
+    },
+    "tp1-c2-streaming/hbm-length_32.txt": {
+      "sha256": "30ecfbebf979a9bde1399cc60d97c87c79ee681b51ff5de97b933989124e75d1",
+      "remote_relative_path": "tp1-c2-streaming/hbm-length_32.txt"
+    },
+    "tp1-c2-streaming/streaming-summary.json": {
+      "sha256": "b80bffb8ccaf95821260d31a289e4b11b2558dac72c98cc92ccec6f8cddcbcca",
+      "remote_relative_path": "tp1-c2-streaming/streaming-summary.json"
+    },
+    "tp1-c2-streaming/hbm-length_256.txt": {
+      "sha256": "6c9b52c2c4029119938074977c69970e0810221c1d0dc11e82ff90fd76434398",
+      "remote_relative_path": "tp1-c2-streaming/hbm-length_256.txt"
+    },
+    "tp1-c2-streaming/hbm-before.txt": {
+      "sha256": "b8ce80b49e17bb6300db61bd34334bc1fa09de7889a5b7129c3d0eed2bd6d202",
+      "remote_relative_path": "tp1-c2-streaming/hbm-before.txt"
+    },
+    "tp1-c2-streaming/hbm-loaded.txt": {
+      "sha256": "4e90546fb5fab9dbeee2c4ce6c2ddb3893a6e40b9b953b1dce771eea453ae1e8",
+      "remote_relative_path": "tp1-c2-streaming/hbm-loaded.txt"
+    },
+    "tp1-c1-correctness.log.gz": {
+      "sha256": "f9b512d6a63ac94b3e71afae7cd0bb74a1b930effa7a5dba4ccd4f4228901b06",
+      "uncompressed_sha256": "4c2707177efa123583a8626ed5ada9c28f6a8922f4c786fb3108b945c390bb3d",
+      "remote_relative_path": "tp1-c1-correctness.log"
+    },
+    "tp1-c1-stream-smoke-supervisor.log.gz": {
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "remote_relative_path": "tp1-c1-stream-smoke-supervisor.log"
+    },
+    "tp1-c1-stream-smoke.log.gz": {
+      "sha256": "54ad54f160ed0696e597df3aaf3451f812f7826fa8f3c1ff7b20d303b0bbd676",
+      "uncompressed_sha256": "4b6141161287880d22ee2b0c48f4a16971bb32aa42a2cf6a0fde1a050d5c866f",
+      "remote_relative_path": "tp1-c1-stream-smoke.log"
+    },
+    "tp1-c1-streaming.log.gz": {
+      "sha256": "aaf7f34d0a8fa3f8d7b7b62ade05de442d99e5088a320f9e91d9fc1e3e7f13af",
+      "uncompressed_sha256": "6ebd7e4956da0b852f6a5e2a850ceec817da71c954de8761bb7487aaac2b1e5f",
+      "remote_relative_path": "tp1-c1-streaming.log"
+    },
+    "tp1-c2-correctness.log.gz": {
+      "sha256": "20e20fd5e1a30c761f7780fdf051a70731303ce2bdb0071014f295acf43854fb",
+      "uncompressed_sha256": "32687a8abde9894d964fc68c3dae7469fd1e4f637d14516f591812ba3aa02d24",
+      "remote_relative_path": "tp1-c2-correctness.log"
+    },
+    "tp1-c2-streaming.log.gz": {
+      "sha256": "ae480688f61863c25da510833623fe6a09b81c1bcad06de33d3e08b3d04105d6",
+      "uncompressed_sha256": "848574faae63e33fe007c0bfb98d7658e6100cce6e18e9b1f96f79dea40c652f",
+      "remote_relative_path": "tp1-c2-streaming.log"
+    },
+    "tp1-matrix-supervisor.log.gz": {
+      "sha256": "2973225c8b7e6503f04a4dd4e31eaa5a10e0415a7f01bf23f9faf33ad499e90a",
+      "uncompressed_sha256": "5432ff4ec992105d1753f508232490fc5b2dc8a9debbe117a9ed76ec55baf153",
+      "remote_relative_path": "tp1-matrix-supervisor.log"
+    }
+  },
+  "transfer_archive_sha256": "ebee59fa1b46da38ba8c9678b324df60e8c5c9b2593fc50ea0cbc56c458a08cd",
+  "deployment_manifest_sha256": "3bda4eade1c1f529b6f2e44511eeccd8011fbb9b01d0e5f991351c514e8dedf4",
+  "raw_log_storage": "Lossless deterministic gzip copies tracked here; original logs retained on the course server."
+}

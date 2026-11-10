@@ -1,5 +1,6 @@
 """Prepared HW2 TP=1/2 correctness/throughput runner; real NPU execution required."""
 import argparse
+import copy
 import hashlib
 from importlib import metadata
 import json
@@ -151,6 +152,123 @@ def validate_outputs(outputs, *, batch_size, new_tokens, input_tokens):
             raise ValueError("invalid generated token IDs")
 
 
+def summarize_stream_events(events, *, batch_size, new_tokens, input_tokens, batch_seconds):
+    """Recompute client-observed metrics from indexed token-delta arrivals.
+
+    A coalesced first chunk cannot establish TTFT. Empty terminal frames do not
+    move the last-token timestamp. Client timing includes scheduling and IPC;
+    it is not an isolated prefill/decode kernel or communication measurement.
+    """
+    def require(condition, message):
+        if not condition:
+            raise ValueError(message)
+
+    def seconds(value):
+        return type(value) in (int, float) and math.isfinite(value) and value >= 0
+
+    require(type(batch_size) is int and batch_size in (1, 2), "invalid batch size")
+    require(type(new_tokens) is int and new_tokens > 0, "invalid output count")
+    require(type(input_tokens) is int and input_tokens > 0, "invalid input count")
+    require(seconds(batch_seconds) and batch_seconds > 0, "invalid batch duration")
+    require(isinstance(events, list) and bool(events), "missing streaming events")
+    states = [{"output_ids": [], "arrivals": [], "finished": False, "id": None}
+              for _ in range(batch_size)]
+    previous = 0
+    try:
+        for event in events:
+            index, elapsed = event["index"], event["seconds"]
+            require(type(index) is int and 0 <= index < batch_size, "invalid request index")
+            require(seconds(elapsed) and previous <= elapsed <= batch_seconds,
+                    "invalid or nonmonotonic arrival time")
+            previous = elapsed
+            state = states[index]
+            require(not state["finished"], "event after request completion")
+            ids, meta = event["output_ids"], event["meta_info"]
+            require(isinstance(ids, list) and all(type(i) is int and i >= 0 for i in ids),
+                    "invalid token delta")
+            rid = meta["id"]
+            require(isinstance(rid, str) and bool(rid), "missing request identity")
+            require(state["id"] in (None, rid), "request identity changed")
+            require(all(other is state or other["id"] != rid for other in states),
+                    "request identity reused across indices")
+            state["id"] = rid
+            state["output_ids"].extend(ids)
+            count = len(state["output_ids"])
+            require(count <= new_tokens, "too many tokens or cumulative payload")
+            require(type(meta["completion_tokens"]) is int and meta["completion_tokens"] == count,
+                    "delta/metadata token count mismatch")
+            require(type(meta["prompt_tokens"]) is int and meta["prompt_tokens"] == input_tokens,
+                    "prompt count mismatch")
+            require(type(meta["cached_tokens"]) is int and meta["cached_tokens"] == 0,
+                    "prefix reuse in streaming benchmark")
+            if ids:
+                state["arrivals"].append({"tokens": count, "delta_tokens": len(ids),
+                                          "seconds": elapsed})
+            finish = meta["finish_reason"]
+            if finish is not None:
+                require(finish == {"type": "length", "length": new_tokens}
+                        and count == new_tokens, "request did not finish at requested length")
+                state["finished"] = True
+                state["completion_seconds"] = elapsed
+                state["meta_info"] = meta
+        outputs, requests = [], []
+        for index, state in enumerate(states):
+            require(state["finished"] and bool(state["arrivals"]), "truncated or missing request")
+            arrivals = state["arrivals"]
+            first, last = arrivals[0]["seconds"], arrivals[-1]["seconds"]
+            first_is_single = arrivals[0]["delta_tokens"] == 1
+            all_single = all(a["delta_tokens"] == 1 for a in arrivals)
+            requests.append({
+                "index": index, "arrivals": arrivals,
+                "first_chunk_ms": first * 1000,
+                "ttft_ms": first * 1000 if first_is_single else None,
+                "tpot_ms": (last - first) * 1000 / (new_tokens - 1)
+                if first_is_single and new_tokens > 1 else None,
+                "inter_token_ms": [(b["seconds"] - a["seconds"]) * 1000
+                                   for a, b in zip(arrivals, arrivals[1:])]
+                if all_single else None,
+                "last_token_ms": last * 1000,
+                "request_completion_ms": state["completion_seconds"] * 1000,
+                "coalesced_chunks": sum(a["delta_tokens"] > 1 for a in arrivals),
+                "ttft_unavailable_reason": None if first_is_single else "first_chunk_coalesced",
+            })
+            outputs.append({"output_ids": state["output_ids"], "meta_info": state["meta_info"]})
+        return {"outputs": outputs, "requests": requests}
+    except (KeyError, TypeError, IndexError, AttributeError) as exc:
+        raise ValueError(f"malformed streaming event: {exc}") from exc
+
+
+def measure_stream_batch(engine, *, batch, params, expected_outputs, clock=None):
+    """Time the public synchronous batch stream; retain replayable raw events."""
+    if clock is None:
+        clock = time.perf_counter
+    start = clock()
+    events = []
+    stream = engine.generate(input_ids=batch, sampling_params=params,
+                             return_logprob=False, stream=True)
+    try:
+        for chunk in stream:
+            elapsed = clock() - start
+            # Snapshot before advancing a producer that may reuse dictionaries.
+            events.append({"seconds": elapsed, "index": chunk["index"],
+                           "output_ids": list(chunk["output_ids"]),
+                           "meta_info": copy.deepcopy(chunk["meta_info"])})
+        duration = clock() - start
+    finally:
+        close = getattr(stream, "close", None)
+        if close is not None:
+            close()
+    summary = summarize_stream_events(events, batch_size=len(batch),
+                                      new_tokens=params["max_new_tokens"],
+                                      input_tokens=len(batch[0]), batch_seconds=duration)
+    if [o["output_ids"] for o in summary["outputs"]] != [o["output_ids"] for o in expected_outputs]:
+        raise ValueError("streamed token IDs disagree with nonstreaming warmup")
+    return {"batch_seconds": duration,
+            "aggregate_output_tokens_per_second": params["max_new_tokens"] * len(batch) / duration,
+            "outputs": summary["outputs"], "stream_requests": summary["requests"],
+            "stream_events": events}
+
+
 def snapshot(path):
     result = subprocess.run(["npu-smi", "info"], capture_output=True, text=True, timeout=20)
     path.write_text(result.stdout + result.stderr)
@@ -171,7 +289,7 @@ def main():
     p.add_argument("--output-dir", type=Path, required=True)
     p.add_argument("--memory-fraction", type=float, required=True)
     p.add_argument("--concurrency", type=int, choices=(1, 2), required=True)
-    p.add_argument("--mode", choices=("correctness", "benchmark"), required=True)
+    p.add_argument("--mode", choices=("correctness", "benchmark", "streaming"), required=True)
     p.add_argument("--port", type=int, required=True)
     p.add_argument("--repeats", type=int, required=True)
     args = p.parse_args()
@@ -181,6 +299,8 @@ def main():
                           memory_fraction=args.memory_fraction,
                           concurrency=args.concurrency, port=args.port)
     config["dtype"] = args.dtype
+    if args.mode == "streaming":
+        config.update(stream_interval=1, enable_output_logprobs=False)
     if args.lm_head_compute_dtype is not None:
         config["lm_head_compute_dtype"] = args.lm_head_compute_dtype
     if args.dtype == "float16":
@@ -202,7 +322,7 @@ def main():
         raise ValueError("invalid or out-of-capacity cases")
     if len({c["name"] for c in cases}) != len(cases):
         raise ValueError("duplicate case names")
-    if args.mode == "benchmark":
+    if args.mode in ("benchmark", "streaming"):
         cases = [c for c in cases if len(c["input_ids"]) in (32, 256)]
         if {len(c["input_ids"]) for c in cases} != {32, 256}:
             raise ValueError("benchmark requires both 32- and 256-token cases")
@@ -216,6 +336,13 @@ def main():
               "cases_sha256": hashlib.sha256(cases_bytes).hexdigest(), "runs": [],
               "reproducibility": {"environment": selected_environment()},
               "measurement": "batch wall latency/aggregate throughput; not TTFT, TPOT or isolated communication timing"}
+    if args.mode == "streaming":
+        result["measurement"] = (
+            "client-observed indexed token-delta arrivals; TTFT only for a singleton first chunk; "
+            "TPOT=(last-first)/(N-1); includes scheduling/IPC/observer overhead, not isolated kernel timing")
+        result["stream_schema_version"] = 1
+        result["requested_repeats"] = args.repeats
+        result["reproducibility"]["runner_sha256"] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     def save():
         (args.output_dir / "result.json").write_text(json.dumps(result, indent=2, allow_nan=False) + "\n")
     save()
@@ -242,6 +369,16 @@ def main():
             validate_outputs(warmup, batch_size=args.concurrency, new_tokens=16,
                              input_tokens=len(case["input_ids"]))
             for repeat in range(args.repeats):
+                if args.mode == "streaming":
+                    measured = measure_stream_batch(engine, batch=batch, params=params,
+                                                    expected_outputs=warmup)
+                    result["runs"].append({"case": case["name"], "repeat": repeat,
+                                           "input_tokens": len(case["input_ids"]),
+                                           "output_tokens_per_request": 16,
+                                           "warmup_output_ids": [o["output_ids"] for o in warmup],
+                                           **measured})
+                    save()
+                    continue
                 start = time.perf_counter()
                 outputs = engine.generate(input_ids=batch, sampling_params=params,
                                           return_logprob=args.mode == "correctness")

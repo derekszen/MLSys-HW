@@ -1,0 +1,66 @@
+{
+  "passed": true,
+  "tp": 1,
+  "concurrency": 1,
+  "verified_requests": 6,
+  "summary": [
+    {
+      "input_tokens": 32,
+      "repeats": 3,
+      "metrics": {
+        "ttft_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 251.02792028337717
+        },
+        "tpot_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 68.05656468495727
+        },
+        "first_chunk_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 251.02792028337717
+        },
+        "last_token_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 1274.2883302271366
+        }
+      },
+      "batch_seconds_median": 1.274354049935937
+    },
+    {
+      "input_tokens": 256,
+      "repeats": 3,
+      "metrics": {
+        "ttft_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 1011.538680177182
+        },
+        "tpot_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 66.67152267570297
+        },
+        "first_chunk_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 1011.538680177182
+        },
+        "last_token_ms": {
+          "observed_requests": 3,
+          "total_requests": 3,
+          "median": 2023.0626901611686
+        }
+      },
+      "batch_seconds_median": 2.0230888701044023
+    }
+  ],
+  "scope": "Recorded event/metric consistency and warmup repeatability only; not independent model accuracy or proof of hardware execution. Client time includes scheduling, IPC and observer overhead. No pure prefill/decode/communication attribution.",
+  "input_sha256": "5d7ccb428fcd8d49d69b6adfa43747c5c8949079addb8a18d165f01776e16bb0",
+  "verifier_sha256": "91870b790be4a87baaa64a85d9f4908dca7d0728c8d1872e2d32fd73b5b4b547",
+  "runner_sha256": "9d813ab4350f7c22bbcf0191b22a46b76b8e8c2cf704dbe8af860c5a25f3f912"
+}
