@@ -1,8 +1,7 @@
 # Offline reproduction — Steven Walxim (2501112130)
 
 This contribution adds a standard-library HW1 evidence checker and fixes two
-macOS path-comparison failures in the HW2 tests. Implementation and local
-execution were performed with AI assistance. The existing model adaptations,
+macOS path-comparison failures in the HW2 tests. The existing model adaptations,
 frozen patches, hardware observations, and Zhuoxi Zeng's attribution are preserved.
 
 ## What the new checker establishes

@@ -1,6 +1,6 @@
 # Homework 1 — Qwen3.5-0.8B on Ascend 910C
 
-**Single-chip technical baseline completed.** The adapted course TokenSpeed fork loads the actual checkpoint and runs text prefill, decode, and continuous inference on one Ascend chip. The [Chinese report](report.md) records **Zhuoxi Zeng (2501213387)** and **Steven Walxim (2501112130)** with their respective contributions. Steven's fresh results are in the [separate reproduction report](rebuild/report.md); the original technical evidence below remains unchanged. See the [submission guide](../SUBMISSION.md). Nothing has been submitted. [COMPLETION.md](COMPLETION.md) records the frozen baseline handed off to Homework 2.
+**Single-chip technical baseline completed.** The adapted course TokenSpeed fork loads the actual checkpoint and runs text prefill, decode, and continuous inference on one Ascend chip. The [Chinese report](report.md) records **Zhuoxi Zeng (2501213387)**, **Steven Walxim (2501112130)**, and **陈子睿 (2601112045)** with their respective contributions. Steven's fresh results are in the [separate reproduction report](rebuild/report.md); the original technical evidence below remains unchanged. See the [submission guide](../SUBMISSION.md). Nothing has been submitted. [COMPLETION.md](COMPLETION.md) records the frozen baseline handed off to Homework 2.
 
 ## Verified results
 

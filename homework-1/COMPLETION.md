@@ -1,6 +1,6 @@
 # Homework 1 closure / Homework 2 handoff
 
-**Technical baseline complete; report and submission materials prepared, not uploaded.** Zhuoxi Zeng (2501213387) is confirmed in the [submission guide](../SUBMISSION.md). The report includes the documented coordination role and technical results. See [report](report.md) and [reproduction instructions](README.md).
+**Technical baseline complete; report and submission materials prepared, not uploaded.** All three contributors—Zhuoxi Zeng (2501213387), Steven Walxim (2501112130), and 陈子睿 (2601112045)—are recorded in the [submission guide](../SUBMISSION.md). The report includes their respective contributions and technical results. See [report](report.md) and [reproduction instructions](README.md).
 
 ## Frozen baseline
 

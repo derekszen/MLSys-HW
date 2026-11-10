@@ -2,7 +2,7 @@
 
 **Technical work is complete for the stored assignment and recorded experimental scope.** All four required models run one sharded model across the two chips of a single910C card and have passing matched TP1/TP2 configurations. The last4B discrepancy was explained and fixed, not waived by changing the tolerance. **Nothing has been submitted.**
 
-Student: **Zhuoxi Zeng ·2501213387**. The [report](report.md) includes the documented coordination contribution and technical results. The report now includes **two additional group-member placeholders**. Both names, student IDs and actual contributions remain unconfirmed; this is a draft for group details, not a final submission copy. Technical results are unchanged. See the [submission guide](../SUBMISSION.md).
+The [report](report.md) records all three confirmed members and their respective contributions: **Zhuoxi Zeng (2501213387)**, **Steven Walxim (2501112130)** and **陈子睿 (2601112045)**. Group details are complete. Technical results are unchanged. See the [submission guide](../SUBMISSION.md).
 
 ## Requirement coverage
 

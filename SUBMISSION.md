@@ -1,8 +1,8 @@
 # Homework 1 / Homework 2 提交说明
 
-**已确认成员：Zhuoxi Zeng（2501213387）、Steven Walxim（2501112130）。报告开头记录各自贡献；尚未上传教学网。** 下方小组生成器仍使用 Zhuoxi 的文件名前缀；Steven 的独立 HW1 报告使用单独生成脚本，不代表所有成员必须各交一份或必须提交 ZIP。
+**已确认 HW1/HW2 成员：Zhuoxi Zeng（2501213387）、Steven Walxim（2501112130）、陈子睿（2601112045）。两份小组报告开头记录三人各自贡献；尚未上传教学网。** 下方小组生成器仍使用 Zhuoxi 的文件名前缀；Steven 的独立 HW1 报告使用单独生成脚本，不代表所有成员必须各交一份或必须提交 ZIP。
 
-**作业二成员信息：** 已补充 Steven Walxim（2501112130）的离线复核工具、测试可移植性修复、已有 HW2 证据复核，以及本人账户下新完成的 HW1 前置单 chip 复现。新增 NPU 实测属于 HW1，尚未新增 HW2 TP2 运行或通信测量；证据见 [HW2 贡献表](homework-2/report.md) 和 [独立 HW1 报告](homework-1/rebuild/report.md)。成员 3 的姓名、学号与实际贡献仍为“待确认”。提交前核对成员信息并重新生成需要上传的 HW2 材料；目前不能将该占位版本当作最终提交稿。HW1 贡献表已补充 Steven，原技术数据与冻结 patch 保持不变。
+**作业二成员信息：** 已补充 Steven Walxim（2501112130）的离线复核工具、测试可移植性修复、已有 HW2 证据复核，以及本人账户下新完成的 HW1 前置单 chip 复现。新增 NPU 实测属于 HW1，尚未新增 HW2 TP2 运行或通信测量；证据见 [HW2 贡献表](homework-2/report.md) 和 [独立 HW1 报告](homework-1/rebuild/report.md)。已按本人提供的信息补充陈子睿（2601112045）的双 chip 适配、正确性验证、性能/HBM 对比与通信时间线分析贡献，三名成员信息均已补齐。HW1 贡献表已补充 Steven 与陈子睿；陈子睿的 HW1 贡献对应单 chip 适配、算子与模型正确性、性能/HBM 快照及主机侧 profile 分析。原技术数据与冻结 patch 保持不变。
 
 ## 需要上传的文件
 
@@ -20,6 +20,10 @@
 ## 提交前只需完成以下步骤
 
 1. **审核两份 PDF。** 核对姓名、学号、中文文字和表格；重点看结论、配置与贡献声明。开头记录需求/实验目标确认、资源访问协调和回归/修复/交付要求，若有其他成员须据实补齐。按本人选择，AI 辅助说明由本人填写在网站的提交评论中，不重复写入报告或附件说明。本条为本地操作提醒，不复制进提交 ZIP。
+   已从附件移至此处、供网站提交评论使用的 Steven 辅助说明：
+   > Steven's AI-assisted work here is fresh setup and execution, checking reproduction, adding a focused initialization regression, and documenting the failure/fix.
+   > Implementation and local execution were performed with AI assistance.
+
 2. **确认课程规则。** 原题没有指定 PDF/ZIP 格式、附件大小、上传数量或教学网具体网址；以实际作业入口及教师最新通知为准，并确认 AI 辅助政策。不能保证满分，评分由教师决定。
 3. **分别打开教学网的第1次、第2次作业入口。** 对应上传各自 PDF；若支持附加材料，再附相应 ZIP。若只允许一个文件且支持 ZIP，ZIP 已含 PDF；若只收 PDF，先按入口要求交 PDF，其他材料按教师允许的方式补充。不要把两次作业交错。
 4. **完成正式提交并核验回执。** 点击平台的“提交”而不只保存草稿；确认附件名、提交状态/时间，并保留回执或截图。仓库中的“已准备”不等于平台“已提交”。

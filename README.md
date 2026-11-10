@@ -1,6 +1,6 @@
 # MLSys-HW
 
-**Confirmed contributors: Zhuoxi Zeng (2501213387) and Steven Walxim (2501112130).** Each report records their respective work; HW2's third-member details remain unconfirmed. Report sources and package-building tools are retained; generated PDFs/ZIPs are local outputs, not GitHub downloads. No teaching-platform submission has been performed by this project. Start with the [submission guide](SUBMISSION.md) and [generated-file instructions](submissions/README.md).
+**Confirmed HW1/HW2 contributors: Zhuoxi Zeng (2501213387), Steven Walxim (2501112130), and 陈子睿 (2601112045).** Both group reports record all three members' respective contributions. Report sources and package-building tools are retained; generated PDFs/ZIPs are local outputs, not GitHub downloads. No teaching-platform submission has been performed by this project. Start with the [submission guide](SUBMISSION.md) and [generated-file instructions](submissions/README.md).
 
 - [Homework 1: single-chip Qwen3.5-0.8B adaptation](homework-1/README.md) — single-chip inference, reference checks and the 2×2 performance baseline completed. The report includes a self-contained operator matrix and the required contribution statement.
 - [Steven's HW1 reproduction report](homework-1/rebuild/report.md) — fresh single-chip correctness and timing results, with separate attribution for the group's existing implementation and historical memory/profile evidence.

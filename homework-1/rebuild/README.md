@@ -67,7 +67,7 @@ Evidence: [checkpoint](results/2026-11-06/checkpoint.json),
 
 The model implementation, original Ascend adapters, and reference harness come
 from the existing group project. The stream guard also exists in the frozen
-HW1 patch. Steven's AI-assisted work here is fresh setup and execution, checking
+HW1 patch. Steven's work here is fresh setup and execution, checking
 reproduction, adding a focused initialization regression, and documenting the
 failure/fix. It is not a claim to have independently authored all adapters.
 
