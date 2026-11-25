@@ -1,0 +1,36 @@
+{
+  "clear-l1-tp1-host0.0.json": {
+    "requests": 4,
+    "tokens_equal": true,
+    "cached_tokens": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "clear-l1-tp1-host0.05.json": {
+    "requests": 4,
+    "tokens_equal": true,
+    "cached_tokens": [
+      0,
+      128,
+      0,
+      0
+    ]
+  },
+  "clear-l1-tp1-host0.5.json": {
+    "requests": 4,
+    "tokens_equal": true,
+    "cached_tokens": [
+      0,
+      128,
+      128,
+      128
+    ]
+  },
+  "stress": {
+    "requests": 36,
+    "tokens_equal": true
+  }
+}

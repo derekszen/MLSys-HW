@@ -85,7 +85,18 @@ Host 占用列为每个 rank 的 L2 峰值已认领容量与预分配容量，�
 
 **Zhuoxi Zeng（2501213387）｜小组报告与实验基线。** 本报告以 Zhuoxi 的名义整理提交。前两阶段小组记录将需求与实验目标确认、资源和账户协调、正确性回归及交付要求列为其贡献。本文把 TP2 实现补丁和成对原始运行列为小组可复核的产物，不据提交人姓名判定单独作者。
 
-**陈子睿（2601112045）｜本阶段复用的 Ascend 基线。** 陈子睿在[作业一](https://github.com/derekszen/MLSys-HW/blob/aeb321daa6abacef3fb67f8cb90b96ee7ea78cda/homework-1/report.md)完成 Qwen3.5-0.8B 的单芯片适配与正确性验证，并与 Transformers 参考输出对照；在[作业二](https://github.com/derekszen/MLSys-HW/blob/aeb321daa6abacef3fb67f8cb90b96ee7ea78cda/homework-2/report.md)完成双芯片适配与正确性验证，分析通信、精度差异及每芯片 HBM 占用。作业三沿用这套能正确推理的基线，在同一模型和设备预算下比较卸载开关，以区分恢复误差与原有模型差异。这是已确认的前置贡献，不将本次缓存补丁或硬件运行按推测归到个人名下。
+**陈子睿（2601112045）｜Ascend 基线与独立验证。** 陈子睿在[作业一](https://github.com/derekszen/MLSys-HW/blob/aeb321daa6abacef3fb67f8cb90b96ee7ea78cda/homework-1/report.md)完成 Qwen3.5-0.8B 的单芯片适配与正确性验证，并与 Transformers 参考输出对照；在[作业二](https://github.com/derekszen/MLSys-HW/blob/aeb321daa6abacef3fb67f8cb90b96ee7ea78cda/homework-2/report.md)完成双芯片适配与正确性验证，分析通信、精度差异及每芯片 HBM 占用。作业三沿用这套能正确推理的基线，在同一模型和设备预算下比较卸载开关，以区分恢复误差与原有模型差异。作业三另完成独立的卸载恢复对照、DMA 事件与块级观测、Host 淘汰统计和受控 L1 清空实验。
+
+### 陈子睿的独立 TP2 压力验证
+
+对 0.8B 和 4B 分别运行 5、32、256 token 输入及 32 token 解码，开启卸载时的输出 token 和所选 token 的 logprob 均与各自的关闭组一致。0.8B 另用三种输入循环 12 轮，共 36 个请求，每请求生成 8 token，输出全部与参考匹配。
+
+| 进程 PID | 单向 DMA 次数 | 单向 payload（字节） | D2H / H2D 设备事件累计（ms） | 结束可用设备块 / 快照空块 / Host pin |
+| --- | ---: | ---: | ---: | ---: |
+| 524422 | 1,555 | 16,545,755,136 | 4,094.293 / 4,147.694 | 16/16、15、0 |
+| 524423 | 1,555 | 16,545,755,136 | 3,103.159 / 3,226.379 | 16/16、15、0 |
+
+每个进程的 D2H 和 H2D 次数及字节数相同。设备事件时间来自有同步等待的诊断模式，按进程独立统计。结束时快照空块数回到初始值。[输出验证摘要](results/cray-hw3/validation-supplement.json) · [逐进程观测统计](results/cray-hw3/observability-summary.json)
 
 Steven Walxim（2501112130）在[独立 TP1 分支](https://github.com/derekszen/MLSys-HW/blob/4656c87148dbc1f501571d95bede2ddc49cf8105/homework-3/report.md)设计并运行 off/on 对照，编写逐请求输出与来源复核工具、完成事件观测器，并归档压力和容量实验。他验证了 0.8B 与 4B 的强制 decode / prefill 恢复。该分支与上文 TP=2 实验分别建立在上游 TokenSpeed 和小组 HW1/HW2 的适配之上；Host L2、快照池和调度框架不是本阶段从零实现。两组使用的补丁、工作负载与计时口径不同，不能将吞吐相除来估算 TP 扩展效率。
 

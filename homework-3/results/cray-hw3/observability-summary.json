@@ -1,0 +1,483 @@
+{
+  "observed-capacity-.05.log": {
+    "host_eviction_events": 18,
+    "per_pid": {
+      "523268": {
+        "directions": {
+          "d2h": {
+            "operations": 9,
+            "bytes": 180559872,
+            "device_ms_sum": 14.448700040578842,
+            "device_ms_median": 0.7772200107574463
+          },
+          "h2d": {
+            "operations": 0,
+            "bytes": 0,
+            "device_ms_sum": 0,
+            "device_ms_median": null
+          }
+        },
+        "block_samples": 17,
+        "first": {
+          "device_total": 8,
+          "device_empty": 3,
+          "device_active": 5,
+          "device_available": 3,
+          "host_cached": 0,
+          "host_pinned": 0,
+          "snapshot_free": 3,
+          "pid": 523268,
+          "time": 1794976849.5629358
+        },
+        "last": {
+          "device_total": 8,
+          "device_empty": 1,
+          "device_active": 0,
+          "device_available": 8,
+          "host_cached": 3,
+          "host_pinned": 0,
+          "snapshot_free": 3,
+          "pid": 523268,
+          "time": 1794976855.0496285
+        },
+        "idle_samples": 5,
+        "idle_snapshot_free_values": [
+          3
+        ],
+        "idle_host_pinned_values": [
+          0
+        ],
+        "max_host_cached": 5
+      }
+    },
+    "scheduler_retractions": 0,
+    "scheduler_restores": 0
+  },
+  "observed-capacity-.5.log": {
+    "host_eviction_events": 0,
+    "per_pid": {
+      "524046": {
+        "directions": {
+          "d2h": {
+            "operations": 3,
+            "bytes": 63332352,
+            "device_ms_sum": 6.33705997467041,
+            "device_ms_median": 0.8767799735069275
+          },
+          "h2d": {
+            "operations": 0,
+            "bytes": 0,
+            "device_ms_sum": 0,
+            "device_ms_median": null
+          }
+        },
+        "block_samples": 17,
+        "first": {
+          "device_total": 8,
+          "device_empty": 3,
+          "device_active": 5,
+          "device_available": 3,
+          "host_cached": 0,
+          "host_pinned": 0,
+          "snapshot_free": 3,
+          "pid": 524046,
+          "time": 1794976938.8085692
+        },
+        "last": {
+          "device_total": 8,
+          "device_empty": 1,
+          "device_active": 0,
+          "device_available": 8,
+          "host_cached": 9,
+          "host_pinned": 0,
+          "snapshot_free": 3,
+          "pid": 524046,
+          "time": 1794976944.842585
+        },
+        "idle_samples": 5,
+        "idle_snapshot_free_values": [
+          3
+        ],
+        "idle_host_pinned_values": [
+          0
+        ],
+        "max_host_cached": 9
+      }
+    },
+    "scheduler_retractions": 0,
+    "scheduler_restores": 0
+  },
+  "observed-reuse-.05.log": {
+    "host_eviction_events": 113,
+    "per_pid": {
+      "523028": {
+        "directions": {
+          "d2h": {
+            "operations": 40,
+            "bytes": 838139904,
+            "device_ms_sum": 41.78735959529877,
+            "device_ms_median": 0.723110020160675
+          },
+          "h2d": {
+            "operations": 0,
+            "bytes": 0,
+            "device_ms_sum": 0,
+            "device_ms_median": null
+          }
+        },
+        "block_samples": 63,
+        "first": {
+          "device_total": 8,
+          "device_empty": 3,
+          "device_active": 5,
+          "device_available": 3,
+          "host_cached": 0,
+          "host_pinned": 0,
+          "snapshot_free": 3,
+          "pid": 523028,
+          "time": 1794976797.3861263
+        },
+        "last": {
+          "device_total": 8,
+          "device_empty": 1,
+          "device_active": 0,
+          "device_available": 8,
+          "host_cached": 3,
+          "host_pinned": 0,
+          "snapshot_free": 3,
+          "pid": 523028,
+          "time": 1794976818.2102432
+        },
+        "idle_samples": 15,
+        "idle_snapshot_free_values": [
+          3
+        ],
+        "idle_host_pinned_values": [
+          0
+        ],
+        "max_host_cached": 10
+      }
+    },
+    "scheduler_retractions": 0,
+    "scheduler_restores": 0
+  },
+  "observed-reuse-.5.log": {
+    "host_eviction_events": 48,
+    "per_pid": {
+      "523587": {
+        "directions": {
+          "d2h": {
+            "operations": 36,
+            "bytes": 759988224,
+            "device_ms_sum": 34.06177991628647,
+            "device_ms_median": 0.6927300095558167
+          },
+          "h2d": {
+            "operations": 0,
+            "bytes": 0,
+            "device_ms_sum": 0,
+            "device_ms_median": null
+          }
+        },
+        "block_samples": 62,
+        "first": {
+          "device_total": 8,
+          "device_empty": 3,
+          "device_active": 5,
+          "device_available": 3,
+          "host_cached": 0,
+          "host_pinned": 0,
+          "snapshot_free": 3,
+          "pid": 523587,
+          "time": 1794976886.607586
+        },
+        "last": {
+          "device_total": 8,
+          "device_empty": 1,
+          "device_active": 0,
+          "device_available": 8,
+          "host_cached": 60,
+          "host_pinned": 0,
+          "snapshot_free": 3,
+          "pid": 523587,
+          "time": 1794976906.8239346
+        },
+        "idle_samples": 14,
+        "idle_snapshot_free_values": [
+          3
+        ],
+        "idle_host_pinned_values": [
+          0
+        ],
+        "max_host_cached": 60
+      }
+    },
+    "scheduler_retractions": 0,
+    "scheduler_restores": 0
+  },
+  "controlled-capacity-.05.log": {
+    "host_eviction_events": 22,
+    "per_pid": {
+      "524384": {
+        "directions": {
+          "d2h": {
+            "operations": 11,
+            "bytes": 214585344,
+            "device_ms_sum": 21.70952035486698,
+            "device_ms_median": 0.7339000105857849
+          },
+          "h2d": {
+            "operations": 24,
+            "bytes": 21110784,
+            "device_ms_sum": 1.9434799924492836,
+            "device_ms_median": 0.07414000108838081
+          }
+        },
+        "block_samples": 22,
+        "first": {
+          "device_total": 8,
+          "device_empty": 3,
+          "device_active": 5,
+          "device_available": 3,
+          "host_cached": 0,
+          "host_pinned": 0,
+          "snapshot_free": 3,
+          "pid": 524384,
+          "time": 1794976970.4438832
+        },
+        "last": {
+          "device_total": 8,
+          "device_empty": 8,
+          "device_active": 0,
+          "device_available": 8,
+          "host_cached": 5,
+          "host_pinned": 0,
+          "snapshot_free": 3,
+          "pid": 524384,
+          "time": 1794976976.934983
+        },
+        "idle_samples": 8,
+        "idle_snapshot_free_values": [
+          3
+        ],
+        "idle_host_pinned_values": [
+          0
+        ],
+        "max_host_cached": 5
+      }
+    },
+    "scheduler_retractions": 0,
+    "scheduler_restores": 0
+  },
+  "controlled-capacity-.5.log": {
+    "host_eviction_events": 0,
+    "per_pid": {
+      "524776": {
+        "directions": {
+          "d2h": {
+            "operations": 3,
+            "bytes": 63332352,
+            "device_ms_sum": 6.521699845790863,
+            "device_ms_median": 0.9577599763870239
+          },
+          "h2d": {
+            "operations": 72,
+            "bytes": 63332352,
+            "device_ms_sum": 9.56664002686739,
+            "device_ms_median": 0.0916999988257885
+          }
+        },
+        "block_samples": 17,
+        "first": {
+          "device_total": 8,
+          "device_empty": 3,
+          "device_active": 5,
+          "device_available": 3,
+          "host_cached": 0,
+          "host_pinned": 0,
+          "snapshot_free": 3,
+          "pid": 524776,
+          "time": 1794977008.8475716
+        },
+        "last": {
+          "device_total": 8,
+          "device_empty": 8,
+          "device_active": 0,
+          "device_available": 8,
+          "host_cached": 9,
+          "host_pinned": 0,
+          "snapshot_free": 3,
+          "pid": 524776,
+          "time": 1794977015.1263056
+        },
+        "idle_samples": 5,
+        "idle_snapshot_free_values": [
+          3
+        ],
+        "idle_host_pinned_values": [
+          0
+        ],
+        "max_host_cached": 9
+      }
+    },
+    "scheduler_retractions": 0,
+    "scheduler_restores": 0
+  },
+  "controlled-capacity-0.log": {
+    "host_eviction_events": 0,
+    "per_pid": {
+      "524004": {
+        "directions": {
+          "d2h": {
+            "operations": 0,
+            "bytes": 0,
+            "device_ms_sum": 0,
+            "device_ms_median": null
+          },
+          "h2d": {
+            "operations": 0,
+            "bytes": 0,
+            "device_ms_sum": 0,
+            "device_ms_median": null
+          }
+        },
+        "block_samples": 16,
+        "first": {
+          "device_total": 8,
+          "device_empty": 3,
+          "device_active": 5,
+          "device_available": 3,
+          "host_cached": 0,
+          "host_pinned": 0,
+          "snapshot_free": 3,
+          "pid": 524004,
+          "time": 1794976932.5032697
+        },
+        "last": {
+          "device_total": 8,
+          "device_empty": 8,
+          "device_active": 0,
+          "device_available": 8,
+          "host_cached": 0,
+          "host_pinned": 0,
+          "snapshot_free": 3,
+          "pid": 524004,
+          "time": 1794976939.3236024
+        },
+        "idle_samples": 4,
+        "idle_snapshot_free_values": [
+          3
+        ],
+        "idle_host_pinned_values": [
+          0
+        ],
+        "max_host_cached": 0
+      }
+    },
+    "scheduler_retractions": 0,
+    "scheduler_restores": 0
+  },
+  "stress-tp2.log": {
+    "host_eviction_events": 0,
+    "per_pid": {
+      "524422": {
+        "directions": {
+          "d2h": {
+            "operations": 1555,
+            "bytes": 16545755136,
+            "device_ms_sum": 4094.292597413063,
+            "device_ms_median": 2.2761600017547607
+          },
+          "h2d": {
+            "operations": 1555,
+            "bytes": 16545755136,
+            "device_ms_sum": 4147.693575382233,
+            "device_ms_median": 2.29721999168396
+          }
+        },
+        "block_samples": 3341,
+        "first": {
+          "device_total": 16,
+          "device_empty": 11,
+          "device_active": 5,
+          "device_available": 11,
+          "host_cached": 0,
+          "host_pinned": 0,
+          "snapshot_free": 15,
+          "pid": 524422,
+          "time": 1794976980.6006682
+        },
+        "last": {
+          "device_total": 16,
+          "device_empty": 2,
+          "device_active": 0,
+          "device_available": 16,
+          "host_cached": 0,
+          "host_pinned": 0,
+          "snapshot_free": 15,
+          "pid": 524422,
+          "time": 1794977044.933397
+        },
+        "idle_samples": 1591,
+        "idle_snapshot_free_values": [
+          12,
+          15
+        ],
+        "idle_host_pinned_values": [
+          0
+        ],
+        "max_host_cached": 0
+      },
+      "524423": {
+        "directions": {
+          "d2h": {
+            "operations": 1555,
+            "bytes": 16545755136,
+            "device_ms_sum": 3103.158661842346,
+            "device_ms_median": 1.7933800220489502
+          },
+          "h2d": {
+            "operations": 1555,
+            "bytes": 16545755136,
+            "device_ms_sum": 3226.3787018060684,
+            "device_ms_median": 1.8121800422668457
+          }
+        },
+        "block_samples": 3341,
+        "first": {
+          "device_total": 16,
+          "device_empty": 11,
+          "device_active": 5,
+          "device_available": 11,
+          "host_cached": 0,
+          "host_pinned": 0,
+          "snapshot_free": 15,
+          "pid": 524423,
+          "time": 1794976980.6006687
+        },
+        "last": {
+          "device_total": 16,
+          "device_empty": 2,
+          "device_active": 0,
+          "device_available": 16,
+          "host_cached": 0,
+          "host_pinned": 0,
+          "snapshot_free": 15,
+          "pid": 524423,
+          "time": 1794977044.9327354
+        },
+        "idle_samples": 1591,
+        "idle_snapshot_free_values": [
+          12,
+          15
+        ],
+        "idle_host_pinned_values": [
+          0
+        ],
+        "max_host_cached": 0
+      }
+    },
+    "scheduler_retractions": 3110,
+    "scheduler_restores": 3110
+  }
+}
